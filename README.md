@@ -26,6 +26,11 @@ SculptNG uses parcel for bundling and developer experience.
 `yarn parcel tools/index.dev.html` will bundle up the necessary resources and launch a dev server
 with hot reloading.
 
+If things seem to get stuck, updated assets not being seen, or errors from parcel, you can delete
+the `.parcel-cache` directory
+
+`rm -rf .parcel-cache`
+
 ## Credits
 
 Original Author: Stephane Ginier (<https://stephaneginier.com/>)
