@@ -1,6 +1,6 @@
-import TR from 'gui/GuiTR';
-import getOptionsURL from 'misc/getOptionsURL';
-import Enums from 'misc/Enums';
+import TR from '../gui/GuiTR';
+import getOptionsURL from '../misc/getOptionsURL';
+import Enums from '../misc/Enums';
 
 class GuiCamera {
 
@@ -82,20 +82,20 @@ class GuiCamera {
     }
 
     switch (getOptionsURL.getShortKey(event.which)) {
-    case Enums.KeyAction.STRIFE_LEFT:
-      camera._moveX = -1;
-      break;
-    case Enums.KeyAction.STRIFE_RIGHT:
-      camera._moveX = 1;
-      break;
-    case Enums.KeyAction.STRIFE_UP:
-      camera._moveZ = -1;
-      break;
-    case Enums.KeyAction.STRIFE_DOWN:
-      camera._moveZ = 1;
-      break;
-    default:
-      event.handled = false;
+      case Enums.KeyAction.STRIFE_LEFT:
+        camera._moveX = -1;
+        break;
+      case Enums.KeyAction.STRIFE_RIGHT:
+        camera._moveX = 1;
+        break;
+      case Enums.KeyAction.STRIFE_UP:
+        camera._moveZ = -1;
+        break;
+      case Enums.KeyAction.STRIFE_DOWN:
+        camera._moveZ = 1;
+        break;
+      default:
+        event.handled = false;
     }
 
     if (event.handled === true && this._cameraTimer === -1) {
@@ -123,28 +123,28 @@ class GuiCamera {
     var camera = this._camera;
 
     switch (getOptionsURL.getShortKey(event.which)) {
-    case Enums.KeyAction.STRIFE_LEFT:
-    case Enums.KeyAction.STRIFE_RIGHT:
-      camera._moveX = 0;
-      break;
-    case Enums.KeyAction.STRIFE_UP:
-    case Enums.KeyAction.STRIFE_DOWN:
-      camera._moveZ = 0;
-      break;
-    case Enums.KeyAction.CAMERA_RESET:
-      this.resetCamera();
-      break;
-    case Enums.KeyAction.CAMERA_FRONT:
-      this.resetFront();
-      break;
-    case Enums.KeyAction.CAMERA_TOP:
-      this.resetTop();
-      break;
-    case Enums.KeyAction.CAMERA_LEFT:
-      this.resetLeft();
-      break;
-    default:
-      event.handled = false;
+      case Enums.KeyAction.STRIFE_LEFT:
+      case Enums.KeyAction.STRIFE_RIGHT:
+        camera._moveX = 0;
+        break;
+      case Enums.KeyAction.STRIFE_UP:
+      case Enums.KeyAction.STRIFE_DOWN:
+        camera._moveZ = 0;
+        break;
+      case Enums.KeyAction.CAMERA_RESET:
+        this.resetCamera();
+        break;
+      case Enums.KeyAction.CAMERA_FRONT:
+        this.resetFront();
+        break;
+      case Enums.KeyAction.CAMERA_TOP:
+        this.resetTop();
+        break;
+      case Enums.KeyAction.CAMERA_LEFT:
+        this.resetLeft();
+        break;
+      default:
+        event.handled = false;
     }
 
     if (this._cameraTimer !== -1 && camera._moveX === 0 && camera._moveZ === 0) {

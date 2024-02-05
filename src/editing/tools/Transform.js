@@ -1,6 +1,6 @@
 import { vec3, mat4 } from 'gl-matrix';
-import Gizmo from 'editing/Gizmo';
-import SculptBase from 'editing/tools/SculptBase';
+import Gizmo from '../../editing/Gizmo';
+import SculptBase from './SculptBase';
 
 class Transform extends SculptBase {
 
@@ -96,7 +96,7 @@ class Transform extends SculptBase {
     else mesh.updateGeometry(mesh.getFacesFromVertices(iVerts), iVerts);
   }
 
-  update() {}
+  update() { }
 
   postRender() {
     if (this.getMesh())

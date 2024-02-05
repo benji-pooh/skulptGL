@@ -1,14 +1,14 @@
-import getOptionsURL from 'misc/getOptionsURL';
-import english from 'gui/tr/english';
-import chinese from 'gui/tr/chinese';
-import japanese from 'gui/tr/japanese';
-import korean from 'gui/tr/korean';
-import russian from 'gui/tr/russian';
-import turkish from 'gui/tr/turkish';
-import swedish from 'gui/tr/swedish';
-import french from 'gui/tr/french';
-import german from 'gui/tr/german';
-import italian from 'gui/tr/italian';
+import getOptionsURL from '../misc/getOptionsURL';
+import english from './tr/english';
+import chinese from './tr/chinese';
+import japanese from './tr/japanese';
+import korean from './tr/korean';
+import russian from './tr/russian';
+import turkish from './tr/turkish';
+import swedish from './tr/swedish';
+import french from './tr/french';
+import german from './tr/german';
+import italian from './tr/italian';
 
 var GuiTR = function (key) {
   var str = GuiTR.languages[GuiTR.select][key] || GuiTR.languages.english[key];
@@ -45,36 +45,36 @@ else if (language === 'fr') GuiTR.select = 'français';
 else if (language === 'de') GuiTR.select = 'deutsch';
 
 switch (getOptionsURL().language) {
-case 'english':
-  GuiTR.select = 'english';
-  break;
-case 'chinese':
-  GuiTR.select = '中文';
-  break;
-case 'korean':
-  GuiTR.select = '한국어';
-  break;
-case 'japanese':
-  GuiTR.select = '日本語';
-  break;
-case 'russian':
-  GuiTR.select = 'русский';
-  break;
-case 'turkish':
-  GuiTR.select = 'turkish';
-  break;
-case 'swedish':
-  GuiTR.select = 'svenska';
-  break;
-case 'french':
-  GuiTR.select = 'français';
-  break;
-case 'german':
-  GuiTR.select = 'deutsch';
-  break;
-case 'italian':
-  GuiTR.select = 'italiano';
-  break;
+  case 'english':
+    GuiTR.select = 'english';
+    break;
+  case 'chinese':
+    GuiTR.select = '中文';
+    break;
+  case 'korean':
+    GuiTR.select = '한국어';
+    break;
+  case 'japanese':
+    GuiTR.select = '日本語';
+    break;
+  case 'russian':
+    GuiTR.select = 'русский';
+    break;
+  case 'turkish':
+    GuiTR.select = 'turkish';
+    break;
+  case 'swedish':
+    GuiTR.select = 'svenska';
+    break;
+  case 'french':
+    GuiTR.select = 'français';
+    break;
+  case 'german':
+    GuiTR.select = 'deutsch';
+    break;
+  case 'italian':
+    GuiTR.select = 'italiano';
+    break;
 }
 
 export default GuiTR;

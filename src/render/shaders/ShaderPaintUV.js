@@ -1,5 +1,5 @@
-import ShaderBase from 'render/shaders/ShaderBase';
-import Attribute from 'render/Attribute';
+import ShaderBase from './ShaderBase';
+import Attribute from '../Attribute';
 
 var ShaderPaintUV = ShaderBase.getCopy();
 ShaderPaintUV.CHANNEL_VALUE = 0; // 0 color, 1 roughness, 2 metalness

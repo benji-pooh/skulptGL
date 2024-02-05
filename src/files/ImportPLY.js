@@ -1,62 +1,62 @@
-import Utils from 'misc/Utils';
-import MeshStatic from 'mesh/meshStatic/MeshStatic';
+import Utils from '../misc/Utils';
+import MeshStatic from '../mesh/meshStatic/MeshStatic';
 
 var Import = {};
 
 var typeToOctet = function (type) {
   switch (type) {
-  case 'uchar':
-  case 'char':
-  case 'int8':
-  case 'uint8':
-    return 1;
-  case 'ushort':
-  case 'short':
-  case 'int16':
-  case 'uint16':
-    return 2;
-  case 'uint':
-  case 'int':
-  case 'float':
-  case 'int32':
-  case 'uint32':
-  case 'float32':
-    return 4;
-  case 'double':
-  case 'float64':
-    return 8;
-  default:
-    return 0;
+    case 'uchar':
+    case 'char':
+    case 'int8':
+    case 'uint8':
+      return 1;
+    case 'ushort':
+    case 'short':
+    case 'int16':
+    case 'uint16':
+      return 2;
+    case 'uint':
+    case 'int':
+    case 'float':
+    case 'int32':
+    case 'uint32':
+    case 'float32':
+      return 4;
+    case 'double':
+    case 'float64':
+      return 8;
+    default:
+      return 0;
   }
 };
 
 var getParseFunc = function (type, isFloat) {
   var fac = isFloat ? 1.0 / 255.0 : 1;
   switch (type) {
-  case 'char':
-  case 'uchar':
-  case 'short':
-  case 'ushort':
-  case 'int':
-  case 'uint':
-  case 'int8':
-  case 'uint8':
-  case 'int16':
-  case 'uint16':
-  case 'int32':
-  case 'uint32':
-    return function (n) {
-      return parseInt(n, 10) * fac;
-    };
-  case 'float':
-  case 'double':
-  case 'float32':
-  case 'float64':
-    return parseFloat;
-  default:
-    return function (n) {
-      return n;
-    };
+    case 'char':
+    case 'uchar':
+    case 'short':
+    case 'ushort':
+    case 'int':
+    case 'uint':
+    case 'int8':
+    case 'uint8':
+    case 'int16':
+    case 'uint16':
+    case 'int32':
+    case 'uint32':
+      return function (n) {
+        return parseInt(n, 10) * fac;
+      };
+    case 'float':
+    case 'double':
+    case 'float32':
+    case 'float64':
+      return parseFloat;
+    default:
+      return function (n) {
+        return n;
+      };
   }
 };
 
@@ -64,46 +64,46 @@ var getBinaryRead = function (dview, prop, isFloat) {
   var fac = isFloat ? 1.0 / 255.0 : 1;
   var offset = prop.offsetOctet;
   switch (prop.type) {
-  case 'int8':
-  case 'char':
-    return function (off) {
-      return dview.getInt8(off + offset) * fac;
-    };
-  case 'uint8':
-  case 'uchar':
-    return function (off) {
-      return dview.getUint8(off + offset) * fac;
-    };
-  case 'int16':
-  case 'short':
-    return function (off) {
-      return dview.getInt16(off + offset, true) * fac;
-    };
-  case 'uint16':
-  case 'ushort':
-    return function (off) {
-      return dview.getUint16(off + offset, true) * fac;
-    };
-  case 'int32':
-  case 'int':
-    return function (off) {
-      return dview.getInt32(off + offset, true) * fac;
-    };
-  case 'uint32':
-  case 'uint':
-    return function (off) {
-      return dview.getUint32(off + offset, true) * fac;
-    };
-  case 'float32':
-  case 'float':
-    return function (off) {
-      return dview.getFloat32(off + offset, true);
-    };
-  case 'float64':
-  case 'double':
-    return function (off) {
-      return dview.getFloat64(off + offset, true);
-    };
+    case 'int8':
+    case 'char':
+      return function (off) {
+        return dview.getInt8(off + offset) * fac;
+      };
+    case 'uint8':
+    case 'uchar':
+      return function (off) {
+        return dview.getUint8(off + offset) * fac;
+      };
+    case 'int16':
+    case 'short':
+      return function (off) {
+        return dview.getInt16(off + offset, true) * fac;
+      };
+    case 'uint16':
+    case 'ushort':
+      return function (off) {
+        return dview.getUint16(off + offset, true) * fac;
+      };
+    case 'int32':
+    case 'int':
+      return function (off) {
+        return dview.getInt32(off + offset, true) * fac;
+      };
+    case 'uint32':
+    case 'uint':
+      return function (off) {
+        return dview.getUint32(off + offset, true) * fac;
+      };
+    case 'float32':
+    case 'float':
+      return function (off) {
+        return dview.getFloat32(off + offset, true);
+      };
+    case 'float64':
+    case 'double':
+      return function (off) {
+        return dview.getFloat64(off + offset, true);
+      };
   }
 };
 

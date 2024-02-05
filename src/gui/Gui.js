@@ -1,19 +1,19 @@
-import yagui from 'yagui';
-import TR from 'gui/GuiTR';
-import GuiBackground from 'gui/GuiBackground';
-import GuiCamera from 'gui/GuiCamera';
-import GuiConfig from 'gui/GuiConfig';
-import GuiFiles from 'gui/GuiFiles';
-import GuiMesh from 'gui/GuiMesh';
-import GuiTopology from 'gui/GuiTopology';
-import GuiRendering from 'gui/GuiRendering';
-import GuiScene from 'gui/GuiScene';
-import GuiSculpting from 'gui/GuiSculpting';
-import GuiStates from 'gui/GuiStates';
-import GuiTablet from 'gui/GuiTablet';
-import ShaderContour from 'render/shaders/ShaderContour';
+import GuiMain from '../yagui/GuiMain';
+import TR from './GuiTR';
+import GuiBackground from './GuiBackground';
+import GuiCamera from './GuiCamera';
+import GuiConfig from './GuiConfig';
+import GuiFiles from './GuiFiles';
+import GuiMesh from './GuiMesh';
+import GuiTopology from './GuiTopology';
+import GuiRendering from './GuiRendering';
+import GuiScene from './GuiScene';
+import GuiSculpting from './GuiSculpting';
+import GuiStates from './GuiStates';
+import GuiTablet from './GuiTablet';
+import ShaderContour from '../render/shaders/ShaderContour';
 
-import Export from 'files/Export';
+import Export from '../files/Export';
 
 class Gui {
 
@@ -47,7 +47,7 @@ class Gui {
   initGui() {
     this.deleteGui();
 
-    this._guiMain = new yagui.GuiMain(this._main.getViewport(), this._main.onCanvasResize.bind(this._main));
+    this._guiMain = new GuiMain(this._main.getViewport(), this._main.onCanvasResize.bind(this._main));
 
     var ctrls = this._ctrls;
     ctrls.length = 0;

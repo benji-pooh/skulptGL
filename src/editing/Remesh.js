@@ -1,12 +1,12 @@
 import { vec3, mat4 } from 'gl-matrix';
-import HoleFilling from 'editing/HoleFilling';
-import SurfaceNets from 'editing/SurfaceNets';
-import MarchingCubes from 'editing/MarchingCubes';
-import Geometry from 'math3d/Geometry';
-import MeshStatic from 'mesh/meshStatic/MeshStatic';
-import Utils from 'misc/Utils';
-import Enums from 'misc/Enums';
-import Smooth from 'editing/tools/Smooth';
+import HoleFilling from './HoleFilling';
+import SurfaceNets from './SurfaceNets';
+import MarchingCubes from './MarchingCubes';
+import Geometry from '../math3d/Geometry';
+import MeshStatic from '../mesh/meshStatic/MeshStatic';
+import Utils from '../misc/Utils';
+import Enums from '../misc/Enums';
+import Smooth from './tools/Smooth';
 
 var Remesh = {};
 Remesh.RESOLUTION = 150;

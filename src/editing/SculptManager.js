@@ -1,6 +1,6 @@
-import Selection from 'drawables/Selection';
-import Tools from 'editing/tools/Tools';
-import Enums from 'misc/Enums';
+import Selection from '../drawables/Selection';
+import Tools from './tools/Tools';
+import Enums from '../misc/Enums';
 
 class SculptManager {
 
@@ -56,14 +56,14 @@ class SculptManager {
 
   canBeContinuous() {
     switch (this._toolIndex) {
-    case Enums.Tools.TWIST:
-    case Enums.Tools.MOVE:
-    case Enums.Tools.DRAG:
-    case Enums.Tools.LOCALSCALE:
-    case Enums.Tools.TRANSFORM:
-      return false;
-    default:
-      return true;
+      case Enums.Tools.TWIST:
+      case Enums.Tools.MOVE:
+      case Enums.Tools.DRAG:
+      case Enums.Tools.LOCALSCALE:
+      case Enums.Tools.TRANSFORM:
+        return false;
+      default:
+        return true;
     }
   }
 

@@ -1,5 +1,5 @@
-import { zip } from 'zip';
-import ExportSTL from 'files/ExportSTL';
+import { zip } from '../../lib/zip';
+import ExportSTL from './ExportSTL';
 
 var Export = {};
 

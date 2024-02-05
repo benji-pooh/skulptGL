@@ -1,11 +1,11 @@
-import 'misc/Polyfill';
+import './misc/Polyfill';
 import { vec3 } from 'gl-matrix';
 import { Manager as HammerManager, Pan, Pinch, Tap } from 'hammerjs';
-import Tablet from 'misc/Tablet';
-import Enums from 'misc/Enums';
-import Utils from 'misc/Utils';
-import Scene from 'Scene';
-import Multimesh from 'mesh/multiresolution/Multimesh';
+import Tablet from './misc/Tablet';
+import Enums from './misc/Enums';
+import Utils from './misc/Utils';
+import Scene from './Scene';
+import Multimesh from './mesh/multiresolution/Multimesh';
 
 var MOUSE_LEFT = 1;
 var MOUSE_MIDDLE = 2;

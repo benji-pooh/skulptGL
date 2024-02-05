@@ -1,6 +1,6 @@
-import TR from 'gui/GuiTR';
-import Remesh from 'editing/Remesh';
-import ShaderBase from 'render/shaders/ShaderBase';
+import TR from '../gui/GuiTR';
+import Remesh from '../editing/Remesh';
+import ShaderBase from '../render/shaders/ShaderBase';
 
 class GuiScene {
 
@@ -14,7 +14,7 @@ class GuiScene {
     var menu = this._menu = guiParent.addMenu(TR('sceneTitle'));
 
     // scene
-    menu.addButton(TR('sceneReset'), this, 'clearScene' /*, 'CTRL+ALT+N'*/ );
+    menu.addButton(TR('sceneReset'), this, 'clearScene' /*, 'CTRL+ALT+N'*/);
     menu.addButton(TR('sceneAddSphere'), this._main, 'addSphere');
     menu.addButton(TR('sceneAddCube'), this._main, 'addCube');
     menu.addButton(TR('sceneAddCylinder'), this._main, 'addCylinder');

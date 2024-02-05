@@ -1,4 +1,4 @@
-import TR from 'gui/GuiTR';
+import TR from './GuiTR';
 
 class GuiMesh {
 
@@ -13,10 +13,10 @@ class GuiMesh {
 
   init(guiParent) {
     this.domVerts = document.createElement('ul');
-    this.domVerts.innerHTML = TR('meshNbVertices');
+    this.domVerts.innerHTML = TR('./meshNbVertices');
 
     this.domFaces = document.createElement('ul');
-    this.domFaces.innerHTML = TR('meshNbFaces');
+    this.domFaces.innerHTML = TR('./meshNbFaces');
 
     this.domUl = document.createElement('span');
     this.domUl.appendChild(this.domVerts);
@@ -31,8 +31,8 @@ class GuiMesh {
 
   updateMeshInfo() {
     var mesh = this._main.getMesh();
-    this.domVerts.innerHTML = TR('meshNbVertices') + (mesh ? mesh.getNbVertices() : 0);
-    this.domFaces.innerHTML = TR('meshNbFaces') + (mesh ? mesh.getNbFaces() : 0);
+    this.domVerts.innerHTML = TR('./meshNbVertices') + (mesh ? mesh.getNbVertices() : 0);
+    this.domFaces.innerHTML = TR('./meshNbFaces') + (mesh ? mesh.getNbFaces() : 0);
   }
 }
 
