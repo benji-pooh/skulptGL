@@ -1,5 +1,14 @@
 import TR from '../../gui/GuiTR';
 import ShaderBase from './ShaderBase';
+import clay from '../../../app/resources/matcaps/clay.jpg';
+import redClay from '../../../app/resources/matcaps/redClay.jpg';
+import matcapFV from '../../../app/resources/matcaps/matcapFV.jpg';
+import skinHazardousarts from '../../../app/resources/matcaps/skinHazardousarts.jpg';
+import skinHazardousarts2 from '../../../app/resources/matcaps/skinHazardousarts2.jpg';
+import pearl from '../../../app/resources/matcaps/pearl.jpg';
+import skin from '../../../app/resources/matcaps/skin.jpg';
+import green from '../../../app/resources/matcaps/green.jpg';
+import white from '../../../app/resources/matcaps/white.jpg';
 
 var ShaderMatcap = ShaderBase.getCopy();
 ShaderMatcap.vertexName = ShaderMatcap.fragmentName = 'Matcap';
@@ -17,31 +26,31 @@ ShaderMatcap.createTexture = function (gl, img, idMaterial) {
 
 var texPath = 'resources/matcaps/';
 ShaderMatcap.matcaps = [{
-  path: texPath + 'matcapFV.jpg',
+  path: matcapFV,
   name: 'matcap FV' // too lazy to tr
 }, {
-  path: texPath + 'redClay.jpg',
+  path: redClay,
   name: 'Red clay' // too lazy to tr
 }, {
-  path: texPath + 'skinHazardousarts.jpg',
+  path: skinHazardousarts,
   name: 'Skin hazardousarts' // too lazy to tr
 }, {
-  path: texPath + 'skinHazardousarts2.jpg',
+  path: skinHazardousarts2,
   name: 'Skin Hazardousarts2' // too lazy to tr
 }, {
-  path: texPath + 'pearl.jpg',
+  path: pearl,
   name: TR('matcapPearl')
 }, {
-  path: texPath + 'clay.jpg',
+  path: clay,
   name: TR('matcapClay')
 }, {
-  path: texPath + 'skin.jpg',
+  path: skin,
   name: TR('matcapSkin')
 }, {
-  path: texPath + 'green.jpg',
+  path: green,
   name: TR('matcapGreen')
 }, {
-  path: texPath + 'white.jpg',
+  path: white,
   name: TR('matcapWhite')
 }];
 
