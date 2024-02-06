@@ -10,6 +10,7 @@ app/index.html
 app/sculptgl.js
 cache/*
 dist
+build
 node_modules
 standalone/*
 tools/*.png
