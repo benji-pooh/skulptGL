@@ -1,8 +1,8 @@
-import TR from 'gui/GuiTR';
-import Enums from 'misc/Enums';
-import Tools from 'editing/tools/Tools';
-import getOptionsURL from 'misc/getOptionsURL';
-import GuiSculptingTools from 'gui/GuiSculptingTools';
+import TR from '../gui/GuiTR';
+import Enums from '../misc/Enums';
+import Tools from '../editing/tools/Tools';
+import getOptionsURL from '../misc/getOptionsURL';
+import GuiSculptingTools from '../gui/GuiSculptingTools';
 
 var GuiTools = GuiSculptingTools.tools;
 
@@ -208,25 +208,25 @@ class GuiSculpting {
     var cur = GuiTools[this.getSelectedTool()];
 
     switch (shk) {
-    case Enums.KeyAction.DELETE:
-      main.deleteCurrentSelection();
-      break;
-    case Enums.KeyAction.INTENSITY:
-      this._modalBrushIntensity = main._focusGui = true;
-      break;
-    case Enums.KeyAction.RADIUS:
-      if (!this._modalBrushRadius) this._startModalBrushRadius(this._lastPageX, this._lastPageY);
-      this._modalBrushRadius = main._focusGui = true;
-      break;
-    case Enums.KeyAction.NEGATIVE:
-      if (cur.toggleNegative) cur.toggleNegative();
-      break;
-    case Enums.KeyAction.PICKER:
-      var ctrlPicker = cur._ctrlPicker;
-      if (ctrlPicker && !ctrlPicker.getValue()) ctrlPicker.setValue(true);
-      break;
-    default:
-      event.handled = false;
+      case Enums.KeyAction.DELETE:
+        main.deleteCurrentSelection();
+        break;
+      case Enums.KeyAction.INTENSITY:
+        this._modalBrushIntensity = main._focusGui = true;
+        break;
+      case Enums.KeyAction.RADIUS:
+        if (!this._modalBrushRadius) this._startModalBrushRadius(this._lastPageX, this._lastPageY);
+        this._modalBrushRadius = main._focusGui = true;
+        break;
+      case Enums.KeyAction.NEGATIVE:
+        if (cur.toggleNegative) cur.toggleNegative();
+        break;
+      case Enums.KeyAction.PICKER:
+        var ctrlPicker = cur._ctrlPicker;
+        if (ctrlPicker && !ctrlPicker.getValue()) ctrlPicker.setValue(true);
+        break;
+      default:
+        event.handled = false;
     }
   }
 
@@ -242,24 +242,24 @@ class GuiSculpting {
 
     var main = this._main;
     switch (getOptionsURL.getShortKey(event.which)) {
-    case Enums.KeyAction.RADIUS:
-      this._modalBrushRadius = main._focusGui = false;
-      var selRadius = this._main.getSculptManager().getSelection();
-      selRadius.setOffsetX(0.0);
-      event.pageX = this._lastPageX;
-      event.pageY = this._lastPageY;
-      main.setMousePosition(event);
-      main.getPicking().intersectionMouseMeshes();
-      main.renderSelectOverRtt();
-      break;
-    case Enums.KeyAction.PICKER:
-      var cur = GuiTools[this.getSelectedTool()];
-      var ctrlPicker = cur._ctrlPicker;
-      if (ctrlPicker && ctrlPicker.getValue()) ctrlPicker.setValue(false);
-      break;
-    case Enums.KeyAction.INTENSITY:
-      this._modalBrushIntensity = main._focusGui = false;
-      break;
+      case Enums.KeyAction.RADIUS:
+        this._modalBrushRadius = main._focusGui = false;
+        var selRadius = this._main.getSculptManager().getSelection();
+        selRadius.setOffsetX(0.0);
+        event.pageX = this._lastPageX;
+        event.pageY = this._lastPageY;
+        main.setMousePosition(event);
+        main.getPicking().intersectionMouseMeshes();
+        main.renderSelectOverRtt();
+        break;
+      case Enums.KeyAction.PICKER:
+        var cur = GuiTools[this.getSelectedTool()];
+        var ctrlPicker = cur._ctrlPicker;
+        if (ctrlPicker && ctrlPicker.getValue()) ctrlPicker.setValue(false);
+        break;
+      case Enums.KeyAction.INTENSITY:
+        this._modalBrushIntensity = main._focusGui = false;
+        break;
     }
   }
 

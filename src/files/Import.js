@@ -1,7 +1,7 @@
-import ImportOBJ from 'files/ImportOBJ';
-import ImportSGL from 'files/ImportSGL';
-import ImportPLY from 'files/ImportPLY';
-import ImportSTL from 'files/ImportSTL';
+import ImportOBJ from './ImportOBJ';
+import ImportSGL from './ImportSGL';
+import ImportPLY from './ImportPLY';
+import ImportSTL from './ImportSTL';
 
 var Import = {
   importOBJ: ImportOBJ.importOBJ,

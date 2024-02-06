@@ -1,41 +1,46 @@
 import { mat3 } from 'gl-matrix';
-import getOptionsURL from 'misc/getOptionsURL';
-import ShaderBase from 'render/shaders/ShaderBase';
-import pbrGLSL from 'render/shaders/glsl/pbr.glsl';
+import veld from '../../../app/resources/environments/mpumalanga_veld_1k.png';
+import venice from '../../../app/resources/environments/venetian_crossroads_1k.png';
+import studio from '../../../app/resources/environments/studio_small_01_1k.png';
+import moonless from '../../../app/resources/environments/moonless_golf_1k.png';
+import winter_river from '../../../app/resources/environments/winter_river_1k.png';
+
+import getOptionsURL from '../../misc/getOptionsURL';
+import ShaderBase from './ShaderBase';
+import pbrGLSL from './glsl/pbr.glsl';
 
 var ShaderPBR = ShaderBase.getCopy();
 ShaderPBR.vertexName = ShaderPBR.fragmentName = 'ShadingPBR';
 
 ShaderPBR.textures = {};
 
-var texPath = 'resources/environments/';
 ShaderPBR.environments = [{
   // https://hdrihaven.com/hdri/?h=mpumalanga_veld
-  path: texPath + 'mpumalanga_veld_1k.png',
+  path: veld,
   sph: [0.136819, 0.174125, 0.253762, 0.027778, 0.056838, 0.131221, 0.074356, 0.086793, 0.099181, -0.079040, -0.091269, -0.102346, -0.027550, -0.032300, -0.039217, 0.031822, 0.034773, 0.039945, 0.017235, 0.021044, 0.026136, -0.106608, -0.118640, -0.132761, 0.041000, 0.049794, 0.061183],
   exposure: 2.5,
   name: 'Mpumalanga veld'
 }, {
   // https://hdrihaven.com/hdri/?h=venetian_crossroads
-  path: texPath + 'venetian_crossroads_1k.png',
+  path: venice,
   sph: [0.200626, 0.198426, 0.209579, 0.090452, 0.127807, 0.188390, 0.093188, 0.103245, 0.106131, 0.033349, 0.054751, 0.067044, 0.074350, 0.081670, 0.079716, 0.063127, 0.085940, 0.101710, 0.007751, 0.005710, -0.000791, 0.104134, 0.103979, 0.094236, -0.022747, -0.028166, -0.037714],
   exposure: 2.5,
   name: 'Venetian crossroads'
 }, {
   // https://hdrihaven.com/hdri/?h=studio_small_01
-  path: texPath + 'studio_small_01_1k.png',
+  path: studio,
   sph: [0.534107, 0.589985, 0.617478, 0.119999, 0.130480, 0.128019, 0.089872, 0.088707, 0.088017, 0.099999, 0.151282, 0.138458, 0.005015, 0.035588, 0.027592, 0.114999, 0.116739, 0.120579, -0.057997, -0.069532, -0.070401, 0.385123, 0.411714, 0.454725, 0.303242, 0.333004, 0.350270],
   exposure: 0.5,
   name: 'Studio small 01'
 }, {
   // https://hdrihaven.com/hdri/?h=moonless_golf
-  path: texPath + 'moonless_golf_1k.png',
+  path: moonless,
   sph: [0.137579, 0.112906, 0.093470, 0.070711, 0.066043, 0.065337, -0.029564, -0.020720, -0.007737, -0.037254, -0.033270, -0.028294, -0.023847, -0.021208, -0.018767, -0.007873, -0.002587, 0.003955, 0.009241, 0.007711, 0.006063, 0.017917, 0.011733, 0.007669, 0.036859, 0.026285, 0.014740],
   exposure: 1.0,
   name: 'Moonless golf'
 }, {
   // https://hdrihaven.com/hdri/?h=winter_river
-  path: texPath + 'winter_river_1k.png',
+  path: winter_river,
   sph: [0.560145, 0.554695, 0.513523, -0.213105, -0.155190, -0.063568, 0.135182, 0.114211, 0.069349, 0.172852, 0.151820, 0.105477, 0.065753, 0.064050, 0.052622, 0.096352, 0.086557, 0.063826, 0.021830, 0.016560, 0.008804, 0.186193, 0.163720, 0.119627, 0.025363, 0.022278, 0.014461],
   exposure: 0.5,
   name: 'Winter river'

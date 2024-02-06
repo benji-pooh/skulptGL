@@ -1,7 +1,7 @@
-import Utils from 'misc/Utils';
-import Subdivision from 'editing/Subdivision';
-import Mesh from 'mesh/Mesh';
-import createMeshData from 'mesh/MeshData';
+import Utils from '../../misc/Utils';
+import Subdivision from '../../editing/Subdivision';
+import Mesh from '../Mesh';
+import createMeshData from '../MeshData';
 
 class MeshResolution extends Mesh {
 
@@ -20,7 +20,7 @@ class MeshResolution extends Mesh {
     this._evenMapping = false; // if the even vertices are not aligned with higher res
   }
 
-  optimize() {}
+  optimize() { }
 
   getEvenMapping() {
     return this._evenMapping;

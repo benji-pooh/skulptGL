@@ -1,4 +1,4 @@
-import ShaderBase from 'render/shaders/ShaderBase';
+import ShaderBase from './ShaderBase';
 
 var ShaderWireframe = ShaderBase.getCopy();
 ShaderWireframe.vertexName = ShaderWireframe.fragmentName = 'Wireframe';
@@ -32,7 +32,7 @@ ShaderWireframe.fragment = [
 ].join('\n');
 
 ShaderWireframe.getOrCreate = ShaderBase.getOrCreate;
-ShaderWireframe.draw = function (mesh /*, main*/ ) {
+ShaderWireframe.draw = function (mesh /*, main*/) {
   var gl = mesh.getGL();
   gl.useProgram(this.program);
   this.bindAttributes(mesh);

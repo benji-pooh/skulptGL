@@ -1,5 +1,5 @@
-import { zip } from 'zip';
-import ExportPLY from 'files/ExportPLY';
+import { zip } from '../../lib/zip';
+import ExportPLY from './ExportPLY';
 
 var Export = {};
 

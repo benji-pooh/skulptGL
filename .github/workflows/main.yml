@@ -1,0 +1,11 @@
+name: "Check that parcel can build file and lint works"
+on: "push"
+jobs:
+  unit_test-lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - run: |
+          yarn
+          yarn eslint
+          yarn parcel build tools/index.dev.html

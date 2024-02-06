@@ -1,37 +1,40 @@
-Status
-======
+# SculptNG
 
-I don't maintain Sculptgl anymore (except small/minor fixes).
+SculptNG is a continuation of SculptGL created by Stephane Ginier.
 
-SculptGL - WebGL sculpting
-==========================
+Currently focused around bugfixes and modernizing the software build system, JS features, etc.
 
-You can try it [**here**](http://stephaneginier.com/sculptgl).
+Contributors are welcome.
 
-Additional information can be found on the [website](http://stephaneginier.com/).
+## Roadmap
 
-Tools
-=====
+- [ ] Remove little used features
+- [ ] Clean up index pages
+- [ ] Reorganize resources
+- [ ] Convert to ES6 style classes
+- [ ] Document modules, classes, methods, functions
+- [ ] Add some tests around important invariants
 
-Nodejs needs to be installed [nodejs](http://nodejs.org/).
+## Developing
 
-Then for the browser build :
-```
-yarn # npm install
-yarn dev # npm run dev (npm run release for final build, npm run website should not be used)
-// visit app/index.html
-```
+you will need to have `node` and `yarn` installed
 
-For standalone :
-```
-yarn add electron
-yarn add electron-packager
-yarn standalone
-```
+SculptNG uses parcel for bundling and developer experience.
 
-Credits
-=======
+## Testing/Running
 
-#### Environments
+`yarn parcel tools/index.dev.html` will bundle up the necessary resources and launch a dev server
+with hot reloading.
 
-The raw environments are from https://hdrihaven.com/hdris
+If things seem to get stuck, updated assets not being seen, or errors from parcel, you can delete
+the `.parcel-cache` directory
+
+`rm -rf .parcel-cache`
+
+## Credits
+
+Original Author: Stephane Ginier (<https://stephaneginier.com/>)
+
+### Environments
+
+The raw environments are from <https://hdrihaven.com/hdris>
