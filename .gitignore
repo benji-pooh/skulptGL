@@ -6,8 +6,6 @@
 .DS_Store
 .idea/*
 .parcel-cache
-app/index.html
-app/sculptgl.js
 cache/*
 dist
 build
