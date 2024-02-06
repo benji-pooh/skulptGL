@@ -6,6 +6,6 @@ jobs:
     steps:
       - uses: "actions/checkout@v4"
       - run: |
-          "yarn"
-          "yarn eslint"
-          "yarn parcel build tools/index.dev.html"
+          yarn
+          yarn eslint
+          yarn parcel build tools/index.dev.html
