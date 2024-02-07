@@ -31,7 +31,12 @@ the `.parcel-cache` directory
 
 `rm -rf .parcel-cache`
 
-If you want to serve the built `dist/` directory after `yarn parcel build` you can use `python3 -m http.server -d dist/`.
+If you want to serve the built `dist/` directory after `yarn parcel build` you can use `python3 -m
+http.server -d dist/`.
+
+## Updating docs
+
+Right now, `rm -rf docs` and `yarn parcel build --dist-dir docs --public-url="/sculpt_ng/"`
 
 ## Credits
 
