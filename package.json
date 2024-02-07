@@ -1,6 +1,6 @@
 {
   "name": "sculpt_ng",
-  "source": "tools/index.dev.html",
+  "source": "app/index.html",
   "homepage": "https://github.com/stephomi/sculptgl",
   "version": "0.9.0",
   "description": "A WebGL digital sculpting app",
@@ -17,6 +17,7 @@
     "raw-loader": "^4.0.2"
   },
   "devDependencies": {
+    "@parcel/reporter-bundle-analyzer": "^2.11.0",
     "@parcel/transformer-glsl": "^2.11.0",
     "eslint": "^8.56.0",
     "parcel": "^2.11.0"
