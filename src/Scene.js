@@ -274,7 +274,11 @@ class Scene {
     // CONTOUR 1/2
     ///////////////
     gl.disable(gl.DEPTH_TEST);
-    var showContour = this._selectMeshes.length > 0 && this._showContour && ShaderLib[Enums.Shader.CONTOUR].color[3] > 0.0;
+
+    let showContour = this._selectMeshes.length > 0
+      && this._showContour
+      && ShaderLib[Enums.Shader.CONTOUR].color[3] > 0.0;
+
     if (showContour) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, this._rttContour.getFramebuffer());
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -367,7 +371,10 @@ class Scene {
     };
 
     var canvas = document.getElementById('canvas');
-    var gl = this._gl = canvas.getContext('webgl', attributes) || canvas.getContext('experimental-webgl', attributes);
+
+    var gl = this._gl = canvas.getContext('webgl', attributes) 
+      || canvas.getContext('experimental-webgl', attributes);
+      
     if (!gl) {
       window.alert('Could not initialise WebGL. No WebGL, no SculptGL. Sorry.');
       return;
@@ -489,7 +496,11 @@ class Scene {
 
     var mCen = mat4.create();
     mat4.scale(mCen, mCen, [scale, scale, scale]);
-    mat4.translate(mCen, mCen, [-(box[0] + box[3]) * 0.5, -(box[1] + box[4]) * 0.5, -(box[2] + box[5]) * 0.5]);
+    mat4.translate(
+      mCen, 
+      mCen, 
+      [-(box[0] + box[3]) * 0.5, -(box[1] + box[4]) * 0.5, -(box[2] + box[5]) * 0.5]
+    );
 
     for (var i = 0, l = meshes.length; i < l; ++i) {
       var mat = meshes[i].getMatrix();
@@ -522,7 +533,15 @@ class Scene {
   }
 
   addTorus(preview) {
-    var mesh = new Multimesh(Primitives.createTorus(this._gl, this._torusLength, this._torusWidth, this._torusRadius, this._torusRadial, this._torusTubular));
+    var mesh = new Multimesh(
+      Primitives.createTorus(
+        this._gl, 
+        this._torusLength,
+        this._torusWidth, 
+        this._torusRadius, 
+        this._torusRadial, 
+        this._torusTubular)
+    );
     if (preview) {
       mesh.setShowWireframe(true);
       var scale = 0.3 * Utils.SCALE;
