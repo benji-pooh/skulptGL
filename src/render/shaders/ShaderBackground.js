@@ -11,7 +11,13 @@ ShaderBackground.vertexName = ShaderBackground.fragmentName = 'Background';
 ShaderBackground.uniforms = {};
 ShaderBackground.attributes = {};
 
-ShaderBackground.uniformNames = ['uTexture0', 'uBackgroundType', 'uIblTransform', 'uSPH', 'uBlur', 'uEnvSize'];
+ShaderBackground.uniformNames = [
+  'uTexture0', 
+  'uBackgroundType',
+  'uIblTransform', 
+  'uSPH',
+  'uBlur',
+  'uEnvSize'];
 
 ShaderBackground.vertex = [
   'attribute vec2 aVertex;',
@@ -31,7 +37,7 @@ ShaderBackground.fragment = [
 ].join('\n');
 
 ShaderBackground.draw = function (bg) {
-  var gl = bg.getGL();
+  var gl = bg.gl;
   gl.useProgram(this.program);
   this.bindAttributes(bg);
   this.updateUniforms(bg);
@@ -45,21 +51,21 @@ ShaderBackground.initAttributes = function (gl) {
 };
 ShaderBackground.bindAttributes = function (bg) {
   var attrs = ShaderBackground.attributes;
-  attrs.aVertex.bindToBuffer(bg.getVertexBuffer());
-  attrs.aTexCoord.bindToBuffer(bg.getTexCoordBuffer());
+  attrs.aVertex.bindToBuffer(bg.vertexBuffer);
+  attrs.aTexCoord.bindToBuffer(bg.texCoordBuffer);
 };
 
 var uIBLTmp = mat3.create();
 ShaderBackground.updateUniforms = function (bg) {
   var uniforms = this.uniforms;
-  var main = bg._main;
+  var main = bg.main;
   var env = ShaderPBR.environments[ShaderPBR.idEnv];
 
-  var gl = bg.getGL();
-  gl.uniform1i(uniforms.uBackgroundType, bg.getType());
+  var gl = bg.gl;
+  gl.uniform1i(uniforms.uBackgroundType, bg.type);
 
   var tex;
-  if (bg.getType() === 0) tex = bg.getTexture();
+  if (bg.type === 0) tex = bg.getTexture();
   else tex = ShaderPBR.getOrCreateEnvironment(gl, main, env) || bg.getTexture();
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -71,7 +77,7 @@ ShaderBackground.updateUniforms = function (bg) {
   gl.uniform3fv(uniforms.uSPH, env.sph);
   if (env.size) gl.uniform2fv(uniforms.uEnvSize, env.size);
 
-  gl.uniform1f(uniforms.uBlur, bg.getBlur());
+  gl.uniform1f(uniforms.uBlur, bg.blur);
 };
 
 export default ShaderBackground;

@@ -16,13 +16,24 @@ class GuiBackground {
 
     var types = ['Image', 'Environment', 'Ambient env'];
     menu.addCombobox('Type', this._bg._type, this.onBackgroundType.bind(this), types);
-    this._ctrlBlur = menu.addSlider('Blur', this._bg._blur, this.onEnvBlur.bind(this), 0.0, 1.0, 0.01);
+    this._ctrlBlur = menu.addSlider(
+      'Blur', 
+      this._bg._blur, 
+      this.onEnvBlur.bind(this),
+      0.0, 
+      1.0, 
+      0.01
+    );
     this._ctrlBlur.setVisibility(this._bg._type === 1);
 
     menu.addTitle('Image');
     menu.addButton(TR('backgroundReset'), this, 'resetBackground');
     menu.addButton(TR('backgroundImport'), this, 'importBackground');
-    menu.addCheckbox(TR('backgroundFill'), this._main.getBackground()._fill, this.updateFill.bind(this));
+    menu.addCheckbox(
+      TR('backgroundFill'), 
+      this._main.getBackground()._fill, 
+      this.updateFill.bind(this)
+    );
   }
 
   updateFill(val) {
