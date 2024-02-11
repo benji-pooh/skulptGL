@@ -4,15 +4,16 @@ import SculptBase from './SculptBase';
 
 class Smooth extends SculptBase {
 
+  protected _intensity: number = 0.75
+  protected _culling: boolean = false;
+  protected _tangent: boolean = false;
+  protected _idAlpha: number = 0;
+  protected _lockPosition: boolean = false;
+
   constructor(main) {
     super(main);
 
     this._radius = 50;
-    this._intensity = 0.75;
-    this._culling = false;
-    this._tangent = false;
-    this._idAlpha = 0;
-    this._lockPosition = false;
   }
 
   stroke(picking) {

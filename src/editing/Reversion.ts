@@ -1,7 +1,5 @@
 import Utils from '../misc/Utils';
 
-var Reversion = {};
-
 var detectExtraordinaryVertices = function (mesh) {
   var nbVertices = mesh.getNbVertices();
   var fAr = mesh.getFaces();
@@ -552,29 +550,31 @@ var computeTexCoords = function (baseMesh, newMesh, triFaceOrQuadCenter) {
   computeFaceTexCoords(baseMesh, newMesh, triFaceOrQuadCenter, uvMap);
 };
 
-/** Apply the reverse of a subdivision */
-Reversion.computeReverse = function (baseMesh, newMesh) {
-  var nbFaces = baseMesh.getNbFaces();
-  if (nbFaces % 4 !== 0)
-    return false;
+/** Static class, apply the reverse of a subdivision */
+class Reversion {
+  static computeReverse(baseMesh, newMesh) {
+    var nbFaces = baseMesh.getNbFaces();
+    if (nbFaces % 4 !== 0)
+      return false;
 
-  // 0 not processed, -1 odd vertex, 1 even vertex
-  var vEvenTags = new Int8Array(baseMesh.getNbVertices());
-  if (!tagEvenVertices(baseMesh, vEvenTags))
-    return false;
+    // 0 not processed, -1 odd vertex, 1 even vertex
+    var vEvenTags = new Int8Array(baseMesh.getNbVertices());
+    if (!tagEvenVertices(baseMesh, vEvenTags))
+      return false;
 
-  var triFaceOrQuadCenter = new Int32Array(nbFaces / 4);
-  if (!createFaces(baseMesh, newMesh, vEvenTags, triFaceOrQuadCenter))
-    return false;
+    var triFaceOrQuadCenter = new Int32Array(nbFaces / 4);
+    if (!createFaces(baseMesh, newMesh, vEvenTags, triFaceOrQuadCenter))
+      return false;
 
-  createVertices(baseMesh, newMesh, triFaceOrQuadCenter);
-  copyVerticesData(baseMesh, newMesh);
+    createVertices(baseMesh, newMesh, triFaceOrQuadCenter);
+    copyVerticesData(baseMesh, newMesh);
 
-  if (baseMesh.hasUV())
-    computeTexCoords(baseMesh, newMesh, triFaceOrQuadCenter);
+    if (baseMesh.hasUV())
+      computeTexCoords(baseMesh, newMesh, triFaceOrQuadCenter);
 
-  newMesh.allocateArrays();
-  return true;
-};
+    newMesh.allocateArrays();
+    return true;
+  };
+}
 
 export default Reversion;

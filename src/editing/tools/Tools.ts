@@ -12,8 +12,9 @@ import Move from './Move';
 import Masking from './Masking';
 import LocalScale from './LocalScale';
 import Transform from './Transform';
+import SculptBase from './SculptBase';
 
-var Tools = [];
+let Tools: Array<typeof SculptBase> = [];
 
 Tools[Enums.Tools.BRUSH] = Brush;
 Tools[Enums.Tools.INFLATE] = Inflate;

@@ -3,14 +3,15 @@ import SculptBase from './SculptBase';
 
 class Pinch extends SculptBase {
 
+  protected _intensity = 0.75;
+  protected _negative = false;
+  protected _culling = false;
+  protected _idAlpha = 0;
+
   constructor(main) {
     super(main);
 
     this._radius = 50;
-    this._intensity = 0.75;
-    this._negative = false;
-    this._culling = false;
-    this._idAlpha = 0;
     this._lockPosition = false;
   }
 

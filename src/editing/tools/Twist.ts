@@ -4,20 +4,21 @@ import SculptBase from './SculptBase';
 
 class Twist extends SculptBase {
 
+  protected _culling = false;
+  protected _twistData = {
+    normal: <vec3>[0.0, 0.0, 0.0], // normal of rotation plane
+    center: <vec3>[0.0, 0.0, 0.0] // 2D center of rotation 
+  };
+  protected _twistDataSym = {
+    normal: <vec3>[0.0, 0.0, 0.0], // normal of rotation plane
+    center: <vec3>[0.0, 0.0, 0.0] // 2D center of rotation 
+  };
+  protected _idAlpha = 0;
+
   constructor(main) {
     super(main);
 
     this._radius = 75;
-    this._culling = false;
-    this._twistData = {
-      normal: [0.0, 0.0, 0.0], // normal of rotation plane
-      center: [0.0, 0.0] // 2D center of rotation 
-    };
-    this._twistDataSym = {
-      normal: [0.0, 0.0, 0.0], // normal of rotation plane
-      center: [0.0, 0.0] // 2D center of rotation 
-    };
-    this._idAlpha = 0;
   }
 
   startSculpt() {
@@ -88,13 +89,13 @@ class Twist extends SculptBase {
   twist(iVerts, center, radiusSquared, mouseX, mouseY, lastMouseX, lastMouseY, twistData, picking) {
     var mesh = this.getMesh();
     var mouseCenter = twistData.center;
-    var vecMouse = [mouseX - mouseCenter[0], mouseY - mouseCenter[1]];
+    var vecMouse: vec2 = [mouseX - mouseCenter[0], mouseY - mouseCenter[1]];
     if (vec2.len(vecMouse) < 30)
       return;
     vec2.normalize(vecMouse, vecMouse);
     var nPlane = twistData.normal;
-    var rot = [0.0, 0.0, 0.0, 0.0];
-    var vecOldMouse = [lastMouseX - mouseCenter[0], lastMouseY - mouseCenter[1]];
+    var rot: quat = [0.0, 0.0, 0.0, 0.0];
+    var vecOldMouse: vec2 = [lastMouseX - mouseCenter[0], lastMouseY - mouseCenter[1]];
     vec2.normalize(vecOldMouse, vecOldMouse);
     var angle = Geometry.signedAngle2d(vecMouse, vecOldMouse);
     var vAr = mesh.getVertices();
@@ -103,7 +104,7 @@ class Twist extends SculptBase {
     var cx = center[0];
     var cy = center[1];
     var cz = center[2];
-    var coord = [0.0, 0.0, 0.0];
+    var coord: vec3 = [0.0, 0.0, 0.0];
     for (var i = 0, l = iVerts.length; i < l; ++i) {
       var ind = iVerts[i] * 3;
       var vx = vAr[ind];

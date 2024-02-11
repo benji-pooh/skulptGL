@@ -40,7 +40,11 @@ class MeshResolution extends Mesh {
 
   /** Go to one level above (down to up) */
   higherSynthesis(meshDown) {
-    meshDown.computePartialSubdivision(this.getVertices(), this.getColors(), this.getMaterials(), this.getNbVertices());
+    meshDown.computePartialSubdivision(
+      this.getVertices(),
+      this.getColors(), 
+      this.getMaterials(), 
+      this.getNbVertices());
     this.applyDetails();
   }
 

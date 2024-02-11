@@ -52,7 +52,13 @@ ShaderContour.draw = function (rtt) {
   gl.drawArrays(gl.TRIANGLES, 0, 3);
 };
 ShaderContour.initAttributes = function (gl) {
-  ShaderContour.attributes.aVertex = new Attribute(gl, ShaderContour.program, 'aVertex', 2, gl.FLOAT);
+  ShaderContour.attributes.aVertex = new Attribute(
+    gl, 
+    ShaderContour.program,
+    'aVertex', 
+    2, 
+    gl.FLOAT
+  );
 };
 
 export default ShaderContour;
