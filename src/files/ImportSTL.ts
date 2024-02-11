@@ -1,21 +1,23 @@
 import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 
+// TODO: Color import for STL seeems a little wonky. There may be a bug on import, or on export
 
 /** Import STL file */
 export function importSTL(buffer, gl) {
   var nbTriangles = new Uint32Array(buffer, 80, 1)[0] || 0;
   var isBinary = 84 + (nbTriangles * 50) === buffer.byteLength;
   // TODO: This is a little nasty around the overloaded meaning of vb, refactor.
-  var vb = isBinary
+  var stl_data = isBinary
     ? importBinarySTL(buffer, nbTriangles)
     : importAsciiSTL(Utils.ab2str(buffer));
-  var vbc: Uint8Array | null;
+  var vbc: Float32Array | null = null;
+  var vb: Float32Array;
   if (isBinary) {
-    vb = <Float32Array>vb[0];
-    vbc = <Uint8Array><unknown>vb[1];
+    vb = <Float32Array>stl_data[0];
+    vbc = <Float32Array>stl_data[1];
   } else {
-    vbc = null;
+    vb = <Float32Array>stl_data;
   }
   nbTriangles = vb.length / 9;
   var mapVertices = new Map();
@@ -31,8 +33,9 @@ export function importSTL(buffer, gl) {
   }
   var mesh = new MeshStatic(gl);
   mesh.setVertices((<Float32Array>vb).subarray(0, nbVertices[0] * 3));
-  if (vbc)
+  if (vbc != null) {
     mesh.setColors(vbc.subarray(0, nbVertices[0] * 3));
+  }
   mesh.setFaces(iAr);
   return [mesh];
 };
@@ -88,7 +91,7 @@ function importAsciiSTL(data) {
 };
 
 /** Import binary STL file */
-function importBinarySTL(buffer, nbTriangles): [Float32Array, Uint8Array] {
+function importBinarySTL(buffer, nbTriangles): [Float32Array, Float32Array] {
   var data = new Uint8Array(buffer);
 
   var dataHeader = data.subarray(0, 80);
@@ -140,6 +143,6 @@ function importBinarySTL(buffer, nbTriangles): [Float32Array, Uint8Array] {
     vbColor[j + 1] = vbColor[j + 4] = vbColor[j + 7] = g;
     vbColor[j + 2] = vbColor[j + 5] = vbColor[j + 8] = b;
   }
-  return [new Float32Array(vb.buffer), vbc];
+  return [new Float32Array(vb.buffer), vbColor];
 };
 
