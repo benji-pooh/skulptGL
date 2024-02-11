@@ -1,9 +1,8 @@
 import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
-import ExportSGL from '../files/ExportSGL';
+import * as ExportSGL from './ExportSGL';
 import ShaderBase from '../render/shaders/ShaderBase';
 
-var Import = {};
 
 var handleNegativeIndexFace = function (i32) {
   var u32 = new Uint32Array(i32);
@@ -20,7 +19,7 @@ var handleNegativeIndexFace = function (i32) {
 // see ExportSGL for file description
 //
 /** Import SGL file */
-Import.importSGL = function (buffer, gl, main) {
+export function importSGL(buffer, gl, main) {
   var f32a = new Float32Array(buffer);
   var u32a = new Uint32Array(buffer);
   var i32a = new Int32Array(buffer);
@@ -95,14 +94,14 @@ Import.importSGL = function (buffer, gl, main) {
 
     // uvs
     nbElts = u32a[off++];
-    var uv = null;
+    var uv: Float32Array | null = null;
     if (nbElts)
       uv = f32a.subarray(off, off + nbElts * 2);
     off += nbElts * 2;
 
     // face uvs
     nbElts = u32a[off++];
-    var fuv = null;
+    var fuv: Uint32Array | null = null;
     if (nbElts) {
       if (version <= 2) {
         fuv = handleNegativeIndexFace(i32a.subarray(off, off + nbElts * 4));
@@ -119,4 +118,3 @@ Import.importSGL = function (buffer, gl, main) {
   return meshes;
 };
 
-export default Import;

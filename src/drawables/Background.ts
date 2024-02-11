@@ -50,7 +50,7 @@ class Background {
     this.#monoTex = this.createOnePixelTexture(50, 50, 50, 255);
     let element = document
       .getElementById('backgroundopen');
-    if (element !== null) {
+    if (element != null) {
       element.addEventListener('change', this.loadBackground.bind(this), false);
     } else {
       console.error('Could not find DOM element with id of "background"')
@@ -69,7 +69,7 @@ class Background {
     var reader = new FileReader();
     reader.onload = function (evt) {
       var bg = new Image();
-      if (evt.target !== null && typeof evt.target.result === "string") {
+      if (evt.target != null && typeof evt.target.result === "string") {
         bg.src = evt.target.result;
       } else {
         console.error("Could not load image");
@@ -84,7 +84,7 @@ class Background {
     };
 
     let element = <HTMLInputElement>document.getElementById('backgroundopen')
-    if (element !== null) {
+    if (element != null) {
       element.value = '';
     }
     reader.readAsDataURL(file);

@@ -36,7 +36,7 @@ var getResult = function (meshes) {
 };
 
 /** Export Ascii STL file */
-Export.exportAsciiSTL = function (meshes) {
+export function exportAsciiSTL(meshes) {
   var res = getResult(meshes);
   var nbTriangles = res.nbTriangles;
   var vAr = res.vertices;
@@ -62,7 +62,7 @@ Export.exportAsciiSTL = function (meshes) {
 };
 
 /** Export binary STL file */
-Export.exportBinarySTL = function (meshes, opt) {
+export function exportBinarySTL(meshes, opt) {
   var res = getResult(meshes);
   var nbTriangles = res.nbTriangles;
   var vAr = res.vertices;
@@ -141,5 +141,3 @@ Export.exportBinarySTL = function (meshes, opt) {
   }
   return new Blob([data]);
 };
-
-export default Export;

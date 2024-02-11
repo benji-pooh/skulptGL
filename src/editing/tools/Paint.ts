@@ -80,7 +80,7 @@ class Paint extends SculptBase {
     var roughness = color[0];
     var metallic = color[1];
     picking.polyLerp(mesh.getColors(), color);
-    if (this._pickCallback !== null) {
+    if (this._pickCallback != null) {
       this._pickCallback(color, roughness, metallic);
     }
   }

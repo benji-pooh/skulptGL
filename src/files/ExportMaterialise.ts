@@ -1,15 +1,15 @@
-import { zip } from '../../lib/zip';
-import ExportSTL from './ExportSTL';
+import * as stl from './ExportSTL';
+let zip = require('../../lib/zip');
 
-var Export = {};
 
-Export.exportMaterialise = function (main, statusWidget) {
+export function exportMaterialise(main, statusWidget) {
   var xhr = new XMLHttpRequest();
   // xhr.open('POST', 'https://i.materialise.com/upload', true);
   // xhr.open('POST', 'uploadMaterialise.php', true);
+  // TODO: Need to make this configurable
   xhr.open(
-    'POST', 
-    'https://i.materialise.com/web-api/tool/20cc0fd6-3cef-4111-a201-0b87026d892c/model', 
+    'POST',
+    'https://i.materialise.com/web-api/tool/20cc0fd6-3cef-4111-a201-0b87026d892c/model',
     true
   );
 
@@ -38,7 +38,7 @@ Export.exportMaterialise = function (main, statusWidget) {
   var meshes = main.getMeshes();
   var box = main.computeBoundingBoxMeshes(meshes);
   var radius = main.computeRadiusFromBoundingBox(box);
-  var data = ExportSTL.exportBinarySTL(meshes, { colorMagic: true, swapXY: true });
+  var data = stl.exportBinarySTL(meshes, { colorMagic: true, swapXY: true });
 
   // var blob = new Blob([data], { type: 'application/octet-stream' });
   // Export.exportFileMaterialise(radius, xhr, domStatus, blob);
@@ -48,14 +48,14 @@ Export.exportMaterialise = function (main, statusWidget) {
   zip.workerScriptsPath = 'worker/';
   zip.createWriter(new zip.BlobWriter('application/zip'), function (zipWriter) {
     zipWriter.add('yourMesh.stl', new zip.BlobReader(data), function () {
-      zipWriter.close(Export.exportFileMaterialise.bind(this, radius, xhr, statusWidget));
+      zipWriter.close(exportFileMaterialise.bind(this, radius, xhr, statusWidget));
     });
   }, onerror);
 
   return xhr;
 };
 
-Export.exportFileMaterialise = function (radius, xhr, statusWidget, blob) {
+export function exportFileMaterialise(radius, xhr, statusWidget, blob) {
   if (xhr.isAborted) return;
 
   var fd = new FormData();
@@ -69,4 +69,3 @@ Export.exportFileMaterialise = function (radius, xhr, statusWidget, blob) {
   xhr.send(fd);
 };
 
-export default Export;

@@ -1,12 +1,11 @@
 import ShaderBase from '../render/shaders/ShaderBase';
 
-var Export = {};
 
 // versions
 // 1 initial
 // 2 + camera,shader, matcap, wire, alpha, flat 
 // 3 faces u32 instead of i32
-Export.VERSION = 3;
+export let VERSION = 3;
 
 // current version 3
 //
@@ -53,7 +52,7 @@ Export.VERSION = 3;
 //
 /** Export SGL (sculptgl) file */
 
-Export.exportSGL = function (meshes, main) {
+export function exportSGL(meshes, main) {
   var nbMeshes = meshes.length;
 
   var bytePerMesh = 3 + 16 + 1 + 6 + 5;
@@ -78,7 +77,7 @@ Export.exportSGL = function (meshes, main) {
   var f32a = new Float32Array(buffer);
   var u32a = new Uint32Array(buffer);
   var off = 0;
-  u32a[off++] = Export.VERSION;
+  u32a[off++] = VERSION;
 
   // misc stuffs
   u32a[off++] = main._showGrid;
@@ -158,4 +157,3 @@ Export.exportSGL = function (meshes, main) {
   return new Blob([data]);
 };
 
-export default Export;

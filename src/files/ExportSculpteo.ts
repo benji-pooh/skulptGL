@@ -1,11 +1,12 @@
-import { zip } from '../../lib/zip';
-import ExportPLY from './ExportPLY';
+import * as ply from './ExportPLY';
+let zip = require('../../lib/zip');
 
-var Export = {};
 
-Export.exportSculpteo = function (main, statusWidget) {
+
+export function exportSculpteo(main, statusWidget) {
   var xhr = new XMLHttpRequest();
   // xhr.open('POST', 'https://www.sculpteo.com/en/upload_design/a/3D/', true);
+  //TODO: This is probably very old and probably needs to be updated to match the modern api.
   xhr.open('POST', 'uploadSculpteo.php', true);
 
   xhr.onprogress = function (event) {
@@ -38,21 +39,21 @@ Export.exportSculpteo = function (main, statusWidget) {
   var meshes = main.getMeshes();
   var box = main.computeBoundingBoxMeshes(meshes);
   var radius = main.computeRadiusFromBoundingBox(box);
-  var data = ExportPLY.exportBinaryPLY(meshes, { swapXY: true });
+  var data = ply.exportBinaryPLY(meshes, { swapXY: true });
 
   statusWidget.setMessage('Creating zip...');
   zip.useWebWorkers = true;
   zip.workerScriptsPath = 'worker/';
   zip.createWriter(new zip.BlobWriter('application/zip'), function (zipWriter) {
     zipWriter.add('yourMesh.ply', new zip.BlobReader(data), function () {
-      zipWriter.close(Export.exportFileSculpteo.bind(this, radius, xhr, statusWidget));
+      zipWriter.close(exportFileSculpteo.bind(this, radius, xhr, statusWidget));
     });
   }, onerror);
 
   return xhr;
 };
 
-Export.exportFileSculpteo = function (radius, xhr, statusWidget, blob) {
+export function exportFileSculpteo(radius, xhr, statusWidget, blob) {
   if (xhr.isAborted) return;
 
   var fd = new FormData();
@@ -64,7 +65,7 @@ Export.exportFileSculpteo = function (radius, xhr, statusWidget, blob) {
   // fd.append('print_authorization', '0');
   // fd.append('customizable', '0');
   // fd.append('unit', 'cm');
-  fd.append('scale', 4.0 / radius);
+  fd.append('scale', "" + (4.0 / radius));
   // fd.append('rotation', '0,0,0');
   // fd.append('terms', '1');
 
@@ -73,4 +74,3 @@ Export.exportFileSculpteo = function (radius, xhr, statusWidget, blob) {
   xhr.send(fd);
 };
 
-export default Export;
