@@ -1,27 +1,29 @@
-import { vec3, mat4 } from 'gl-matrix';
+import { vec3, mat4, vec2 } from 'gl-matrix';
 import Geometry from '../../math3d/Geometry';
 import SculptBase from './SculptBase';
 
 class Move extends SculptBase {
 
+  protected _intensity = 1.0;
+  protected _topoCheck = true;
+  protected _negative = false; // along normal
+  protected _moveData = {
+    center: <vec3>[0.0, 0.0, 0.0],
+    dir: <vec3>[0.0, 0.0, 0.0],
+    vProxy: null
+  };
+  protected _moveDataSym = {
+    center: <vec3>[0.0, 0.0, 0.0],
+    dir: <vec3>[0.0, 0.0, 0.0],
+    vProxy: null
+  };
+  protected _idAlpha = 0;
+
   constructor(main) {
     super(main);
 
     this._radius = 150;
-    this._intensity = 1.0;
-    this._topoCheck = true;
-    this._negative = false; // along normal
-    this._moveData = {
-      center: [0.0, 0.0, 0.0],
-      dir: [0.0, 0.0],
-      vProxy: null
-    };
-    this._moveDataSym = {
-      center: [0.0, 0.0, 0.0],
-      dir: [0.0, 0.0],
-      vProxy: null
-    };
-    this._idAlpha = 0;
+
   }
 
   startSculpt() {
@@ -141,7 +143,7 @@ class Move extends SculptBase {
     }
   }
 
-  updateMoveDir(picking, mouseX, mouseY, useSymmetry) {
+  updateMoveDir(picking, mouseX, mouseY, useSymmetry = false) {
     var mesh = this.getMesh();
     var vNear = picking.unproject(mouseX, mouseY, 0.0);
     var vFar = picking.unproject(mouseX, mouseY, 0.1);

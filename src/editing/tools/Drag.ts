@@ -4,13 +4,15 @@ import SculptBase from './SculptBase';
 
 class Drag extends SculptBase {
 
+  protected _dragDir: vec3 = [0.0, 0.0, 0.0];
+  protected _dragDirSym: vec3 = [0.0, 0.0, 0.0];
+  protected _idAlpha = 0;
+
+
   constructor(main) {
     super(main);
-
     this._radius = 150;
-    this._dragDir = [0.0, 0.0, 0.0];
-    this._dragDirSym = [0.0, 0.0, 0.0];
-    this._idAlpha = 0;
+
   }
 
   sculptStroke() {
@@ -120,7 +122,7 @@ class Drag extends SculptBase {
   }
 
   /** Set a few infos that will be needed for the drag function afterwards */
-  updateDragDir(picking, mouseX, mouseY, useSymmetry) {
+  updateDragDir(picking, mouseX, mouseY, useSymmetry = false) {
     var mesh = this.getMesh();
     var vNear = picking.unproject(mouseX, mouseY, 0.0);
     var vFar = picking.unproject(mouseX, mouseY, 0.1);

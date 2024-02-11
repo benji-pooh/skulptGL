@@ -2,12 +2,18 @@ import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 import Mesh from '../mesh/Mesh';
 
-var Edge = function (v1, v2) {
-  this.previous = null;
-  this.next = null;
-  this.v1 = v1;
-  this.v2 = v2;
-};
+
+
+class Edge {
+  #v1;
+  #v2;
+  #previous;
+  #next;
+  constructor(v1, v2) {
+    this.#v1 = v1;
+    this.#v2 = v2;
+  }
+}
 
 var detectHole = function (borderEdges) {
   if (borderEdges.length <= 2)
@@ -46,7 +52,7 @@ var detectHoles = function (mesh) {
   var eAr = mesh.getEdges();
   var fAr = mesh.getFaces();
   var feAr = mesh.getFaceEdges();
-  var borderEdges = [];
+  var borderEdges: Edge[] = [];
   for (var i = 0, len = mesh.getNbFaces(); i < len; ++i) {
     var id = i * 4;
     var iv4 = feAr[id + 3];
@@ -57,7 +63,7 @@ var detectHoles = function (mesh) {
     if (isQuad && eAr[iv4] === 1) borderEdges.push(new Edge(fAr[id + 3], fAr[id]));
   }
 
-  var holes = [];
+  var holes: Edge[] = [];
   while (true) {
     var firstEdge = detectHole(borderEdges);
     if (!firstEdge) break;
@@ -198,20 +204,21 @@ var closeHoles = function (mesh) {
   return createMesh(mesh, vertices, faces, colors, materials);
 };
 
-var HoleFilling = {};
+class HoleFilling {
 
-HoleFilling.createClosedMesh = function (mesh) {
-  var closed = closeHoles(mesh);
-  if (closed === mesh) {
-    var lenv = mesh.getNbVertices() * 3;
-    var lenf = mesh.getNbFaces() * 4;
-    var faces = new Uint32Array(mesh.getFaces().subarray(0, lenf));
-    var vertices = new Float32Array(mesh.getVertices().subarray(0, lenv));
-    var colors = new Float32Array(mesh.getColors().subarray(0, lenv));
-    var materials = new Float32Array(mesh.getMaterials().subarray(0, lenv));
-    closed = createMesh(mesh, vertices, faces, colors, materials);
-  }
-  return closed;
-};
+  static createClosedMesh(mesh) {
+    var closed = closeHoles(mesh);
+    if (closed === mesh) {
+      var lenv = mesh.getNbVertices() * 3;
+      var lenf = mesh.getNbFaces() * 4;
+      var faces = new Uint32Array(mesh.getFaces().subarray(0, lenf));
+      var vertices = new Float32Array(mesh.getVertices().subarray(0, lenv));
+      var colors = new Float32Array(mesh.getColors().subarray(0, lenv));
+      var materials = new Float32Array(mesh.getMaterials().subarray(0, lenv));
+      closed = createMesh(mesh, vertices, faces, colors, materials);
+    }
+    return closed;
+  };
+}
 
 export default HoleFilling;

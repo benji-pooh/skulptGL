@@ -1,8 +1,10 @@
 import { vec3, mat4 } from 'gl-matrix';
-import Gizmo from '../../editing/Gizmo';
+import Gizmo from '../Gizmo';
 import SculptBase from './SculptBase';
 
 class Transform extends SculptBase {
+
+  protected _gizmo;
 
   constructor(main) {
     super(main);
@@ -77,7 +79,7 @@ class Transform extends SculptBase {
     var em = mesh.getEditMatrix();
     var mAr = mesh.getMaterials();
     var vAr = mesh.getVertices();
-    var vTemp = [0.0, 0.0, 0.0];
+    var vTemp: vec3 = [0.0, 0.0, 0.0];
     for (var i = 0, nb = iVerts.length; i < nb; ++i) {
       var j = iVerts[i] * 3;
       var mask = mAr[j + 2];

@@ -8,11 +8,6 @@ import Utils from '../misc/Utils';
 import Enums from '../misc/Enums';
 import Smooth from './tools/Smooth';
 
-var Remesh = {};
-Remesh.RESOLUTION = 150;
-Remesh.BLOCK = false;
-Remesh.SMOOTHING = true;
-
 var floodFill = function (voxels) {
   var step = voxels.step;
   var res = voxels.dims;
@@ -172,7 +167,18 @@ var voxelize = function (mesh, voxels) {
           point[0] = x;
           point[1] = y;
           point[2] = z;
-          var newDist = Geometry.distance2PointTriangleEdges(point, triEdge1, triEdge2, v1, a00, a01, a11, closest);
+
+          var newDist = Geometry.distance2PointTriangleEdges(
+            point,
+            triEdge1,
+            triEdge2,
+            v1,
+            a00,
+            a01,
+            a11,
+            closest
+          );
+
           newDist = Math.sqrt(newDist);
           if (newDist < distField[n]) {
             distField[n] = newDist;
@@ -197,7 +203,13 @@ var voxelize = function (mesh, voxels) {
             if (crossedEdges[idEdge] === 1)
               continue;
 
-            var dist = Geometry.intersectionRayTriangleEdges(point, dirUnit[it], triEdge1, triEdge2, v1);
+            var dist = Geometry.intersectionRayTriangleEdges(
+              point,
+              dirUnit[it],
+              triEdge1,
+              triEdge2,
+              v1
+            );
             if (dist < 0.0 || dist > step)
               continue;
 
@@ -239,7 +251,8 @@ var createVoxelData = function (box) {
   for (var idc = 0, datalenc = datalen * 3; idc < datalenc; ++idc)
     colors[idc] = materials[idc] = -1;
 
-  var voxels = {};
+  // TODO: Refine this type more
+  var voxels: { [k: string]: any } = {};
   voxels.dims = [rx, ry, rz];
   voxels.step = step;
   voxels.min = min;
@@ -267,7 +280,7 @@ var createMesh = function (mesh, faces, vertices, colors, materials) {
 // hole filling + transform to world + ComputeBox
 var prepareMeshes = function (meshes) {
   var box = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
-  var tmp = [0.0, 0.0, 0.0];
+  var tmp: vec3 = [0.0, 0.0, 0.0];
   for (var i = 0, nbm = meshes.length; i < nbm; ++i) {
     var mesh = meshes[i];
     if (mesh.isUsingTexCoords())
@@ -297,21 +310,21 @@ var prepareMeshes = function (meshes) {
 };
 
 var alignMeshBound = function (mesh, box) {
-  var oldMin = [box[0], box[1], box[2]];
-  var oldMax = [box[3], box[4], box[5]];
+  var oldMin: vec3 = [box[0], box[1], box[2]];
+  var oldMax: vec3 = [box[3], box[4], box[5]];
   var oldRadius = vec3.dist(oldMin, oldMax);
-  var oldCenter = vec3.add([], oldMin, oldMax);
+  var oldCenter = vec3.add([0, 0, 0], oldMin, oldMax);
   vec3.scale(oldCenter, oldCenter, 0.5);
 
   var newBox = mesh.getLocalBound();
-  var newMin = [newBox[0], newBox[1], newBox[2]];
-  var newMax = [newBox[3], newBox[4], newBox[5]];
+  var newMin: vec3 = [newBox[0], newBox[1], newBox[2]];
+  var newMax: vec3 = [newBox[3], newBox[4], newBox[5]];
   var newRadius = vec3.dist(newMin, newMax);
-  var newCenter = vec3.add([], newMin, newMax);
+  var newCenter = vec3.add([0, 0, 0], newMin, newMax);
   vec3.scale(newCenter, newCenter, 0.5);
 
   var scale = oldRadius / newRadius;
-  var tr = vec3.scale([], oldCenter, 1.0 / scale);
+  var tr = vec3.scale([0, 0, 0], oldCenter, 1.0 / scale);
   vec3.sub(tr, tr, newCenter);
 
   var mat = mesh.getMatrix();
@@ -332,152 +345,167 @@ var tangentialSmoothing = function (mesh) {
   mesh.updateGeometryBuffers();
 };
 
-Remesh.remesh = function (meshes, baseMesh, manifold) {
-  console.time('remesh total');
 
-  console.time('1. prepareMeshes');
-  meshes = meshes.slice();
-  var box = prepareMeshes(meshes);
-  console.timeEnd('1. prepareMeshes');
+class Remesh {
+  // TODO these should be params.
+  static RESOLUTION = 150;
+  static BLOCK = false;
+  static SMOOTHING = true;
 
-  console.time('2. voxelization');
-  var voxels = createVoxelData(box);
-  for (var i = 0, l = meshes.length; i < l; ++i)
-    voxelize(meshes[i], voxels);
-  console.timeEnd('2. voxelization');
+  static remesh(meshes, baseMesh, manifold) {
+    console.time('remesh total');
 
-  console.time('3. flood');
-  floodFill(voxels);
-  console.timeEnd('3. flood');
+    console.time('1. prepareMeshes');
+    meshes = meshes.slice();
+    var box = prepareMeshes(meshes);
+    console.timeEnd('1. prepareMeshes');
 
-  var res;
-  if (manifold) {
-    console.time('4. marchingCubes');
-    MarchingCubes.BLOCK = Remesh.BLOCK;
-    res = MarchingCubes.computeSurface(voxels);
-    console.timeEnd('4. marchingCubes');
-  } else {
-    console.time('4. surfaceNets');
-    SurfaceNets.BLOCK = Remesh.BLOCK;
-    res = SurfaceNets.computeSurface(voxels);
-    console.timeEnd('4. surfaceNets');
-  }
+    console.time('2. voxelization');
+    var voxels = createVoxelData(box);
+    for (var i = 0, l = meshes.length; i < l; ++i)
+      voxelize(meshes[i], voxels);
+    console.timeEnd('2. voxelization');
 
-  console.time('5. createMesh');
-  var nmesh = createMesh(baseMesh, res.faces, res.vertices, res.colors, res.materials);
-  console.timeEnd('5. createMesh');
+    console.time('3. flood');
+    floodFill(voxels);
+    console.timeEnd('3. flood');
 
-  alignMeshBound(nmesh, box);
-
-  if (manifold && Remesh.SMOOTHING) {
-    console.time('6. tangential smoothing');
-    tangentialSmoothing(nmesh);
-    console.timeEnd('6. tangential smoothing');
-  }
-
-  console.timeEnd('remesh total');
-  console.log('\n');
-  return nmesh;
-};
-
-Remesh.mergeArrays = function (meshes, arr) {
-  var nbVertices = 0;
-  var nbFaces = 0;
-  var nbQuads = 0;
-  var nbTriangles = 0;
-  var i, j;
-
-  var nbMeshes = meshes.length;
-  var k = 0;
-  for (i = 0; i < nbMeshes; ++i) {
-    nbVertices += meshes[i].getNbVertices();
-    nbFaces += meshes[i].getNbFaces();
-    nbQuads += meshes[i].getNbQuads();
-    nbTriangles += meshes[i].getNbTriangles();
-  }
-
-  arr.nbVertices = nbVertices;
-  arr.nbFaces = nbFaces;
-  arr.nbQuads = nbQuads;
-  arr.nbTriangles = nbTriangles;
-
-  var vAr = arr.vertices = arr.vertices !== undefined ? new Float32Array(nbVertices * 3) : null;
-  var cAr = arr.colors = arr.colors !== undefined ? new Float32Array(nbVertices * 3) : null;
-  var mAr = arr.materials = arr.materials !== undefined ? new Float32Array(nbVertices * 3) : null;
-  var fAr = arr.faces = arr.faces !== undefined ? new Uint32Array(nbFaces * 4) : null;
-  var iAr = arr.triangles = arr.triangles !== undefined ? new Uint32Array(nbTriangles * 3) : null;
-
-  var ver = [0.0, 0.0, 0.0];
-  var offsetVerts = 0;
-  var offsetFaces = 0;
-  var offsetTris = 0;
-  var offsetIndex = 0;
-  for (i = 0; i < nbMeshes; ++i) {
-    var mesh = meshes[i];
-    var mVerts = mesh.getVertices();
-    var mCols = mesh.getColors();
-    var mMats = mesh.getMaterials();
-    var mFaces = mesh.getFaces();
-    var mTris = mesh.getTriangles();
-
-    var mNbVertices = mesh.getNbVertices();
-    var mNbFaces = mesh.getNbFaces();
-    var mNbTriangles = mesh.getNbTriangles();
-    var matrix = mesh.getMatrix();
-
-    for (j = 0; j < mNbVertices; ++j) {
-      k = j * 3;
-      ver[0] = mVerts[k];
-      ver[1] = mVerts[k + 1];
-      ver[2] = mVerts[k + 2];
-      vec3.transformMat4(ver, ver, matrix);
-      vAr[offsetVerts + k] = ver[0];
-      vAr[offsetVerts + k + 1] = ver[1];
-      vAr[offsetVerts + k + 2] = ver[2];
-      if (cAr) {
-        cAr[offsetVerts + k] = mCols[k];
-        cAr[offsetVerts + k + 1] = mCols[k + 1];
-        cAr[offsetVerts + k + 2] = mCols[k + 2];
-      }
-      if (mAr) {
-        mAr[offsetVerts + k] = mMats[k];
-        mAr[offsetVerts + k + 1] = mMats[k + 1];
-        mAr[offsetVerts + k + 2] = mMats[k + 2];
-      }
+    var res;
+    if (manifold) {
+      console.time('4. marchingCubes');
+      MarchingCubes.BLOCK = Remesh.BLOCK;
+      res = MarchingCubes.computeSurface(voxels);
+      console.timeEnd('4. marchingCubes');
+    } else {
+      console.time('4. surfaceNets');
+      SurfaceNets.BLOCK = Remesh.BLOCK;
+      res = SurfaceNets.computeSurface(voxels);
+      console.timeEnd('4. surfaceNets');
     }
 
-    offsetVerts += mNbVertices * 3;
-    if (fAr) {
-      for (j = 0; j < mNbFaces; ++j) {
-        k = j * 4;
-        fAr[offsetFaces + k] = mFaces[k] + offsetIndex;
-        fAr[offsetFaces + k + 1] = mFaces[k + 1] + offsetIndex;
-        fAr[offsetFaces + k + 2] = mFaces[k + 2] + offsetIndex;
-        fAr[offsetFaces + k + 3] = mFaces[k + 3] === Utils.TRI_INDEX ? Utils.TRI_INDEX : mFaces[k + 3] + offsetIndex;
-      }
+    console.time('5. createMesh');
+    var nmesh = createMesh(baseMesh, res.faces, res.vertices, res.colors, res.materials);
+    console.timeEnd('5. createMesh');
+
+    alignMeshBound(nmesh, box);
+
+    if (manifold && Remesh.SMOOTHING) {
+      console.time('6. tangential smoothing');
+      tangentialSmoothing(nmesh);
+      console.timeEnd('6. tangential smoothing');
     }
 
-    if (iAr) {
-      for (j = 0; j < mNbTriangles; ++j) {
-        k = j * 3;
-        iAr[offsetTris + k] = mTris[k] + offsetIndex;
-        iAr[offsetTris + k + 1] = mTris[k + 1] + offsetIndex;
-        iAr[offsetTris + k + 2] = mTris[k + 2] + offsetIndex;
-      }
+    console.timeEnd('remesh total');
+    console.log('\n');
+    return nmesh;
+  };
+
+  static mergeArrays(meshes, arr) {
+    var nbVertices = 0;
+    var nbFaces = 0;
+    var nbQuads = 0;
+    var nbTriangles = 0;
+    var i: number, j: number;
+
+    var nbMeshes = meshes.length;
+    var k = 0;
+    for (i = 0; i < nbMeshes; ++i) {
+      nbVertices += meshes[i].getNbVertices();
+      nbFaces += meshes[i].getNbFaces();
+      nbQuads += meshes[i].getNbQuads();
+      nbTriangles += meshes[i].getNbTriangles();
     }
 
-    offsetIndex += mNbVertices;
-    offsetFaces += mNbFaces * 4;
-    offsetTris += mNbTriangles * 3;
-  }
+    arr.nbVertices = nbVertices;
+    arr.nbFaces = nbFaces;
+    arr.nbQuads = nbQuads;
+    arr.nbTriangles = nbTriangles;
 
-  return arr;
-};
+    var vAr = arr.vertices = arr.vertices !== undefined ? new Float32Array(nbVertices * 3) : null;
+    var cAr = arr.colors = arr.colors !== undefined ? new Float32Array(nbVertices * 3) : null;
+    var mAr = arr.materials = arr.materials !== undefined ? new Float32Array(nbVertices * 3) : null;
+    var fAr = arr.faces = arr.faces !== undefined ? new Uint32Array(nbFaces * 4) : null;
+    var iAr = arr.triangles = arr.triangles !== undefined ? new Uint32Array(nbTriangles * 3) : null;
 
-Remesh.mergeMeshes = function (meshes, baseMesh) {
-  var arr = { vertices: null, colors: null, materials: null, faces: null };
-  Remesh.mergeArrays(meshes, arr);
-  return createMesh(baseMesh, arr.faces, arr.vertices, arr.colors, arr.materials);
+    var ver: vec3 = [0.0, 0.0, 0.0];
+    var offsetVerts = 0;
+    var offsetFaces = 0;
+    var offsetTris = 0;
+    var offsetIndex = 0;
+    for (i = 0; i < nbMeshes; ++i) {
+      var mesh = meshes[i];
+      var mVerts = mesh.getVertices();
+      var mCols = mesh.getColors();
+      var mMats = mesh.getMaterials();
+      var mFaces = mesh.getFaces();
+      var mTris = mesh.getTriangles();
+
+      var mNbVertices = mesh.getNbVertices();
+      var mNbFaces = mesh.getNbFaces();
+      var mNbTriangles = mesh.getNbTriangles();
+      var matrix = mesh.getMatrix();
+
+      if (vAr) {
+        for (j = 0; j < mNbVertices; ++j) {
+          k = j * 3;
+          ver[0] = mVerts[k];
+          ver[1] = mVerts[k + 1];
+          ver[2] = mVerts[k + 2];
+          vec3.transformMat4(ver, ver, matrix);
+          vAr[offsetVerts + k] = ver[0];
+          vAr[offsetVerts + k + 1] = ver[1];
+          vAr[offsetVerts + k + 2] = ver[2];
+          if (cAr) {
+            cAr[offsetVerts + k] = mCols[k];
+            cAr[offsetVerts + k + 1] = mCols[k + 1];
+            cAr[offsetVerts + k + 2] = mCols[k + 2];
+          }
+          if (mAr) {
+            mAr[offsetVerts + k] = mMats[k];
+            mAr[offsetVerts + k + 1] = mMats[k + 1];
+            mAr[offsetVerts + k + 2] = mMats[k + 2];
+          }
+        }
+
+        offsetVerts += mNbVertices * 3;
+      }
+
+      if (fAr) {
+        for (j = 0; j < mNbFaces; ++j) {
+          k = j * 4;
+          fAr[offsetFaces + k] = mFaces[k] + offsetIndex;
+          fAr[offsetFaces + k + 1] = mFaces[k + 1] + offsetIndex;
+          fAr[offsetFaces + k + 2] = mFaces[k + 2] + offsetIndex;
+          fAr[offsetFaces + k + 3] = mFaces[k + 3] === Utils.TRI_INDEX
+            ? Utils.TRI_INDEX
+            : mFaces[k + 3] + offsetIndex;
+        }
+      }
+
+      if (iAr) {
+        for (j = 0; j < mNbTriangles; ++j) {
+          k = j * 3;
+          iAr[offsetTris + k] = mTris[k] + offsetIndex;
+          iAr[offsetTris + k + 1] = mTris[k + 1] + offsetIndex;
+          iAr[offsetTris + k + 2] = mTris[k + 2] + offsetIndex;
+        }
+      }
+
+      offsetIndex += mNbVertices;
+      offsetFaces += mNbFaces * 4;
+      offsetTris += mNbTriangles * 3;
+    }
+
+    return arr;
+  };
+
+
+
+  static mergeMeshes(meshes, baseMesh) {
+    var arr = { vertices: null, colors: null, materials: null, faces: null };
+    Remesh.mergeArrays(meshes, arr);
+    return createMesh(baseMesh, arr.faces, arr.vertices, arr.colors, arr.materials);
+  };
 };
 
 export default Remesh;

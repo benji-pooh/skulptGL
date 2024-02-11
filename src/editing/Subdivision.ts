@@ -1,8 +1,5 @@
 import Utils from '../misc/Utils';
 
-var Subdivision = {};
-Subdivision.LINEAR = false;
-
 //       v3
 //       /\
 //      /3T\ 
@@ -24,35 +21,51 @@ Subdivision.LINEAR = false;
 // Helper class
 class OddVertexComputer {
 
+  #vArOut;
+  #cArOut;
+  #mArOut;
+  #vAr;
+  #cAr;
+  #mAr;
+  #eAr;
+  #nbVertices;
+  #tagEdges;
+
   constructor(mesh, vArOut, cArOut, mArOut) {
-    this._vArOut = vArOut;
-    this._cArOut = cArOut;
-    this._mArOut = mArOut;
-    this._vAr = mesh.getVertices();
-    this._cAr = mesh.getColors();
-    this._mAr = mesh.getMaterials();
-    this._eAr = mesh.getEdges();
-    this._nbVertices = mesh.getNbVertices();
-    this._tagEdges = new Int32Array(mesh.getNbEdges());
+    this.#vArOut = vArOut;
+    this.#cArOut = cArOut;
+    this.#mArOut = mArOut;
+    this.#vAr = mesh.getVertices();
+    this.#cAr = mesh.getColors();
+    this.#mAr = mesh.getMaterials();
+    this.#eAr = mesh.getEdges();
+    this.#nbVertices = mesh.getNbVertices();
+    this.#tagEdges = new Int32Array(mesh.getNbEdges());
+  }
+
+  get tagEdges() {
+    return this.#tagEdges
   }
 
   computeTriangleEdgeVertex(iv1, iv2, iv3, ide) {
-    var vAr = this._vAr;
-    var cAr = this._cAr;
-    var mAr = this._mAr;
-    var eAr = this._eAr;
-    var vArOut = this._vArOut;
-    var cArOut = this._cArOut;
-    var mArOut = this._mArOut;
-    var tagEdges = this._tagEdges;
+    var vAr = this.#vAr;
+    var cAr = this.#cAr;
+    var mAr = this.#mAr;
+    var eAr = this.#eAr;
+    var vArOut = this.#vArOut;
+    var cArOut = this.#cArOut;
+    var mArOut = this.#mArOut;
+    var tagEdges = this.#tagEdges;
     var id1 = iv1 * 3;
     var id2 = iv2 * 3;
     var idOpp = iv3 * 3;
     var testEdge = tagEdges[ide] - 1;
-    var ivMid = testEdge === -1 ? this._nbVertices++ : testEdge;
+    var ivMid = testEdge === -1 ? this.#nbVertices++ : testEdge;
     var idMid = ivMid * 3;
     var edgeValue = eAr[ide];
-    if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) { // mid edge vertex or non manifold shit
+    if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) {
+      // mid edge vertex or non manifold shit
+
       if (testEdge !== -1) // no need to recompute weird non manifold stuffs
         return ivMid;
       tagEdges[ide] = ivMid + 1;
@@ -96,24 +109,28 @@ class OddVertexComputer {
     return ivMid;
   }
 
+  /* eslint-disable @stylistic/max-len */
   computeQuadEdgeVertex(iv1, iv2, iv3, iv4, ide) {
-    var vAr = this._vAr;
-    var cAr = this._cAr;
-    var mAr = this._mAr;
-    var eAr = this._eAr;
-    var vArOut = this._vArOut;
-    var cArOut = this._cArOut;
-    var mArOut = this._mArOut;
-    var tagEdges = this._tagEdges;
+    var vAr = this.#vAr;
+    var cAr = this.#cAr;
+    var mAr = this.#mAr;
+    var eAr = this.#eAr;
+    var vArOut = this.#vArOut;
+    var cArOut = this.#cArOut;
+    var mArOut = this.#mArOut;
+    var tagEdges = this.#tagEdges;
     var id1 = iv1 * 3;
     var id2 = iv2 * 3;
     var idOpp = iv3 * 3;
     var idOpp2 = iv4 * 3;
     var testEdge = tagEdges[ide] - 1;
-    var ivMid = testEdge === -1 ? this._nbVertices++ : testEdge;
+    var ivMid = testEdge === -1 ? this.#nbVertices++ : testEdge;
     var idMid = ivMid * 3;
     var edgeValue = eAr[ide];
-    if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) { // mid edge vertex or non manifold shit
+    if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) {
+      // mid edge vertex or non manifold shit
+
+
       if (testEdge !== -1) // no need to recompute weird non manifold stuffs
         return ivMid;
       tagEdges[ide] = ivMid + 1;
@@ -156,19 +173,21 @@ class OddVertexComputer {
     }
     return ivMid;
   }
+  /* eslint-enable */
+
 
   computeFaceVertex(iv1, iv2, iv3, iv4) {
     var id1 = iv1 * 3;
     var id2 = iv2 * 3;
     var id3 = iv3 * 3;
     var id4 = iv4 * 3;
-    var vAr = this._vAr;
-    var cAr = this._cAr;
-    var mAr = this._mAr;
-    var vArOut = this._vArOut;
-    var cArOut = this._cArOut;
-    var mArOut = this._mArOut;
-    var ivCen = this._nbVertices++;
+    var vAr = this.#vAr;
+    var cAr = this.#cAr;
+    var mAr = this.#mAr;
+    var vArOut = this.#vArOut;
+    var cArOut = this.#cArOut;
+    var mArOut = this.#mArOut;
+    var ivCen = this.#nbVertices++;
     var idCen = ivCen * 3;
     vArOut[idCen] = 0.25 * (vAr[id1] + vAr[id2] + vAr[id3] + vAr[id4]);
     vArOut[idCen + 1] = 0.25 * (vAr[id1 + 1] + vAr[id2 + 1] + vAr[id3 + 1] + vAr[id4 + 1]);
@@ -358,7 +377,7 @@ var applyEvenSmooth = function (baseMesh, even, colorOut, materialOut) {
 };
 
 /** Odd vertices smoothing */
-var applyOddSmooth = function (mesh, odds, colorOut, materialOut, fArOut) {
+var applyOddSmooth = function (mesh, odds, colorOut, materialOut, fArOut?) {
   var fAr = mesh.getFaces();
   var feAr = mesh.getFaceEdges();
   var oddComputer = new OddVertexComputer(mesh, odds, colorOut, materialOut);
@@ -407,10 +426,11 @@ var applyOddSmooth = function (mesh, odds, colorOut, materialOut, fArOut) {
       fArOut[id + 13] = iv3;
     }
   }
-  return oddComputer._tagEdges;
+  return oddComputer.tagEdges;
 };
 
 /** Computes uv faces and uv coordinates for center vertices */
+/* eslint-disable @stylistic/max-len */
 var computeFaceTexCoords = function (mesh, newMesh, tagEdges) {
   var fArUVOld = mesh.getFacesTexCoord();
   var fAr = newMesh.getFaces();
@@ -490,6 +510,8 @@ var computeFaceTexCoords = function (mesh, newMesh, tagEdges) {
 
   newMesh.setFacesTexCoord(fArUV);
 };
+/* eslint-enable */
+
 
 /** Subdivide tex coords mesh */
 var computeTexCoords = function (mesh, newMesh, tagEdges) {
@@ -565,24 +587,36 @@ var computeTexCoords = function (mesh, newMesh, tagEdges) {
   computeFaceTexCoords(mesh, newMesh, tagEdges);
 };
 
-/** Apply a complete subdivision (by updating the topology) */
-Subdivision.fullSubdivision = function (baseMesh, newMesh) {
-  var nbVertices = baseMesh.getNbVertices() + baseMesh.getNbEdges() + baseMesh.getNbQuads();
-  newMesh.setVertices(new Float32Array(nbVertices * 3));
-  newMesh.setColors(new Float32Array(nbVertices * 3));
-  newMesh.setMaterials(new Float32Array(nbVertices * 3));
-  newMesh.setFaces(new Uint32Array(baseMesh.getNbFaces() * 4 * 4));
-  applyEvenSmooth(baseMesh, newMesh.getVertices(), newMesh.getColors(), newMesh.getMaterials());
-  var tags = applyOddSmooth(baseMesh, newMesh.getVertices(), newMesh.getColors(), newMesh.getMaterials(), newMesh.getFaces());
-  if (baseMesh.hasUV())
-    computeTexCoords(baseMesh, newMesh, tags);
-  newMesh.allocateArrays();
-};
+class Subdivision {
+  static LINEAR = false;
 
-/** Apply subdivision without topology computation */
-Subdivision.partialSubdivision = function (baseMesh, vertOut, colorOut, materialOut) {
-  applyEvenSmooth(baseMesh, vertOut, colorOut, materialOut);
-  applyOddSmooth(baseMesh, vertOut, colorOut, materialOut);
-};
+
+
+  /** Apply a complete subdivision (by updating the topology) */
+  static fullSubdivision(baseMesh, newMesh) {
+    var nbVertices = baseMesh.getNbVertices() + baseMesh.getNbEdges() + baseMesh.getNbQuads();
+    newMesh.setVertices(new Float32Array(nbVertices * 3));
+    newMesh.setColors(new Float32Array(nbVertices * 3));
+    newMesh.setMaterials(new Float32Array(nbVertices * 3));
+    newMesh.setFaces(new Uint32Array(baseMesh.getNbFaces() * 4 * 4));
+    applyEvenSmooth(baseMesh, newMesh.getVertices(), newMesh.getColors(), newMesh.getMaterials());
+    var tags = applyOddSmooth(
+      baseMesh,
+      newMesh.getVertices(),
+      newMesh.getColors(),
+      newMesh.getMaterials(),
+      newMesh.getFaces()
+    );
+    if (baseMesh.hasUV())
+      computeTexCoords(baseMesh, newMesh, tags);
+    newMesh.allocateArrays();
+  };
+
+  /** Apply subdivision without topology computation */
+  static partialSubdivision(baseMesh, vertOut, colorOut, materialOut) {
+    applyEvenSmooth(baseMesh, vertOut, colorOut, materialOut);
+    applyOddSmooth(baseMesh, vertOut, colorOut, materialOut);
+  }
+}
 
 export default Subdivision;

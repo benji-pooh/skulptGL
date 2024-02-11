@@ -1,8 +1,5 @@
 import Utils from '../misc/Utils';
 
-var MarchingCubes = {};
-MarchingCubes.BLOCK = false;
-
 var edgeTable = new Uint32Array([
   0x0,
   0x109,
@@ -598,83 +595,92 @@ var readScalarValues = function (voxels, grid, dims, n, cols, mats) {
   return mask;
 };
 
-MarchingCubes.computeSurface = function (voxels) {
-  var dims = voxels.dims;
+/** This is a static class that implements the marching cubes algorithm */
+class MarchingCubes {
 
-  var mapVertices = new Map();
+  // TODO: Mixing static global that controls behavior with this is messy
+  // Change to a param or change the app overall to use a singleton and
+  // convert this class to supporting instances.
+  static BLOCK = false;
 
-  var vertices = [];
-  var cols = [];
-  var mats = [];
-  var faces = [];
-  var n = 0;
-  var x = new Int32Array(3);
-  var grid = new Float32Array(8);
+  static computeSurface(voxels) {
+    var dims = voxels.dims;
 
-  var edges = new Array(12);
+    var mapVertices = new Map();
 
-  var tmpV = new Float32Array(3);
-  var tmpC = new Float32Array(3);
-  var tmpM = new Float32Array(3);
+    var vertices: number[] = [];
+    var cols: number[] = [];
+    var mats: number[] = [];
+    var faces: number[] = [];
+    var n = 0;
+    var x = new Int32Array(3);
+    var grid = new Float32Array(8);
 
-  //March over the voxel grid
-  for (x[2] = 0; x[2] < dims[2] - 1; ++x[2], n += dims[0]) {
-    for (x[1] = 0; x[1] < dims[1] - 1; ++x[1], ++n) {
-      for (x[0] = 0; x[0] < dims[0] - 1; ++x[0], ++n) {
-        var cubeIndex = readScalarValues(voxels, grid, dims, n, tmpC, tmpM);
+    var edges: number[] = new Array(12);
 
-        var edgeMask = edgeTable[cubeIndex];
-        if (edgeMask === 0) {
-          continue;
-        }
+    var tmpV = new Float32Array(3);
+    var tmpC = new Float32Array(3);
+    var tmpM = new Float32Array(3);
 
-        for (var k = 0; k < 12; ++k) {
-          if (!(edgeMask & (1 << k))) continue;
+    //March over the voxel grid
+    for (x[2] = 0; x[2] < dims[2] - 1; ++x[2], n += dims[0]) {
+      for (x[1] = 0; x[1] < dims[1] - 1; ++x[1], ++n) {
+        for (x[0] = 0; x[0] < dims[0] - 1; ++x[0], ++n) {
+          var cubeIndex = readScalarValues(voxels, grid, dims, n, tmpC, tmpM);
 
-          var e = edgeIndex[k];
-          var p0 = cubeVerts[e[0]];
-          var p1 = cubeVerts[e[1]];
-          var a = grid[e[0]];
-          var b = grid[e[1]];
-          var d = a - b;
-          var t = 0;
-          if (Math.abs(d) > 1e-6) {
-            t = a / d;
+          var edgeMask = edgeTable[cubeIndex];
+          if (edgeMask === 0) {
+            continue;
           }
 
-          for (var h = 0; h < 3; ++h) {
-            tmpV[h] = x[h] + p0[h] + t * (p1[h] - p0[h]);
+          for (var k = 0; k < 12; ++k) {
+            if (!(edgeMask & (1 << k))) continue;
+
+            var e = edgeIndex[k];
+            var p0 = cubeVerts[e[0]];
+            var p1 = cubeVerts[e[1]];
+            var a = grid[e[0]];
+            var b = grid[e[1]];
+            var d = a - b;
+            var t = 0;
+            if (Math.abs(d) > 1e-6) {
+              t = a / d;
+            }
+
+            for (var h = 0; h < 3; ++h) {
+              tmpV[h] = x[h] + p0[h] + t * (p1[h] - p0[h]);
+            }
+
+            var hash = tmpV[0] + '+' + tmpV[1] + '+' + tmpV[2];
+            var idVertex = mapVertices.get(hash);
+
+            if (idVertex >= 0) {
+              edges[k] = idVertex;
+            } else {
+              edges[k] = vertices.length / 3;
+              mapVertices.set(hash, edges[k]);
+              vertices.push(tmpV[0], tmpV[1], tmpV[2]);
+              cols.push(tmpC[0], tmpC[1], tmpC[2]);
+              mats.push(tmpM[0], tmpM[1], tmpM[2]);
+            }
           }
 
-          var hash = tmpV[0] + '+' + tmpV[1] + '+' + tmpV[2];
-          var idVertex = mapVertices.get(hash);
-
-          if (idVertex >= 0) {
-            edges[k] = idVertex;
-          } else {
-            edges[k] = vertices.length / 3;
-            mapVertices.set(hash, edges[k]);
-            vertices.push(tmpV[0], tmpV[1], tmpV[2]);
-            cols.push(tmpC[0], tmpC[1], tmpC[2]);
-            mats.push(tmpM[0], tmpM[1], tmpM[2]);
+          var f = triTable[cubeIndex];
+          for (var l = 0; l < f.length; l += 3) {
+            faces.push(edges[f[l]], edges[f[l + 1]], edges[f[l + 2]], Utils.TRI_INDEX);
           }
-        }
-
-        var f = triTable[cubeIndex];
-        for (var l = 0; l < f.length; l += 3) {
-          faces.push(edges[f[l]], edges[f[l + 1]], edges[f[l + 2]], Utils.TRI_INDEX);
         }
       }
     }
-  }
 
-  //All done!  Return the result
-  return {
-    colors: new Float32Array(cols),
-    materials: new Float32Array(mats),
-    vertices: new Float32Array(vertices),
-    faces: new Uint32Array(faces)
+    //All done!  Return the result
+    return {
+      colors: new Float32Array(cols),
+      materials: new Float32Array(mats),
+      vertices: new Float32Array(vertices),
+      faces: new Uint32Array(faces)
+    };
   };
-};
+}
 
 export default MarchingCubes;

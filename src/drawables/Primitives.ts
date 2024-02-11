@@ -2,7 +2,7 @@ import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 import Remesh from '../editing/Remesh';
 
-function createPlaneArray (
+function createPlaneArray(
   lx = -0.5, ly = 0.0, lz = -0.5,
   wx = 1.0, wy = 0.0, wz = 0.0,
   hx = 0.0, hy = 0.0, hz = 1.0
@@ -37,7 +37,7 @@ function createPlaneArray (
   };
 };
 
-function createCubeArray  (side = 1.0) {
+function createCubeArray(side = 1.0) {
   var v = new Float32Array(24);
   v[1] = v[2] = v[4] = v[6] = v[7] = v[9] = -side * 0.5;
   v[10] = v[11] = v[14] = v[18] = v[21] = v[23] = -side * 0.5;
@@ -77,7 +77,7 @@ function createCubeArray  (side = 1.0) {
   };
 };
 
-function createCylinderArray (
+function createCylinderArray(
   radiusTop = 0.5, radiusBottom = 0.5, height = 2.0,
   radSegments = 64, heightSegments = 64, topCap = true, lowCap = true
 ) {
@@ -166,11 +166,11 @@ function createCylinderArray (
   };
 };
 
-function createTorusArray  (
-  radiusOut = 0.5, 
-  radiusWidth = 0.1, 
-  arc = Math.PI * 2, 
-  nbRadial = 32, 
+function createTorusArray(
+  radiusOut = 0.5,
+  radiusWidth = 0.1,
+  arc = Math.PI * 2,
+  nbRadial = 32,
   nbTubular = 128) {
   var isFull = Math.PI * 2 - arc < 1e-2;
 
@@ -179,7 +179,7 @@ function createTorusArray  (
   if (!isFull) {
     nbVertices += 2;
     nbFaces += nbRadial;
-  } 
+  }
   var endTubular = isFull ? nbTubular : nbTubular - 1;
 
   var vAr = new Float32Array(nbVertices * 3);
@@ -290,7 +290,7 @@ function createGridArray(
 };
 
 
-function createMesh (gl, arr) {
+function createMesh(gl, arr) {
   var mesh = new MeshStatic(gl);
   mesh.setVertices(arr.vertices);
   if (arr.faces) mesh.setFaces(arr.faces);
@@ -305,8 +305,8 @@ var slice = Array.prototype.slice;
 
 class Primitives {
 
-  static  createGrid (gl) {
-    var mesh = createMesh(gl, createGridArray.apply(this, slice.call(arguments, 1)));
+  static createGrid(gl, ...args: any[]) {
+    var mesh = createMesh(gl, createGridArray.apply(this, slice.call(args, 1)));
     if (gl) {
       mesh.setMode(gl.LINES);
       mesh.setUseDrawArrays(true);
@@ -315,38 +315,38 @@ class Primitives {
     return mesh;
   };
 
-  static createCube (gl) {
-    return createMesh(gl, createCubeArray.apply(this, slice.call(arguments, 1)));
+  static createCube(gl, ...args: any[]) {
+    return createMesh(gl, createCubeArray.apply(this, args));
   };
 
-  static  createCylinder (gl) {
-    return createMesh(gl, createCylinderArray.apply(this, slice.call(arguments, 1)));
+  static createCylinder(gl, ...args: any[]) {
+    return createMesh(gl, createCylinderArray.apply(this, args));
   };
 
-  static  createTorus (gl) {
-    return createMesh(gl, createTorusArray.apply(this, slice.call(arguments, 1)));
+  static createTorus(gl, ...args: any[]) {
+    return createMesh(gl, createTorusArray.apply(this, args));
   };
 
-  static  createPlane (gl) {
-    return createMesh(gl, createPlaneArray.apply(this, slice.call(arguments, 1)));
+  static createPlane(gl, ...args: any[]) {
+    return createMesh(gl, createPlaneArray.apply(this, args));
   };
 
-  static  createArrow (
-    gl, 
-    thick = 0.5, 
-    height = 2.0, 
-    rConeT = 5.0, 
-    rConeH = 0.2, 
+  static createArrow(
+    gl,
+    thick = 0.5,
+    height = 2.0,
+    rConeT = 5.0,
+    rConeH = 0.2,
     radSegments = 4,
     heightSegments = 1) {
 
     var base = createMesh(
-      null, 
+      null,
       createCylinderArray(thick, thick, height, radSegments, heightSegments)
     );
 
     var cone = createMesh(
-      null, 
+      null,
       createCylinderArray(0.0, thick * rConeT, height * rConeH, radSegments, heightSegments)
     );
 
@@ -360,7 +360,7 @@ class Primitives {
     return createMesh(gl, arrow);
   };
 
-  static createLine2D (gl, lx = 0.0, ly = 0.0, ux = 0.0, uy = 0.0) {
+  static createLine2D(gl, lx = 0.0, ly = 0.0, ux = 0.0, uy = 0.0) {
     var mesh = createMesh(gl, {
       vertices: new Float32Array([lx, ly, 0.0, ux, uy, 0.0])
     });

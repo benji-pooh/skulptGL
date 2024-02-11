@@ -1,3 +1,4 @@
+import { vec3 } from 'gl-matrix';
 import Enums from '../../misc/Enums';
 import Utils from '../../misc/Utils';
 
@@ -13,11 +14,26 @@ import Utils from '../../misc/Utils';
 
 class SculptBase {
 
+  static uiName;
+
+  protected _main;
+  /** Callback continuous */
+  protected _cbContinuous
+  protected _lastMouseX: number = 0.0;
+  protected _lastMouseY: number = 0.0;
+  protected _forceToolMesh;
+  protected _lockPosition;
+  protected _radius: number;
+
   constructor(main) {
     this._main = main;
     this._cbContinuous = this.updateContinuous.bind(this); // callback continuous
-    this._lastMouseX = 0.0;
-    this._lastMouseY = 0.0;
+  }
+
+  // TODO this actually isn't overidden by all base classes.
+  /** The stroke action, implemented by subclasses */
+  stroke(picking: any, ...args: any): void {
+    // Nop, override in sub class
   }
 
   setToolMesh(mesh) {
@@ -61,7 +77,7 @@ class SculptBase {
       this.getMesh().balanceOctree();
   }
 
-  pushState() {
+  pushState(force?: boolean) {
     this._main.getStateManager().pushStateGeometry(this.getMesh());
   }
 
@@ -221,7 +237,7 @@ class SculptBase {
   }
 
   /** Compute average normal of a group of vertices with culling */
-  areaNormal(iVerts) {
+  areaNormal(iVerts): vec3 | null {
     var mesh = this.getMesh();
     var nAr = mesh.getNormals();
     var mAr = mesh.getMaterials();
@@ -237,7 +253,7 @@ class SculptBase {
     }
     var len = Math.sqrt(anx * anx + any * any + anz * anz);
     if (len === 0.0)
-      return;
+      return null;
     len = 1.0 / len;
     return [anx * len, any * len, anz * len];
   }
@@ -284,7 +300,7 @@ class SculptBase {
   }
 
   /** Laplacian smooth. Special rule for vertex on the edge of the mesh. */
-  laplacianSmooth(iVerts, smoothVerts, vField) {
+  laplacianSmooth(iVerts, smoothVerts, vField?) {
     var mesh = this.getMesh();
     var vrvStartCount = mesh.getVerticesRingVertStartCount();
     var vertRingVert = mesh.getVerticesRingVert();
@@ -434,7 +450,9 @@ class SculptBase {
     selection.render(this._main);
   }
 
-  addSculptToScene() { }
+  addSculptToScene(scene: any) {
+    // Nop in base class
+  }
 
   getScreenRadius() {
     return (this._radius || 1) * this._main.getPixelRatio();

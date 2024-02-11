@@ -4,23 +4,25 @@ import SculptBase from './SculptBase';
 
 class Paint extends SculptBase {
 
+  protected _hardness = 0.75;
+  protected _intensity = 0.75;
+  protected _culling = false;
+  protected _color = vec3.fromValues(1.0, 0.766, 0.336); // albedo
+  protected _material = vec3.fromValues(0.3, 0.95, 0.0); // roughness/metallic/masking
+  protected _pickColor = false; // color picking
+  protected _pickCallback: Function | null = null; // callback function after picking a color
+  protected _idAlpha = 0;
+  protected _lockPosition = false;
+
+  protected _writeAlbedo = true;
+  protected _writeRoughness = true;
+  protected _writeMetalness = true;
+
   constructor(main) {
     super(main);
 
     this._radius = 50;
-    this._hardness = 0.75;
-    this._intensity = 0.75;
-    this._culling = false;
-    this._color = vec3.fromValues(1.0, 0.766, 0.336); // albedo
-    this._material = vec3.fromValues(0.3, 0.95, 0.0); // roughness/metallic/masking
-    this._pickColor = false; // color picking
-    this._pickCallback = null; // callback function after picking a color
-    this._idAlpha = 0;
-    this._lockPosition = false;
 
-    this._writeAlbedo = true;
-    this._writeRoughness = true;
-    this._writeMetalness = true;
   }
 
   end() {
@@ -78,7 +80,9 @@ class Paint extends SculptBase {
     var roughness = color[0];
     var metallic = color[1];
     picking.polyLerp(mesh.getColors(), color);
-    this._pickCallback(color, roughness, metallic);
+    if (this._pickCallback !== null) {
+      this._pickCallback(color, roughness, metallic);
+    }
   }
 
   stroke(picking) {

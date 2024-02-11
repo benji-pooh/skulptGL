@@ -3,14 +3,17 @@ import SculptBase from './SculptBase';
 
 class Flatten extends SculptBase {
 
+  protected _intensity = 0.75;
+  protected _negative = true;
+  protected _culling = false;
+  protected _idAlpha = 0;
+  // TODO This property didn't exist here previously, was missing, added it, but is this the correct default?
+  protected _accumulate = false; // if we ignore the proxy
+
   constructor(main) {
     super(main);
 
     this._radius = 50;
-    this._intensity = 0.75;
-    this._negative = true;
-    this._culling = false;
-    this._idAlpha = 0;
     this._lockPosition = false;
   }
 

@@ -5,16 +5,17 @@ import Flatten from './Flatten';
 
 class Brush extends SculptBase {
 
+  protected _intensity = 0.5;
+  protected _negative = false;
+  protected _clay = true;
+  protected _culling = false;
+  protected _accumulate = true; // if we ignore the proxy
+  protected _idAlpha = 0;
+
   constructor(main) {
     super(main);
 
     this._radius = 50;
-    this._intensity = 0.5;
-    this._negative = false;
-    this._clay = true;
-    this._culling = false;
-    this._accumulate = true; // if we ignore the proxy
-    this._idAlpha = 0;
     this._lockPosition = false;
   }
 
@@ -38,15 +39,33 @@ class Brush extends SculptBase {
     picking.setIdAlpha(this._idAlpha);
 
     if (!this._clay) {
-      this.brush(iVertsInRadius, picking.getPickedNormal(), picking.getIntersectionPoint(), r2, intensity, picking);
+      this.brush(
+        iVertsInRadius,
+        picking.getPickedNormal(),
+        picking.getIntersectionPoint(),
+        r2,
+        intensity,
+        picking
+      );
     } else {
       var aNormal = this.areaNormal(iVertsFront);
       if (!aNormal)
         return;
-      var aCenter = this._lockPosition ? picking.getIntersectionPoint() : this.areaCenter(iVertsFront);
+      var aCenter = this._lockPosition
+        ? picking.getIntersectionPoint()
+        : this.areaCenter(iVertsFront);
       var off = Math.sqrt(r2) * 0.1;
       vec3.scaleAndAdd(aCenter, aCenter, aNormal, this._negative ? -off : off);
-      Flatten.prototype.flatten.call(this, iVertsInRadius, aNormal, aCenter, picking.getIntersectionPoint(), r2, intensity, picking);
+      Flatten.prototype.flatten.call(
+        this,
+        iVertsInRadius,
+        aNormal,
+        aCenter,
+        picking.getIntersectionPoint(),
+        r2,
+        intensity,
+        picking
+      );
     }
 
     var mesh = this.getMesh();
