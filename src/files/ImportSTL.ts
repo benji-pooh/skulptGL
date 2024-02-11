@@ -1,17 +1,21 @@
 import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 
-var Import = {};
 
 /** Import STL file */
-Import.importSTL = function (buffer, gl) {
+export function importSTL(buffer, gl) {
   var nbTriangles = new Uint32Array(buffer, 80, 1)[0] || 0;
   var isBinary = 84 + (nbTriangles * 50) === buffer.byteLength;
-  var vb = isBinary ? Import.importBinarySTL(buffer, nbTriangles) : Import.importAsciiSTL(Utils.ab2str(buffer));
-  var vbc;
+  // TODO: This is a little nasty around the overloaded meaning of vb, refactor.
+  var vb = isBinary
+    ? importBinarySTL(buffer, nbTriangles)
+    : importAsciiSTL(Utils.ab2str(buffer));
+  var vbc: Uint8Array | null;
   if (isBinary) {
-    vbc = vb[1];
-    vb = vb[0];
+    vb = <Float32Array>vb[0];
+    vbc = <Uint8Array><unknown>vb[1];
+  } else {
+    vbc = null;
   }
   nbTriangles = vb.length / 9;
   var mapVertices = new Map();
@@ -20,13 +24,13 @@ Import.importSTL = function (buffer, gl) {
   for (var i = 0; i < nbTriangles; ++i) {
     var idt = i * 4;
     var idv = i * 9;
-    iAr[idt] = Import.detectNewVertex(mapVertices, vb, vbc, idv, nbVertices);
-    iAr[idt + 1] = Import.detectNewVertex(mapVertices, vb, vbc, idv + 3, nbVertices);
-    iAr[idt + 2] = Import.detectNewVertex(mapVertices, vb, vbc, idv + 6, nbVertices);
+    iAr[idt] = detectNewVertex(mapVertices, vb, vbc, idv, nbVertices);
+    iAr[idt + 1] = detectNewVertex(mapVertices, vb, vbc, idv + 3, nbVertices);
+    iAr[idt + 2] = detectNewVertex(mapVertices, vb, vbc, idv + 6, nbVertices);
     iAr[idt + 3] = Utils.TRI_INDEX;
   }
   var mesh = new MeshStatic(gl);
-  mesh.setVertices(vb.subarray(0, nbVertices[0] * 3));
+  mesh.setVertices((<Float32Array>vb).subarray(0, nbVertices[0] * 3));
   if (vbc)
     mesh.setColors(vbc.subarray(0, nbVertices[0] * 3));
   mesh.setFaces(iAr);
@@ -34,7 +38,7 @@ Import.importSTL = function (buffer, gl) {
 };
 
 /** Check if the vertex already exists */
-Import.detectNewVertex = function (mapVertices, vb, vbc, start, nbVertices) {
+function detectNewVertex(mapVertices, vb, vbc, start, nbVertices) {
   var x = vb[start];
   var y = vb[start + 1];
   var z = vb[start + 2];
@@ -58,7 +62,7 @@ Import.detectNewVertex = function (mapVertices, vb, vbc, start, nbVertices) {
 };
 
 /** Import Ascii STL file */
-Import.importAsciiSTL = function (data) {
+function importAsciiSTL(data) {
   var lines = data.split('\n');
   var nbLength = lines.length;
   var vb = new Float32Array(Math.ceil(nbLength * 9 / 7));
@@ -84,7 +88,7 @@ Import.importAsciiSTL = function (data) {
 };
 
 /** Import binary STL file */
-Import.importBinarySTL = function (buffer, nbTriangles) {
+function importBinarySTL(buffer, nbTriangles): [Float32Array, Uint8Array] {
   var data = new Uint8Array(buffer);
 
   var dataHeader = data.subarray(0, 80);
@@ -106,7 +110,7 @@ Import.importBinarySTL = function (buffer, nbTriangles) {
   }
 
   var uc = new Uint16Array(vbc.buffer);
-  vbc = new Float32Array(nbTriangles * 9);
+  var vbColor = new Float32Array(nbTriangles * 9);
   var inv = 1.0 / 31;
   for (i = 0; i < nbTriangles; ++i) {
     j = i * 9;
@@ -132,11 +136,10 @@ Import.importBinarySTL = function (buffer, nbTriangles) {
       b = ((u & 31) & 31) * inv;
     }
 
-    vbc[j] = vbc[j + 3] = vbc[j + 6] = r;
-    vbc[j + 1] = vbc[j + 4] = vbc[j + 7] = g;
-    vbc[j + 2] = vbc[j + 5] = vbc[j + 8] = b;
+    vbColor[j] = vbColor[j + 3] = vbColor[j + 6] = r;
+    vbColor[j + 1] = vbColor[j + 4] = vbColor[j + 7] = g;
+    vbColor[j + 2] = vbColor[j + 5] = vbColor[j + 8] = b;
   }
   return [new Float32Array(vb.buffer), vbc];
 };
 
-export default Import;

@@ -1,14 +1,12 @@
 import Utils from '../misc/Utils';
 import Remesh from '../editing/Remesh';
 
-var Export = {};
-
 var getResult = function (meshes) {
   return Remesh.mergeArrays(meshes, { vertices: null, colors: null, faces: null });
 };
 
 /** Export Ascii PLY file */
-Export.exportAsciiPLY = function (meshes) {
+export function exportAsciiPLY(meshes) {
   var res = getResult(meshes);
   var nbVertices = res.nbVertices;
   var nbFaces = res.nbFaces;
@@ -45,7 +43,7 @@ Export.exportAsciiPLY = function (meshes) {
 };
 
 /** Export binary PLY file */
-Export.exportBinaryPLY = function (meshes, opt) {
+export function exportBinaryPLY(meshes, opt) {
   var res = getResult(meshes);
   var nbVertices = res.nbVertices;
   var nbFaces = res.nbFaces;
@@ -127,4 +125,3 @@ Export.exportBinaryPLY = function (meshes, opt) {
   return new Blob([data]);
 };
 
-export default Export;

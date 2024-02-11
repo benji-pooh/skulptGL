@@ -123,7 +123,12 @@ Utils.littleEndian = (function () {
 
 /** Get bytes */
 Utils.getBytes = function (data, offset) {
-  return [data[offset].charCodeAt(), data[offset + 1].charCodeAt(), data[offset + 2].charCodeAt(), data[offset + 3].charCodeAt()];
+  return [
+    data[offset].charCodeAt(), 
+    data[offset + 1].charCodeAt(), 
+    data[offset + 2].charCodeAt(), 
+    data[offset + 3].charCodeAt()
+  ];
 };
 
 /** Read a binary uint32 */

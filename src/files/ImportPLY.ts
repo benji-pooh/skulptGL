@@ -1,9 +1,8 @@
 import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 
-var Import = {};
 
-var typeToOctet = function (type) {
+function typeToOctet(type) {
   switch (type) {
     case 'uchar':
     case 'char':
@@ -30,7 +29,7 @@ var typeToOctet = function (type) {
   }
 };
 
-var getParseFunc = function (type, isFloat) {
+function getParseFunc(type, isFloat = false) {
   var fac = isFloat ? 1.0 / 255.0 : 1;
   switch (type) {
     case 'char':
@@ -60,7 +59,7 @@ var getParseFunc = function (type, isFloat) {
   }
 };
 
-var getBinaryRead = function (dview, prop, isFloat) {
+function getBinaryRead(dview, prop, isFloat = false) {
   var fac = isFloat ? 1.0 / 255.0 : 1;
   var offset = prop.offsetOctet;
   switch (prop.type) {
@@ -104,17 +103,19 @@ var getBinaryRead = function (dview, prop, isFloat) {
       return function (off) {
         return dview.getFloat64(off + offset, true);
       };
+    default:
+      throw new Error("Unknown data point type in PLY file")
   }
 };
 
-var readHeader = function (buffer) {
+function readHeader(buffer) {
   var data = Utils.ab2str(buffer);
   var lines = data.split('\n');
 
   var infos = {
     isBinary: false,
     start: 0,
-    elements: [],
+    elements: <{ [key: string]: any }>[],
     lines: lines,
     buffer: buffer,
     vertices: null,
@@ -176,13 +177,13 @@ var prepareElements = function (element, infos) {
   for (var i = 0, nbProps = props.length; i < nbProps; ++i) {
     var prop = props[i];
     var objProp = objProperties[prop.name] = {};
-    objProp.type = prop.type;
-    objProp.type2 = prop.type2;
+    objProp["type"] = prop.type;
+    objProp["type2"] = prop.type2;
     if (infos.isBinary) {
-      objProp.offsetOctet = element.offsetOctet;
+      objProp["offsetOctet"] = element.offsetOctet;
       element.offsetOctet += typeToOctet(prop.type);
     } else {
-      objProp.id = i;
+      objProp["id"] = i;
     }
   }
 };
@@ -311,7 +312,7 @@ var readAsciiIndex = function (element, infos, fAr) {
   infos.offsetLine += count;
 };
 
-var readBinaryIndex = function (element, infos, fAr, dummy) {
+var readBinaryIndex = function (element, infos, fAr, dummy?) {
   var count = element.count;
   var props = element.objProperties;
   var pidx = props && (props.vertex_index || props.vertex_indices);
@@ -374,7 +375,7 @@ var skipElement = function (element, infos) {
 
 };
 
-Import.importPLY = function (buffer, gl) {
+export function importPLY(buffer, gl) {
 
   var infos = readHeader(buffer);
   var elements = infos.elements;
@@ -398,5 +399,3 @@ Import.importPLY = function (buffer, gl) {
   mesh.setColors(infos.colors);
   return [mesh];
 };
-
-export default Import;

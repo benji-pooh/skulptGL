@@ -1,20 +1,18 @@
 import Utils from '../misc/Utils';
 import MeshStatic from '../mesh/meshStatic/MeshStatic';
 
-var Import = {};
-
 /** Import OBJ file */
-Import.importOBJ = function (data, gl) {
-  var meshes = [];
+export function importOBJ(data, gl) {
+  var meshes: any[] = [];
 
-  var vAr = [];
-  var cAr = [];
-  var cArMrgb = [];
-  var mAr = [];
-  var mArMat = [];
-  var texAr = [];
-  var fAr = [];
-  var uvfAr = [];
+  var vAr: number[] = [];
+  var cAr: number[] = [];
+  var cArMrgb: number[] = [];
+  var mAr: number[] = [];
+  var mArMat: number[] = [];
+  var texAr: number[] = [];
+  var fAr: number[] = [];
+  var uvfAr: number[] = [];
 
   var offsetVertices = 0;
   var offsetTexCoords = 0;
@@ -22,7 +20,7 @@ Import.importOBJ = function (data, gl) {
   var nbTexCoords = 0;
 
   var lines = data.split('\n');
-  var split = [];
+  var split: string[] = [];
   var inv255 = 1.0 / 255;
   var nbLength = lines.length;
 
@@ -84,7 +82,7 @@ Import.importOBJ = function (data, gl) {
         var iv1 = parseInt(sp1[0], 10);
         var iv2 = parseInt(sp2[0], 10);
         var iv3 = parseInt(sp3[0], 10);
-        var iv4 = isQuad ? parseInt(sp4[0], 10) : undefined;
+        var iv4 = isQuad ? parseInt(sp4[0], 10) : Utils.TRI_INDEX;
         if (isQuad && (iv4 === iv1 || iv4 === iv2 || iv4 === iv3))
           continue;
 
@@ -101,7 +99,7 @@ Import.importOBJ = function (data, gl) {
           var uv1 = parseInt(sp1[1], 10);
           var uv2 = parseInt(sp2[1], 10);
           var uv3 = parseInt(sp3[1], 10);
-          var uv4 = isQuad ? parseInt(sp4[1], 10) : undefined;
+          var uv4 = isQuad ? parseInt(sp4[1], 10) : Utils.TRI_INDEX;
           uv1 = (uv1 < 0 ? uv1 + nbTexCoords : uv1 - 1) - offsetTexCoords;
           uv2 = (uv2 < 0 ? uv2 + nbTexCoords : uv2 - 1) - offsetTexCoords;
           uv3 = (uv3 < 0 ? uv3 + nbTexCoords : uv3 - 1) - offsetTexCoords;
@@ -144,7 +142,7 @@ Import.importOBJ = function (data, gl) {
     } else if (line.startsWith('o ')) {
 
       if (meshes.length > 0) {
-        Import.initMeshOBJ(meshes[meshes.length - 1], vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat);
+        initMeshOBJ(meshes[meshes.length - 1], vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat);
         offsetVertices = nbVertices;
         offsetTexCoords = nbTexCoords;
       }
@@ -156,12 +154,12 @@ Import.importOBJ = function (data, gl) {
   }
 
   if (meshes.length === 0) meshes[0] = new MeshStatic(gl);
-  Import.initMeshOBJ(meshes[meshes.length - 1], vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat);
+  initMeshOBJ(meshes[meshes.length - 1], vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat);
 
   return meshes;
 };
 
-Import.initMeshOBJ = function (mesh, vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat) {
+function initMeshOBJ(mesh, vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, mArMat) {
   mesh.setVertices(new Float32Array(vAr));
   mesh.setFaces(new Uint32Array(fAr));
 
@@ -180,4 +178,3 @@ Import.initMeshOBJ = function (mesh, vAr, fAr, cAr, mAr, texAr, uvfAr, cArMrgb, 
   texAr.length = uvfAr.length = 0;
 };
 
-export default Import;

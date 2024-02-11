@@ -142,7 +142,7 @@ class Mesh {
   }
 
   hasUV() {
-    return this._meshData._texCoordsST !== null;
+    return this._meshData._texCoordsST != null;
   }
 
   getVertices() {

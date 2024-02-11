@@ -46,10 +46,10 @@ class GizmoBehavior {
   }
 
   updateMatrix() {
-    if (this._drawGeo !== null) {
+    if (this._drawGeo != null) {
       mat4.copy(this._drawGeo.getMatrix(), this._finalMatrix);
     }
-    if (this._pickGeo !== null) {
+    if (this._pickGeo != null) {
       mat4.copy(this._pickGeo.getMatrix(), this._finalMatrix);
     }
   }
@@ -440,7 +440,7 @@ class Gizmo {
   }
 
   #startRotateEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
     var main = this.#main;
@@ -465,7 +465,7 @@ class Gizmo {
   }
 
   #startTranslateEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
     var main = this.#main;
@@ -517,7 +517,7 @@ class Gizmo {
   }
 
   #updateRotateEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
 
@@ -557,7 +557,7 @@ class Gizmo {
   }
 
   #updateTranslateEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
     var main = this.#main;
@@ -599,7 +599,7 @@ class Gizmo {
   }
 
   #updatePlaneEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
     var main = this.#main;
@@ -656,7 +656,7 @@ class Gizmo {
   }
 
   #updateScaleEdit() {
-    if (this.#selected === null) {
+    if (this.#selected == null) {
       return;
     }
     var main = this.#main;
@@ -757,7 +757,7 @@ class Gizmo {
 
   onMouseOver() {
 
-    if (this.#isEditing && this.#selected !== null) {
+    if (this.#isEditing && this.#selected != null) {
       var type = this.#selected._type;
       if (type & ROT_XYZ) this.#updateRotateEdit();
       else if (type & TRANS_XYZ) this.#updateTranslateEdit();
@@ -784,7 +784,7 @@ class Gizmo {
     }
 
     this.#selected = geo._gizmo;
-    if (this.#selected !== null) {
+    if (this.#selected != null) {
       this.#selected._isSelected = true;
       vec3.copy(this.#selected._lastInter, picking.getIntersectionPoint());
     }

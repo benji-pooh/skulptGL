@@ -1,15 +1,14 @@
 import { vec3 } from 'gl-matrix';
 import Utils from '../misc/Utils';
 
-var Export = {};
 
 /** Export OBJ file */
-Export.exportOBJ = function (meshes, colorZbrush = true, colorAppend = false) {
+export function exportOBJ(meshes, colorZbrush = true, colorAppend = false) {
   var data = 's 0\n';
   var offsets = [1, 1];
   for (var i = 0, l = meshes.length; i < l; ++i) {
     data += 'o mesh_' + i + '\n';
-    data = Export.addMesh(meshes[i], data, offsets, colorZbrush, colorAppend);
+    data = addMesh(meshes[i], data, offsets, colorZbrush, colorAppend);
   }
   return new Blob([data]);
 };
@@ -21,7 +20,7 @@ var appendString = function (buffer, str, it) {
   return it;
 };
 
-Export.addMesh = function (mesh, data, offsets, colorZbrush, colorAppend) {
+function addMesh(mesh, data, offsets, colorZbrush, colorAppend) {
   var vAr = mesh.getVertices();
   var cAr = mesh.getColors();
   var mAr = mesh.getMaterials();
@@ -53,7 +52,7 @@ Export.addMesh = function (mesh, data, offsets, colorZbrush, colorAppend) {
   ///////////
   // VERTICES
   ///////////
-  var ver = [0.0, 0.0, 0.0];
+  var ver: vec3 = [0.0, 0.0, 0.0];
   for (i = 0; i < nbVertices; ++i) {
     j = i * 3;
     ver[0] = vAr[j];
@@ -164,4 +163,3 @@ Export.addMesh = function (mesh, data, offsets, colorZbrush, colorAppend) {
   return data;
 };
 
-export default Export;
