@@ -427,7 +427,6 @@ class Scene {
 
   initAlphaTextures() {
     Picking.initAlphas().then((alphaNames)=>{
-      console.log(alphaNames);
       for (let alphaName of alphaNames) {
         var entry = {};
         entry[alphaName] = alphaName;
@@ -665,29 +664,6 @@ class Scene {
     }
 
     this.setMesh(mesh);
-  }
-
-  // TODO Move most of impl to Picking
-  // So tool can either be a string or a gui component ( tool )
-  onLoadAlphaImage(img, name, tool) {
-    var can = document.createElement('canvas');
-    can.width = img.width;
-    can.height = img.height;
-
-    var ctx = can.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    var u8rgba = ctx.getImageData(0, 0, img.width, img.height).data;
-    var u8lum = u8rgba.subarray(0, u8rgba.length / 4);
-    for (var i = 0, j = 0, n = u8lum.length; i < n; ++i, j += 4)
-      u8lum[i] = Math.round((u8rgba[j] + u8rgba[j + 1] + u8rgba[j + 2]) / 3);
-
-    name = Picking.addAlpha(u8lum, img.width, img.height, name)._name;
-
-    var entry = {};
-    entry[name] = name;
-    this.getGui().addAlphaOptions(entry);
-    if (tool && tool._ctrlAlpha)
-      tool._ctrlAlpha.setValue(name);
   }
 }
 
