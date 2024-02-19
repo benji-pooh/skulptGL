@@ -426,13 +426,14 @@ class Scene {
   }
 
   initAlphaTextures() {
-    var alphas = Picking.INIT_ALPHAS_PATHS;
-    var names = Picking.INIT_ALPHAS_NAMES;
-    for (var i = 0, nbA = alphas.length; i < nbA; ++i) {
-      var am = new Image();
-      am.src = 'resources/alpha/' + alphas[i];
-      am.onload = this.onLoadAlphaImage.bind(this, am, names[i]);
-    }
+    Picking.initAlphas().then((alphaNames)=>{
+      console.log(alphaNames);
+      for (let alphaName of alphaNames) {
+        var entry = {};
+        entry[alphaName] = alphaName;
+        this.getGui().addAlphaOptions(entry);
+      }
+    });
   }
 
   /** Called when the window is resized */
@@ -666,6 +667,8 @@ class Scene {
     this.setMesh(mesh);
   }
 
+  // TODO Move most of impl to Picking
+  // So tool can either be a string or a gui component ( tool )
   onLoadAlphaImage(img, name, tool) {
     var can = document.createElement('canvas');
     can.width = img.width;

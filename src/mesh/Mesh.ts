@@ -3,7 +3,8 @@ import Enums from '../misc/Enums';
 import Utils from '../misc/Utils';
 import OctreeCell from '../math3d/OctreeCell';
 import Shader from '../render/ShaderLib';
-import RenderData from '../mesh/RenderData';
+import RenderData from './RenderData';
+
 
 /*
 Basic usage:
@@ -24,6 +25,16 @@ var DEF_ROUGHNESS = 0.18; // 0.18;
 var DEF_METALNESS = 0.08; // 0.08;
 
 class Mesh {
+
+  static OPTIMIZE = true;
+  static ID = 0;
+
+  // useful id to retrieve a mesh (dynamic mesh, multires mesh, voxel mesh)
+  protected _id: number;
+  protected _meshData: any;
+  protected _transformData: any;
+  protected _renderData: any;
+  protected _isVisible = true;
 
   constructor() {
     this._id = Mesh.ID++; // useful id to retrieve a mesh (dynamic mesh, multires mesh, voxel mesh)
@@ -359,7 +370,7 @@ class Mesh {
   }
 
   getLocalBound() {
-    return this._meshData._octree._aabbLoose;
+    return this._meshData._octree.aabbLoose;
   }
 
   getRenderNbEdges() {
@@ -384,7 +395,7 @@ class Mesh {
     this.initRenderTriangles();
   }
 
-  updateGeometry(iFaces, iVerts) {
+  updateGeometry(iFaces: number[] | null = null, iVerts: number[] | null = null) {
     this.updateFacesAabbAndNormal(iFaces);
     this.updateVerticesNormal(iVerts);
     this.updateOctree(iFaces);
@@ -512,17 +523,17 @@ class Mesh {
   }
 
   /** Update a group of vertices' normal */
-  updateVerticesNormal(iVerts) {
+  updateVerticesNormal(iVerts: number[] | null = null) {
     var vrfStartCount = this.getVerticesRingFaceStartCount();
     var vertRingFace = this.getVerticesRingFace();
     var ringFaces = vertRingFace instanceof Array ? vertRingFace : null;
     var nAr = this.getNormals();
     var faceNormals = this.getFaceNormals();
 
-    var full = iVerts === undefined;
-    var nbVerts = full ? this.getNbVertices() : iVerts.length;
+    var full = iVerts == null;
+    var nbVerts = full ? this.getNbVertices() : (<number[]>iVerts).length;
     for (var i = 0; i < nbVerts; ++i) {
-      var ind = full ? i : iVerts[i];
+      var ind = full ? i : (<number[]>iVerts)[i];
       var start, end;
       if (ringFaces) {
         vertRingFace = ringFaces[ind];
@@ -682,17 +693,17 @@ class Mesh {
   }
 
   /** Update a group of faces normal and aabb */
-  updateFacesAabbAndNormal(iFaces) {
+  updateFacesAabbAndNormal(iFaces: number[] | null = null) {
     var faceNormals = this.getFaceNormals();
     var faceBoxes = this.getFaceBoxes();
     var faceCenters = this.getFaceCenters();
     var vAr = this.getVertices();
     var fAr = this.getFaces();
 
-    var full = iFaces === undefined;
-    var nbFaces = full ? this.getNbFaces() : iFaces.length;
+    var full = iFaces == null;
+    var nbFaces = full ? this.getNbFaces() : (<number[]>iFaces).length;
     for (var i = 0; i < nbFaces; ++i) {
-      var ind = full ? i : iFaces[i];
+      var ind = full ? i : (<number[]>iFaces)[i];
       var idTri = ind * 3;
       var idFace = ind * 4;
       var idBox = ind * 6;
@@ -1071,7 +1082,7 @@ class Mesh {
     return useDrawArrays ? this._meshData._drawArraysWireframe : this._meshData._drawElementsWireframe;
   }
 
-  updateDuplicateGeometry(iVerts) {
+  updateDuplicateGeometry(iVerts: number[] | null = null) {
     if (!this.isUsingTexCoords() || !this.hasUV())
       return;
 
@@ -1081,10 +1092,10 @@ class Mesh {
     var nAr = this.getNormals();
     var startCount = this.getVerticesDuplicateStartCount();
 
-    var full = iVerts === undefined;
-    var nbVerts = full ? this.getNbVertices() : iVerts.length;
+    var full = iVerts == null;
+    var nbVerts = full ? this.getNbVertices() : (<number[]>iVerts).length;
     for (var i = 0; i < nbVerts; ++i) {
-      var ind = full ? i : iVerts[i];
+      var ind = full ? i : (<number[]>iVerts)[i];
       var start = startCount[ind * 2];
       if (start === 0)
         continue;
@@ -1121,7 +1132,7 @@ class Mesh {
     }
   }
 
-  updateDuplicateColorsAndMaterials(iVerts) {
+  updateDuplicateColorsAndMaterials(iVerts: number[] | null = null) {
     if (!this.isUsingTexCoords() || !this.hasUV())
       return;
 
@@ -1129,10 +1140,10 @@ class Mesh {
     var mAr = this.getMaterials();
     var startCount = this.getVerticesDuplicateStartCount();
 
-    var full = iVerts === undefined;
-    var nbVerts = full ? this.getNbVertices() : iVerts.length;
+    var full = iVerts == null;
+    var nbVerts = full ? this.getNbVertices() : (<number[]>iVerts).length;
     for (var i = 0; i < nbVerts; ++i) {
-      var ind = full ? i : iVerts[i];
+      var ind = full ? i : (<number[]>iVerts)[i];
       var start = startCount[ind * 2];
       if (start === 0)
         continue;
@@ -1181,7 +1192,7 @@ class Mesh {
     var tagV = new Int32Array(nbVertices);
     // vertex without uv might receive random values...
     var tArTemp = new Float32Array(Utils.getMemory(nbVertices * 4 * 2), 0, nbVertices * 2);
-    var dup = [];
+    var dup: any[] = [];
     var acc = 0;
     var nbDuplicates = 0;
     for (i = 0; i < len; ++i) {
@@ -1209,7 +1220,7 @@ class Mesh {
         continue;
       }
       // check if we need to insert a new duplicate
-      var dupArray = dup[-tag - 1];
+      var dupArray: any[] = dup[-tag - 1];
       var nbDup = dupArray.length;
       for (j = 0; j < nbDup; ++j) {
         if (dupArray[j] === uv)
@@ -1282,7 +1293,7 @@ class Mesh {
   }
 
   /** Updates the arrays that are going to be used by webgl */
-  updateDrawArrays(iFaces) {
+  updateDrawArrays(iFaces: any[] | null = null) {
     if (!this.isUsingDrawArrays())
       return;
 
@@ -1296,7 +1307,7 @@ class Mesh {
     var nbTriangles = this.getNbTriangles();
     var facesToTris = this.hasOnlyTriangles() ? null : this.getFacesToTriangles();
 
-    var full = iFaces === undefined;
+    var full = iFaces == null;
     var cdv = this._meshData._DAverticesXYZ;
     var cdn = this._meshData._DAnormalsXYZ;
     var cdc = this._meshData._DAcolorsRGB;
@@ -1309,9 +1320,9 @@ class Mesh {
       cdm = this._meshData._DAmaterialsPBR = new Float32Array(nbTriangles * 9);
     }
 
-    var nbFaces = full ? this.getNbFaces() : iFaces.length;
+    var nbFaces = full ? this.getNbFaces() : (<any[]>iFaces).length;
     for (var i = 0; i < nbFaces; ++i) {
-      var idFace = full ? i : iFaces[i];
+      var idFace = full ? i : (<any[]>iFaces)[i];
       var ftt = facesToTris ? facesToTris[idFace] : idFace;
       var vId = ftt * 9;
 
@@ -1420,11 +1431,11 @@ class Mesh {
   }
 
   /** Updates the UV array data for drawArrays */
-  updateDrawArraysTexCoord(iFaces) {
+  updateDrawArraysTexCoord(iFaces: number[] | null = null) {
     var nbTriangles = this.getNbTriangles();
     var facesToTris = this.getFacesToTriangles();
 
-    var full = iFaces === undefined;
+    var full = iFaces == null;
     var cdt = this._meshData._DAtexCoordsST;
     if (!cdt || cdt.length !== nbTriangles * 6)
       cdt = this._meshData._DAtexCoordsST = new Float32Array(nbTriangles * 6);
@@ -1432,9 +1443,9 @@ class Mesh {
     var tAr = this.getTexCoords();
     var fArUV = this.getFacesTexCoord();
 
-    var nbFaces = full ? this.getNbFaces() : iFaces.length;
+    var nbFaces = full ? this.getNbFaces() : (<number[]>iFaces).length;
     for (var i = 0; i < nbFaces; ++i) {
-      var idFace = full ? i : iFaces[i];
+      var idFace = full ? i : (<number[]>iFaces)[i];
       var ftt = facesToTris[idFace];
       var vIduv = ftt * 6;
 
@@ -1643,7 +1654,7 @@ class Mesh {
       var idb = idFace * 6;
       var idCen = idFace * 3;
       var leaf = faceLeaf[idFace];
-      var ab = leaf._aabbSplit;
+      var ab = leaf.aabbSplit;
 
       var vx = faceCenters[idCen];
       var vy = faceCenters[idCen + 1];
@@ -1652,7 +1663,7 @@ class Mesh {
       if (vx <= ab[0] || vy <= ab[1] || vz <= ab[2] || vx > ab[3] || vy > ab[4] || vz > ab[5]) {
         // a face center has moved from its cell
         facesToMove[acc++] = iFaces[i];
-        var facesInLeaf = leaf._iFaces;
+        var facesInLeaf = leaf.iFaces;
         if (facesInLeaf.length > 0) { // remove faces from octree cell
           var iFaceLast = facesInLeaf[facesInLeaf.length - 1];
           var iPos = facePosInLeaf[idFace];
@@ -1675,7 +1686,7 @@ class Mesh {
     var nbFacesToMove = facesToMove.length;
 
     var root = this._meshData._octree;
-    var rootSplit = root._aabbSplit;
+    var rootSplit = root.aabbSplit;
     var xmin = rootSplit[0];
     var ymin = rootSplit[1];
     var zmin = rootSplit[2];
@@ -1703,16 +1714,17 @@ class Mesh {
       var idc = idFace * 3;
       var newleaf = root.addFace(idFace, ibux, ibuy, ibuz, iblx, ibly, iblz, fc[idc], fc[idc + 1], fc[idc + 2]);
       if (newleaf) {
-        facePosInLeaf[idFace] = newleaf._iFaces.length - 1;
+        facePosInLeaf[idFace] = newleaf.iFaces.length - 1;
         faceLeaf[idFace] = newleaf;
       } else { // failed to insert face in octree, re-insert it back
-        var facesInLeaf = faceLeaf[idFace]._iFaces;
+        var facesInLeaf = faceLeaf[idFace].iFaces;
         facePosInLeaf[idFace] = facesInLeaf.length;
         facesInLeaf.push(facesToMove[i]);
       }
     }
   }
 
+  // TODO: Move to OctreeCell
   /** balance octree (cut empty leaves or go deeper if needed) */
   balanceOctree() {
     ++OctreeCell.FLAG;
@@ -1724,9 +1736,9 @@ class Mesh {
       if (leaf._flag === OctreeCell.FLAG)
         continue;
 
-      if (leaf._iFaces.length === 0)
+      if (leaf.iFaces.length === 0)
         leaf.pruneIfPossible();
-      else if (leaf._iFaces.length > OctreeCell.MAX_FACES && leaf._depth < OctreeCell.MAX_DEPTH)
+      else if (leaf.iFaces.length > OctreeCell.MAX_FACES && leaf._depth < OctreeCell.MAX_DEPTH)
         leaf.build(this);
 
       leaf._flag = OctreeCell.FLAG;
@@ -2057,7 +2069,7 @@ class Mesh {
     var nbFaces = this.getNbFaces();
 
     var sizeCache = 32;
-    var cache = [];
+    var cache: number[] = [];
     cache.length = sizeCache;
 
     var cacheMiss = 0;
@@ -2147,7 +2159,7 @@ class Mesh {
     var fanningVertex = 0;
     while (fanningVertex >= 0) {
 
-      var ringCandidates = [];
+      var ringCandidates: number[] = [];
 
       var idRing = fanningVertex >= nbUniqueVertices ? mapToUnique[fanningVertex - nbUniqueVertices] : fanningVertex;
       var start = fringsStartCount[idRing * 2];
@@ -2340,8 +2352,5 @@ class Mesh {
 
   }
 }
-
-Mesh.OPTIMIZE = true;
-Mesh.ID = 0;
 
 export default Mesh;

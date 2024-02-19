@@ -215,7 +215,9 @@ class Multimesh extends Mesh {
 
   _canUseLowRender(main) {
     if (this.isUsingTexCoords() || this.isUsingDrawArrays()) return false;
-    if (Multimesh.RENDER_HINT === Multimesh.PICKING || Multimesh.RENDER_HINT === Multimesh.NONE) return false;
+    if (Multimesh.RENDER_HINT === Multimesh.PICKING || Multimesh.RENDER_HINT === Multimesh.NONE){
+      return false;
+    }
     if (main.getMesh() === this && Multimesh.RENDER_HINT !== Multimesh.CAMERA) return false;
     if (this.getLowIndexRender() === this._sel) return false;
     return true;
