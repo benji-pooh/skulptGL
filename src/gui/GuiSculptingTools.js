@@ -72,11 +72,12 @@ var addCtrlNegative = function (tool, fold, widget, name) {
 var importAlpha = function () {
   document.getElementById('alphaopen').click();
 };
+
 var addCtrlAlpha = function (ctrls, fold, tool, ui) {
   ctrls.push(fold.addTitle(TR('sculptAlphaTitle')));
   if (tool._lockPosition !== undefined)
     ctrls.push(fold.addCheckbox(TR('sculptLockPositon'), tool, '_lockPosition'));
-  ui._ctrlAlpha = fold.addCombobox(TR('sculptAlphaTex'), tool, '_idAlpha', Picking.ALPHAS_NAMES);
+  ui._ctrlAlpha = fold.addCombobox(TR('sculptAlphaTex'), tool, '_idAlpha');
   ctrls.push(ui._ctrlAlpha);
   ctrls.push(fold.addButton(TR('sculptImportAlpha'), importAlpha));
 };
@@ -191,7 +192,8 @@ GuiTools[Enums.Tools.PAINT] = {
     var materials = [];
     var cbMatChanged = this.onMaterialChanged.bind(this, main, tool, materials);
     var ctrlColor = fold.addColor(TR('sculptColor'), tool._color, cbMatChanged);
-    var ctrlRoughness = fold.addSlider(TR('sculptRoughness'), tool._material[0] * 100, cbMatChanged, 0, 100, 1);
+    var ctrlRoughness = fold.addSlider(
+      TR('sculptRoughness'), tool._material[0] * 100, cbMatChanged, 0, 100, 1);
     var ctrlMetallic = fold.addSlider(TR('sculptMetallic'), tool._material[1] * 100, cbMatChanged, 0, 100, 1);
     materials.push(ctrlColor, ctrlRoughness, ctrlMetallic);
     this._ctrls.push(ctrlColor, ctrlRoughness, ctrlMetallic);

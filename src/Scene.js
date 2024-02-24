@@ -426,13 +426,13 @@ class Scene {
   }
 
   initAlphaTextures() {
-    var alphas = Picking.INIT_ALPHAS_PATHS;
-    var names = Picking.INIT_ALPHAS_NAMES;
-    for (var i = 0, nbA = alphas.length; i < nbA; ++i) {
-      var am = new Image();
-      am.src = 'resources/alpha/' + alphas[i];
-      am.onload = this.onLoadAlphaImage.bind(this, am, names[i]);
-    }
+    Picking.initAlphas().then((alphaNames)=>{
+      for (let alphaName of alphaNames) {
+        var entry = {};
+        entry[alphaName] = alphaName;
+        this.getGui().addAlphaOptions(entry);
+      }
+    });
   }
 
   /** Called when the window is resized */
@@ -664,27 +664,6 @@ class Scene {
     }
 
     this.setMesh(mesh);
-  }
-
-  onLoadAlphaImage(img, name, tool) {
-    var can = document.createElement('canvas');
-    can.width = img.width;
-    can.height = img.height;
-
-    var ctx = can.getContext('2d');
-    ctx.drawImage(img, 0, 0);
-    var u8rgba = ctx.getImageData(0, 0, img.width, img.height).data;
-    var u8lum = u8rgba.subarray(0, u8rgba.length / 4);
-    for (var i = 0, j = 0, n = u8lum.length; i < n; ++i, j += 4)
-      u8lum[i] = Math.round((u8rgba[j] + u8rgba[j + 1] + u8rgba[j + 2]) / 3);
-
-    name = Picking.addAlpha(u8lum, img.width, img.height, name)._name;
-
-    var entry = {};
-    entry[name] = name;
-    this.getGui().addAlphaOptions(entry);
-    if (tool && tool._ctrlAlpha)
-      tool._ctrlAlpha.setValue(name);
   }
 }
 
