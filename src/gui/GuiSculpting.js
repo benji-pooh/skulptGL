@@ -3,6 +3,7 @@ import Enums from '../misc/Enums';
 import Tools from '../editing/tools/Tools';
 import getOptionsURL from '../misc/getOptionsURL';
 import GuiSculptingTools from '../gui/GuiSculptingTools';
+import Picking from '../math3d/Picking';
 
 var GuiTools = GuiSculptingTools.tools;
 
@@ -110,17 +111,22 @@ class GuiSculpting {
       return;
 
     var file = event.target.files[0];
-    if (!file.type.match('image.*'))
+    if (!file.type.match('image.*')){
       return;
+    }
+
 
     var reader = new FileReader();
-    var main = this._main;
     var tool = GuiTools[this._sculptManager.getToolIndex()];
 
-    reader.onload = function (evt) {
-      var img = new Image();
-      img.src = evt.target.result;
-      img.onload = main.onLoadAlphaImage.bind(main, img, file.name || 'new alpha', tool);
+    reader.onload = (evt) => {
+      Picking.loadAlpha(file.name || 'new alpha', evt.target.result ).then((alpha_name) =>{
+        let options = {};
+        options[alpha_name] = alpha_name;
+        this.addAlphaOptions(options);
+        tool._ctrlAlpha.setValue(alpha_name);
+      });
+
     };
 
     document.getElementById('alphaopen').value = '';

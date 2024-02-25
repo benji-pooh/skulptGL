@@ -3,9 +3,14 @@
 class ImageLoader {
 
     /** Loads an image from the given url returning a ImageBitmap */
-    static async loadImageUrl(url: string): Promise<ImageBitmap> {
-        let blob = await fetch(url).then((response) => response.blob());
-        return await createImageBitmap(blob,);
+    static async loadImage(url_or_blob: string | Blob): Promise<ImageBitmap> {
+        let blob
+        if (typeof url_or_blob == "string") {
+            blob = await fetch(url_or_blob).then((response) => response.blob());
+        } else {
+            blob = url_or_blob;
+        }
+        return await createImageBitmap(blob);
     }
 }
 
