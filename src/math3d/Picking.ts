@@ -59,18 +59,22 @@ class Picking {
   /** Load a single alpha from a url 
    * Returns the name ( possibly translated ) of the new alpha
    */
-  static async loadAlpha(name: string, url: string, _ctx: CanvasRenderingContext2D | null): Promise<string> {
+  static async loadAlpha(name: string, url_or_blob: string | Blob, _ctx: CanvasRenderingContext2D | null): Promise<string> {
     let ctx = _ctx == null ? this.getContext() : _ctx;
-    let img = await ImageLoader.loadImageUrl(url)
-    ctx.canvas.width = img.width;
-    ctx.canvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
-    var u8rgba = ctx.getImageData(0, 0, img.width, img.height).data;
-    var u8lum = u8rgba.subarray(0, u8rgba.length / 4);
-    for (var i = 0, j = 0, n = u8lum.length; i < n; ++i, j += 4) {
-      u8lum[i] = Math.round((u8rgba[j] + u8rgba[j + 1] + u8rgba[j + 2]) / 3);
+    let img = await ImageLoader.loadImage(url_or_blob)
+    try {
+      ctx.canvas.width = img.width;
+      ctx.canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      var u8rgba = ctx.getImageData(0, 0, img.width, img.height).data;
+      var u8lum = u8rgba.subarray(0, u8rgba.length / 4);
+      for (var i = 0, j = 0, n = u8lum.length; i < n; ++i, j += 4) {
+        u8lum[i] = Math.round((u8rgba[j] + u8rgba[j + 1] + u8rgba[j + 2]) / 3);
+      }
+      return Picking.addAlpha(u8lum, img.width, img.height, TR(name))._name;
+    } finally {
+      img.close()
     }
-    return Picking.addAlpha(u8lum, img.width, img.height, TR(name))._name;
   }
 
   /** Init the hardcoded alphas 
