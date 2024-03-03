@@ -5,19 +5,19 @@ import createMeshData from '../MeshData';
 
 class MeshResolution extends Mesh {
 
-  constructor(mesh, keepMesh) {
+  protected _detailsXYZ: Float32Array | null = null; // details vectors (Float32Array)
+  protected _detailsRGB: Float32Array | null = null; // details vectors (Float32Array)
+  protected _detailsPBR: Float32Array | null = null; // details vectors (Float32Array)
+  protected _vertMapping: Float32Array | null = null; // vertex mapping to higher res (Uint32Array)
+  protected _evenMapping = false; // if the even vertices are not aligned with higher res
+
+  constructor(mesh, keepMesh = false) {
     super();
 
     this.setID(mesh.getID());
     this.setMeshData(keepMesh ? mesh.getMeshData() : createMeshData());
     this.setRenderData(mesh.getRenderData());
     this.setTransformData(mesh.getTransformData());
-
-    this._detailsXYZ = null; // details vectors (Float32Array)
-    this._detailsRGB = null; // details vectors (Float32Array)
-    this._detailsPBR = null; // details vectors (Float32Array)
-    this._vertMapping = null; // vertex mapping to higher res (Uint32Array)
-    this._evenMapping = false; // if the even vertices are not aligned with higher res
   }
 
   optimize() { }
@@ -42,8 +42,8 @@ class MeshResolution extends Mesh {
   higherSynthesis(meshDown) {
     meshDown.computePartialSubdivision(
       this.getVertices(),
-      this.getColors(), 
-      this.getMaterials(), 
+      this.getColors(),
+      this.getMaterials(),
       this.getNbVertices());
     this.applyDetails();
   }
@@ -75,6 +75,9 @@ class MeshResolution extends Mesh {
       mArDown.set(mArUp.subarray(0, nbVertices * 3));
     } else {
       var vertMap = this.getVerticesMapping();
+      if (vertMap == null) {
+        return;
+      }
       for (var i = 0; i < nbVertices; ++i) {
         var id = i * 3;
         var idUp = vertMap[i] * 3;
@@ -142,6 +145,18 @@ class MeshResolution extends Mesh {
     var dAr = this._detailsXYZ;
     var dColorAr = this._detailsRGB;
     var dMaterialAr = this._detailsPBR;
+
+    if (dColorAr == null) {
+      return;
+    }
+
+    if (dMaterialAr == null) {
+      return;
+    }
+
+    if (dAr == null) {
+      return
+    }
 
     var min = Math.min;
     var max = Math.max;
