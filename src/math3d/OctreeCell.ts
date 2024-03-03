@@ -1,17 +1,17 @@
 class OctreeCell {
 
-  #parent: OctreeCell | null;  // parent
-  #depth: number; // depth of current node
-  #children: OctreeCell[] = []; // children
+  _parent: OctreeCell | null;  // parent
+  _depth: number; // depth of current node
+  _children: OctreeCell[] = []; // children
 
   // extended boundary for intersect test
-  #aabbLoose: number[] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+  _aabbLoose: number[] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
 
   // boundary in order to store exactly the face according to their center
-  #aabbSplit: number[] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
-  #iFaces: number[] = []; // faces (if cell is a leaf)
+  _aabbSplit: number[] = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity];
+  _iFaces: number[] = []; // faces (if cell is a leaf)
 
-  #flag = 0; // to track deleted cell
+  _flag = 0; // to track deleted cell
 
   static FLAG: number;
   static STACK: OctreeCell[];
@@ -27,28 +27,28 @@ class OctreeCell {
   }
 
   constructor(parent: OctreeCell | null = null) {
-    this.#parent = parent ? parent : null; // parent
-    this.#depth = parent != null ? parent.#depth + 1 : 0; // depth of current node
+    this._parent = parent ? parent : null; // parent
+    this._depth = parent != null ? parent._depth + 1 : 0; // depth of current node
   }
 
   get aabbLoose() {
-    return this.#aabbLoose;
+    return this._aabbLoose;
   }
 
   get iFaces() {
-    return this.#iFaces;
+    return this._iFaces;
   }
 
   get aabbSplit() {
-    return this.#aabbSplit;
+    return this._aabbSplit;
   }
 
   get depth() {
-    return this.#depth
+    return this._depth
   }
 
   resetNbFaces(nbFaces) {
-    var facesAll = this.#iFaces;
+    var facesAll = this._iFaces;
     facesAll.length = nbFaces;
     for (var i = 0; i < nbFaces; ++i)
       facesAll[i] = i;
@@ -64,10 +64,10 @@ class OctreeCell {
     var leaves: OctreeCell[] = [];
     while (curStack > 0) {
       var cell = stack[--curStack];
-      var nbFaces = cell.#iFaces.length;
-      if (nbFaces > OctreeCell.MAX_FACES && cell.#depth < OctreeCell.MAX_DEPTH) {
+      var nbFaces = cell._iFaces.length;
+      if (nbFaces > OctreeCell.MAX_FACES && cell._depth < OctreeCell.MAX_DEPTH) {
         cell.constructChildren(mesh);
-        var children = cell.#children;
+        var children = cell._children;
         for (i = 0; i < 8; ++i)
           stack[curStack + i] = children[i];
         curStack += 8;
@@ -83,7 +83,7 @@ class OctreeCell {
 
   /** Construct the leaf  */
   constructLeaf(mesh) {
-    var iFaces = this.#iFaces;
+    var iFaces = this._iFaces;
     var nbFaces = iFaces.length;
     var bxmin = Infinity;
     var bymin = Infinity;
@@ -117,7 +117,7 @@ class OctreeCell {
 
   /** Construct sub cells of the octree */
   constructChildren(mesh) {
-    var split = this.#aabbSplit;
+    var split = this._aabbSplit;
     var xmin = split[0];
     var ymin = split[1];
     var zmin = split[2];
@@ -140,16 +140,16 @@ class OctreeCell {
     var child6 = new OctreeCell(this);
     var child7 = new OctreeCell(this);
 
-    var iFaces0 = child0.#iFaces;
-    var iFaces1 = child1.#iFaces;
-    var iFaces2 = child2.#iFaces;
-    var iFaces3 = child3.#iFaces;
-    var iFaces4 = child4.#iFaces;
-    var iFaces5 = child5.#iFaces;
-    var iFaces6 = child6.#iFaces;
-    var iFaces7 = child7.#iFaces;
+    var iFaces0 = child0._iFaces;
+    var iFaces1 = child1._iFaces;
+    var iFaces2 = child2._iFaces;
+    var iFaces3 = child3._iFaces;
+    var iFaces4 = child4._iFaces;
+    var iFaces5 = child5._iFaces;
+    var iFaces6 = child6._iFaces;
+    var iFaces7 = child7._iFaces;
     var faceCenters = mesh.getFaceCenters();
-    var iFaces = this.#iFaces;
+    var iFaces = this._iFaces;
     var nbFaces = iFaces.length;
     for (var i = 0; i < nbFaces; ++i) {
       var iFace = iFaces[i];
@@ -186,13 +186,13 @@ class OctreeCell {
     child6.setAabbSplit(xcen, ycen, zcen, xmax, ymax, zmax);
     child7.setAabbSplit(xcen - dX, ycen, zcen, xmax - dX, ymax, zmax);
 
-    this.#children.length = 0;
-    this.#children.push(child0, child1, child2, child3, child4, child5, child6, child7);
+    this._children.length = 0;
+    this._children.push(child0, child1, child2, child3, child4, child5, child6, child7);
     iFaces.length = 0;
   }
 
   setAabbSplit(xmin, ymin, zmin, xmax, ymax, zmax) {
-    var aabb = this.#aabbSplit;
+    var aabb = this._aabbSplit;
     aabb[0] = xmin;
     aabb[1] = ymin;
     aabb[2] = zmin;
@@ -202,7 +202,7 @@ class OctreeCell {
   }
 
   setAabbLoose(xmin, ymin, zmin, xmax, ymax, zmax) {
-    var aabb = this.#aabbLoose;
+    var aabb = this._aabbLoose;
     aabb[0] = xmin;
     aabb[1] = ymin;
     aabb[2] = zmin;
@@ -226,7 +226,7 @@ class OctreeCell {
     var curStack = 1;
     while (curStack > 0) {
       var cell = stack[--curStack];
-      var loose = cell.#aabbLoose;
+      var loose = cell._aabbLoose;
       var t1 = (loose[0] - vx) * irx;
       var t2 = (loose[3] - vx) * irx;
       var t3 = (loose[1] - vy) * iry;
@@ -238,14 +238,14 @@ class OctreeCell {
       if (tmax < 0 || tmin > tmax) // no intersection
         continue;
 
-      var children = cell.#children;
+      var children = cell._children;
       if (children.length === 8) {
         for (var i = 0; i < 8; ++i)
           stack[curStack + i] = children[i];
         curStack += 8;
       } else {
         if (leavesHit) leavesHit.push(cell);
-        var iFaces = cell.#iFaces;
+        var iFaces = cell._iFaces;
         collectFaces.set(iFaces, acc);
         acc += iFaces.length;
       }
@@ -265,7 +265,7 @@ class OctreeCell {
     var curStack = 1;
     while (curStack > 0) {
       var cell = stack[--curStack];
-      var loose = cell.#aabbLoose;
+      var loose = cell._aabbLoose;
       var dx = 0.0;
       var dy = 0.0;
       var dz = 0.0;
@@ -285,14 +285,14 @@ class OctreeCell {
       if ((dx * dx + dy * dy + dz * dz) > radiusSquared) // no intersection
         continue;
 
-      var children = cell.#children;
+      var children = cell._children;
       if (children.length === 8) {
         for (var i = 0; i < 8; ++i)
           stack[curStack + i] = children[i];
         curStack += 8;
       } else {
         if (leavesHit) leavesHit.push(cell);
-        var iFaces = cell.#iFaces;
+        var iFaces = cell._iFaces;
         collectFaces.set(iFaces, acc);
         acc += iFaces.length;
       }
@@ -307,7 +307,7 @@ class OctreeCell {
     var curStack = 1;
     while (curStack > 0) {
       var cell = stack[--curStack];
-      var split = cell.#aabbSplit;
+      var split = cell._aabbSplit;
       if (cx <= split[0]) continue;
       if (cy <= split[1]) continue;
       if (cz <= split[2]) continue;
@@ -315,7 +315,7 @@ class OctreeCell {
       if (cy > split[4]) continue;
       if (cz > split[5]) continue;
 
-      var loose = cell.#aabbLoose;
+      var loose = cell._aabbLoose;
       // expands cell aabb loose with aabb face
       if (bxmin < loose[0]) loose[0] = bxmin;
       if (bymin < loose[1]) loose[1] = bymin;
@@ -323,14 +323,14 @@ class OctreeCell {
       if (bxmax > loose[3]) loose[3] = bxmax;
       if (bymax > loose[4]) loose[4] = bymax;
       if (bzmax > loose[5]) loose[5] = bzmax;
-      var children = cell.#children;
+      var children = cell._children;
 
       if (children.length === 8) {
         for (var i = 0; i < 8; ++i)
           stack[curStack + i] = children[i];
         curStack += 8;
       } else {
-        cell.#iFaces.push(faceId);
+        cell._iFaces.push(faceId);
         return cell;
       }
     }
@@ -339,10 +339,10 @@ class OctreeCell {
   /** Cut leaves if needed */
   pruneIfPossible() {
     var cell: OctreeCell = this;
-    while (cell.#parent) {
-      var parent = cell.#parent;
+    while (cell._parent) {
+      var parent = cell._parent;
 
-      var children = parent.#children;
+      var children = parent._children;
       // means that the current cell has already pruned
       if (children.length === 0)
         return;
@@ -350,7 +350,7 @@ class OctreeCell {
       // check if we can prune
       for (var i = 0; i < 8; ++i) {
         var child = children[i];
-        if (child.#iFaces.length > 0 || child.#children.length === 8) {
+        if (child._iFaces.length > 0 || child._children.length === 8) {
           return;
         }
       }
@@ -364,7 +364,7 @@ class OctreeCell {
   expandsAabbLoose(bxmin, bymin, bzmin, bxmax, bymax, bzmax) {
     var parent: OctreeCell | null = this;
     while (parent) {
-      var pLoose = parent.#aabbLoose;
+      var pLoose = parent._aabbLoose;
       var proceed = false;
       if (bxmin < pLoose[0]) {
         pLoose[0] = bxmin;
@@ -390,7 +390,7 @@ class OctreeCell {
         pLoose[5] = bzmax;
         proceed = true;
       }
-      parent = proceed ? parent.#parent : null;
+      parent = proceed ? parent._parent : null;
     }
   }
 }

@@ -21,46 +21,46 @@ import Utils from '../misc/Utils';
 // Helper class
 class OddVertexComputer {
 
-  #vArOut;
-  #cArOut;
-  #mArOut;
-  #vAr;
-  #cAr;
-  #mAr;
-  #eAr;
-  #nbVertices;
-  #tagEdges;
+  _vArOut;
+  _cArOut;
+  _mArOut;
+  _vAr;
+  _cAr;
+  _mAr;
+  _eAr;
+  _nbVertices;
+  _tagEdges;
 
   constructor(mesh, vArOut, cArOut, mArOut) {
-    this.#vArOut = vArOut;
-    this.#cArOut = cArOut;
-    this.#mArOut = mArOut;
-    this.#vAr = mesh.getVertices();
-    this.#cAr = mesh.getColors();
-    this.#mAr = mesh.getMaterials();
-    this.#eAr = mesh.getEdges();
-    this.#nbVertices = mesh.getNbVertices();
-    this.#tagEdges = new Int32Array(mesh.getNbEdges());
+    this._vArOut = vArOut;
+    this._cArOut = cArOut;
+    this._mArOut = mArOut;
+    this._vAr = mesh.getVertices();
+    this._cAr = mesh.getColors();
+    this._mAr = mesh.getMaterials();
+    this._eAr = mesh.getEdges();
+    this._nbVertices = mesh.getNbVertices();
+    this._tagEdges = new Int32Array(mesh.getNbEdges());
   }
 
   get tagEdges() {
-    return this.#tagEdges
+    return this._tagEdges
   }
 
   computeTriangleEdgeVertex(iv1, iv2, iv3, ide) {
-    var vAr = this.#vAr;
-    var cAr = this.#cAr;
-    var mAr = this.#mAr;
-    var eAr = this.#eAr;
-    var vArOut = this.#vArOut;
-    var cArOut = this.#cArOut;
-    var mArOut = this.#mArOut;
-    var tagEdges = this.#tagEdges;
+    var vAr = this._vAr;
+    var cAr = this._cAr;
+    var mAr = this._mAr;
+    var eAr = this._eAr;
+    var vArOut = this._vArOut;
+    var cArOut = this._cArOut;
+    var mArOut = this._mArOut;
+    var tagEdges = this._tagEdges;
     var id1 = iv1 * 3;
     var id2 = iv2 * 3;
     var idOpp = iv3 * 3;
     var testEdge = tagEdges[ide] - 1;
-    var ivMid = testEdge === -1 ? this.#nbVertices++ : testEdge;
+    var ivMid = testEdge === -1 ? this._nbVertices++ : testEdge;
     var idMid = ivMid * 3;
     var edgeValue = eAr[ide];
     if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) {
@@ -111,20 +111,20 @@ class OddVertexComputer {
 
   /* eslint-disable @stylistic/max-len */
   computeQuadEdgeVertex(iv1, iv2, iv3, iv4, ide) {
-    var vAr = this.#vAr;
-    var cAr = this.#cAr;
-    var mAr = this.#mAr;
-    var eAr = this.#eAr;
-    var vArOut = this.#vArOut;
-    var cArOut = this.#cArOut;
-    var mArOut = this.#mArOut;
-    var tagEdges = this.#tagEdges;
+    var vAr = this._vAr;
+    var cAr = this._cAr;
+    var mAr = this._mAr;
+    var eAr = this._eAr;
+    var vArOut = this._vArOut;
+    var cArOut = this._cArOut;
+    var mArOut = this._mArOut;
+    var tagEdges = this._tagEdges;
     var id1 = iv1 * 3;
     var id2 = iv2 * 3;
     var idOpp = iv3 * 3;
     var idOpp2 = iv4 * 3;
     var testEdge = tagEdges[ide] - 1;
-    var ivMid = testEdge === -1 ? this.#nbVertices++ : testEdge;
+    var ivMid = testEdge === -1 ? this._nbVertices++ : testEdge;
     var idMid = ivMid * 3;
     var edgeValue = eAr[ide];
     if (edgeValue === 1 || edgeValue >= 3 || Subdivision.LINEAR) {
@@ -181,13 +181,13 @@ class OddVertexComputer {
     var id2 = iv2 * 3;
     var id3 = iv3 * 3;
     var id4 = iv4 * 3;
-    var vAr = this.#vAr;
-    var cAr = this.#cAr;
-    var mAr = this.#mAr;
-    var vArOut = this.#vArOut;
-    var cArOut = this.#cArOut;
-    var mArOut = this.#mArOut;
-    var ivCen = this.#nbVertices++;
+    var vAr = this._vAr;
+    var cAr = this._cAr;
+    var mAr = this._mAr;
+    var vArOut = this._vArOut;
+    var cArOut = this._cArOut;
+    var mArOut = this._mArOut;
+    var ivCen = this._nbVertices++;
     var idCen = ivCen * 3;
     vArOut[idCen] = 0.25 * (vAr[id1] + vAr[id2] + vAr[id3] + vAr[id4]);
     vArOut[idCen + 1] = 0.25 * (vAr[id1 + 1] + vAr[id2 + 1] + vAr[id3 + 1] + vAr[id4 + 1]);

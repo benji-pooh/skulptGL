@@ -8,86 +8,86 @@ import Enums from '../misc/Enums';
 /** Handles rendering the selection tool */
 class Selection {
 
-  #gl;
+  _gl;
 
-  #circleBuffer;
-  #dotBuffer;
+  _circleBuffer;
+  _dotBuffer;
 
-  #cacheDotMVP = mat4.create();
-  #cacheDotSymMVP = mat4.create();
-  #cacheCircleMVP = mat4.create();
-  #color = new Float32Array([0.8, 0.0, 0.0]);
+  _cacheDotMVP = mat4.create();
+  _cacheDotSymMVP = mat4.create();
+  _cacheCircleMVP = mat4.create();
+  _color = new Float32Array([0.8, 0.0, 0.0]);
 
   // TODO: These are scratch variables and the names should be fixed up
-  #tmp_matpv = mat4.create();
-  #tmp_mat = mat4.create();
-  #tmp_mat3 = mat3.create();
-  #tmp_vec = new Float32Array([0.0, 0.0, 0.0]);
-  #tmp_axis = new Float32Array([0.0, 0.0, 0.0]);
-  #base = new Float32Array([0.0, 0.0, 1.0]);
+  _tmp_matpv = mat4.create();
+  _tmp_mat = mat4.create();
+  _tmp_mat3 = mat3.create();
+  _tmp_vec = new Float32Array([0.0, 0.0, 0.0]);
+  _tmp_axis = new Float32Array([0.0, 0.0, 0.0]);
+  _base = new Float32Array([0.0, 0.0, 1.0]);
 
-  #dot_radius = 50.0;
+  _dot_radius = 50.0;
 
   /** horizontal offset (when editing the radius) */
-  #offsetX = 0.0;
-  #isEditMode = false;
+  _offsetX = 0.0;
+  _isEditMode = false;
 
   constructor(gl) {
-    this.#gl = gl;
+    this._gl = gl;
 
-    this.#circleBuffer = new Buffer(gl, gl.ARRAY_BUFFER, gl.STATIC_DRAW);
-    this.#dotBuffer = new Buffer(gl, gl.ARRAY_BUFFER, gl.STATIC_DRAW);
+    this._circleBuffer = new Buffer(gl, gl.ARRAY_BUFFER, gl.STATIC_DRAW);
+    this._dotBuffer = new Buffer(gl, gl.ARRAY_BUFFER, gl.STATIC_DRAW);
 
     this.init();
   }
 
   getGL() {
-    return this.#gl;
+    return this._gl;
   }
 
   getCircleBuffer() {
-    return this.#circleBuffer;
+    return this._circleBuffer;
   }
 
   getDotBuffer() {
-    return this.#dotBuffer;
+    return this._dotBuffer;
   }
 
   getCircleMVP() {
-    return this.#cacheCircleMVP;
+    return this._cacheCircleMVP;
   }
 
   getDotMVP() {
-    return this.#cacheDotMVP;
+    return this._cacheDotMVP;
   }
 
   getDotSymmetryMVP() {
-    return this.#cacheDotSymMVP;
+    return this._cacheDotSymMVP;
   }
 
   getColor() {
-    return this.#color;
+    return this._color;
   }
 
   setIsEditMode(bool) {
-    this.#isEditMode = bool;
+    this._isEditMode = bool;
   }
 
   getIsEditMode() {
-    return this.#isEditMode;
+    return this._isEditMode;
   }
 
   setOffsetX(offset) {
-    this.#offsetX = offset;
+    this._offsetX = offset;
   }
 
   getOffsetX() {
-    return this.#offsetX;
+    return this._offsetX;
   }
 
   init() {
-    this.getCircleBuffer().update(this.#getCircleVertices(1.0));
-    this.getDotBuffer().update(this.#getDotVertices(0.05, 10));
+    this.getCircleBuffer().update(this._getCircleVertices(1.0));
+    this.getDotBuffer().update(this._getDotVertices(0.05, 10));
   }
 
   release() {
@@ -95,7 +95,7 @@ class Selection {
     this.getDotBuffer().release();
   }
 
-  #getCircleVertices(radius = 1.0, nbVertices = 50, full = false) {
+  _getCircleVertices(radius = 1.0, nbVertices = 50, full = false) {
     var arc = Math.PI * 2;
 
     var start = full ? 1 : 0;
@@ -110,113 +110,113 @@ class Selection {
     return vertices;
   }
 
-  #getDotVertices(r, nb) {
-    return this.#getCircleVertices(r, nb, true);
+  _getDotVertices(r, nb) {
+    return this._getCircleVertices(r, nb, true);
   }
 
-  #updateMatricesBackground(camera, main) {
+  _updateMatricesBackground(camera, main) {
 
     var screenRadius = main.getSculptManager().getCurrentTool().getScreenRadius();
 
     var w = camera._width * 0.5;
     var h = camera._height * 0.5;
     // no need to recompute the ortho proj each time though
-    mat4.ortho(this.#tmp_matpv, -w, w, -h, h, -10.0, 10.0);
+    mat4.ortho(this._tmp_matpv, -w, w, -h, h, -10.0, 10.0);
 
-    mat4.identity(this.#tmp_mat);
+    mat4.identity(this._tmp_mat);
     mat4.translate(
-      this.#tmp_mat,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, -w + main._mouseX + this.#offsetX, h - main._mouseY, 0.0)
+      this._tmp_mat,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, -w + main._mouseX + this._offsetX, h - main._mouseY, 0.0)
     );
     // circle mvp
     mat4.scale(
-      this.#cacheCircleMVP,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, screenRadius, screenRadius, screenRadius)
+      this._cacheCircleMVP,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, screenRadius, screenRadius, screenRadius)
     );
-    mat4.mul(this.#cacheCircleMVP, this.#tmp_matpv, this.#cacheCircleMVP);
+    mat4.mul(this._cacheCircleMVP, this._tmp_matpv, this._cacheCircleMVP);
     // dot mvp
     mat4.scale(
-      this.#cacheDotMVP,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, this.#dot_radius, this.#dot_radius, this.#dot_radius)
+      this._cacheDotMVP,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, this._dot_radius, this._dot_radius, this._dot_radius)
     );
-    mat4.mul(this.#cacheDotMVP, this.#tmp_matpv, this.#cacheDotMVP);
+    mat4.mul(this._cacheDotMVP, this._tmp_matpv, this._cacheDotMVP);
     // symmetry mvp
-    mat4.scale(this.#cacheDotSymMVP, this.#cacheDotSymMVP, [0.0, 0.0, 0.0]);
+    mat4.scale(this._cacheDotSymMVP, this._cacheDotSymMVP, [0.0, 0.0, 0.0]);
   }
 
-  #updateMatricesMesh(camera, main) {
+  _updateMatricesMesh(camera, main) {
     var picking = main.getPicking();
     var pickingSym = main.getPickingSymmetry();
     var worldRadius = Math.sqrt(picking.computeWorldRadius2(true));
     var screenRadius = main.getSculptManager().getCurrentTool().getScreenRadius();
 
     var mesh = picking.getMesh();
-    var constRadius = this.#dot_radius * (worldRadius / screenRadius);
+    var constRadius = this._dot_radius * (worldRadius / screenRadius);
 
-    picking.polyLerp(mesh.getNormals(), this.#tmp_axis);
+    picking.polyLerp(mesh.getNormals(), this._tmp_axis);
     vec3.transformMat3(
-      this.#tmp_axis,
-      this.#tmp_axis,
-      mat3.normalFromMat4(this.#tmp_mat3, mesh.getMatrix())
+      this._tmp_axis,
+      this._tmp_axis,
+      mat3.normalFromMat4(this._tmp_mat3, mesh.getMatrix())
     );
-    vec3.normalize(this.#tmp_axis, this.#tmp_axis);
-    var rad = Math.acos(vec3.dot(this.#base, this.#tmp_axis));
-    vec3.cross(this.#tmp_axis, this.#base, this.#tmp_axis);
+    vec3.normalize(this._tmp_axis, this._tmp_axis);
+    var rad = Math.acos(vec3.dot(this._base, this._tmp_axis));
+    vec3.cross(this._tmp_axis, this._base, this._tmp_axis);
 
-    mat4.identity(this.#tmp_mat);
+    mat4.identity(this._tmp_mat);
     mat4.translate(
-      this.#tmp_mat,
-      this.#tmp_mat,
-      vec3.transformMat4(this.#tmp_vec, picking.getIntersectionPoint(), mesh.getMatrix())
+      this._tmp_mat,
+      this._tmp_mat,
+      vec3.transformMat4(this._tmp_vec, picking.getIntersectionPoint(), mesh.getMatrix())
     );
-    mat4.rotate(this.#tmp_mat, this.#tmp_mat, rad, this.#tmp_axis);
+    mat4.rotate(this._tmp_mat, this._tmp_mat, rad, this._tmp_axis);
 
-    mat4.mul(this.#tmp_matpv, camera.getProjection(), camera.getView());
+    mat4.mul(this._tmp_matpv, camera.getProjection(), camera.getView());
 
     // circle mvp
     mat4.scale(
-      this.#cacheCircleMVP,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, worldRadius, worldRadius, worldRadius)
+      this._cacheCircleMVP,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, worldRadius, worldRadius, worldRadius)
     );
-    mat4.mul(this.#cacheCircleMVP, this.#tmp_matpv, this.#cacheCircleMVP);
+    mat4.mul(this._cacheCircleMVP, this._tmp_matpv, this._cacheCircleMVP);
     // dot mvp
     mat4.scale(
-      this.#cacheDotMVP,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, constRadius, constRadius, constRadius)
+      this._cacheDotMVP,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, constRadius, constRadius, constRadius)
     );
-    mat4.mul(this.#cacheDotMVP, this.#tmp_matpv, this.#cacheDotMVP);
+    mat4.mul(this._cacheDotMVP, this._tmp_matpv, this._cacheDotMVP);
     // symmetry mvp
-    vec3.transformMat4(this.#tmp_vec, pickingSym.getIntersectionPoint(), mesh.getMatrix());
-    mat4.identity(this.#tmp_mat);
-    mat4.translate(this.#tmp_mat, this.#tmp_mat, this.#tmp_vec);
-    mat4.rotate(this.#tmp_mat, this.#tmp_mat, rad, this.#tmp_axis);
+    vec3.transformMat4(this._tmp_vec, pickingSym.getIntersectionPoint(), mesh.getMatrix());
+    mat4.identity(this._tmp_mat);
+    mat4.translate(this._tmp_mat, this._tmp_mat, this._tmp_vec);
+    mat4.rotate(this._tmp_mat, this._tmp_mat, rad, this._tmp_axis);
 
     mat4.scale(
-      this.#tmp_mat,
-      this.#tmp_mat,
-      vec3.set(this.#tmp_vec, constRadius, constRadius, constRadius)
+      this._tmp_mat,
+      this._tmp_mat,
+      vec3.set(this._tmp_vec, constRadius, constRadius, constRadius)
     );
-    mat4.mul(this.#cacheDotSymMVP, this.#tmp_matpv, this.#tmp_mat);
+    mat4.mul(this._cacheDotSymMVP, this._tmp_matpv, this._tmp_mat);
   }
 
   render(main) {
     // if there's an offset then it means we are editing the tool radius
-    var pickedMesh = main.getPicking().getMesh() && !this.#isEditMode;
-    if (pickedMesh) this.#updateMatricesMesh(main.getCamera(), main);
-    else this.#updateMatricesBackground(main.getCamera(), main);
+    var pickedMesh = main.getPicking().getMesh() && !this._isEditMode;
+    if (pickedMesh) this._updateMatricesMesh(main.getCamera(), main);
+    else this._updateMatricesBackground(main.getCamera(), main);
 
     var drawCircle = main._action === Enums.Action.NOTHING;
-    vec3.set(this.#color, 0.8, drawCircle && pickedMesh ? 0.0 : 0.4, 0.0);
+    vec3.set(this._color, 0.8, drawCircle && pickedMesh ? 0.0 : 0.4, 0.0);
     ShaderLib[Enums.Shader.SELECTION]
-      .getOrCreate(this.#gl)
+      .getOrCreate(this._gl)
       .draw(this, drawCircle, main.getSculptManager().getSymmetry());
 
-    this.#isEditMode = false;
+    this._isEditMode = false;
   }
 }
 
