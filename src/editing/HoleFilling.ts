@@ -5,13 +5,13 @@ import Mesh from '../mesh/Mesh';
 
 
 class Edge {
-  #v1;
-  #v2;
-  #previous;
-  #next;
+  _v1;
+  _v2;
+  _previous;
+  _next;
   constructor(v1, v2) {
-    this.#v1 = v1;
-    this.#v2 = v2;
+    this._v1 = v1;
+    this._v2 = v2;
   }
 }
 

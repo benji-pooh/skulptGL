@@ -7,8 +7,8 @@
 class SurfaceNets {
 
   //Precompute edge table, like Paul Bourke does.
-  static #cubeEdges = SurfaceNets.computeCubeEdges();
-  static #edgeTable = SurfaceNets.computeEdgeTable(SurfaceNets.#cubeEdges);
+  static _cubeEdges = SurfaceNets.computeCubeEdges();
+  static _edgeTable = SurfaceNets.computeEdgeTable(SurfaceNets._cubeEdges);
   static BLOCK = false;
 
   // This is just the vertex number of each cube
@@ -191,9 +191,9 @@ class SurfaceNets {
           if (mask === 0 || mask === 0xff)
             continue;
           //Sum up edge intersections
-          var edgeMask = SurfaceNets.#edgeTable[mask];
+          var edgeMask = SurfaceNets._edgeTable[mask];
           buffer[m] = vertices.length / 3;
-          SurfaceNets.interpolateVertices(edgeMask, SurfaceNets.#cubeEdges, grid, x, vertices);
+          SurfaceNets.interpolateVertices(edgeMask, SurfaceNets._cubeEdges, grid, x, vertices);
           SurfaceNets.createFace(edgeMask, mask, buffer, R, m, x, faces);
         }
       }

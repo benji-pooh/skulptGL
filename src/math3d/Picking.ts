@@ -15,34 +15,34 @@ const HARDCODED_ALPHAS: { [k: string]: any } = {
 
 class Picking {
 
-  #mesh: any; // mesh
-  #main: any; // the camera
-  #pickedFace = -1; // face picked
-  #pickedVertices: Uint32Array; // vertices selected
-  #interPoint: vec3 = [0.0, 0.0, 0.0]; // intersection point (mesh local space)
-  #rLocal2 = 0.0; // radius of the selection area (local/object space)
-  #rWorld2 = 0.0; // radius of the selection area (world space)
-  #eyeDir: vec3 = [0.0, 0.0, 0.0]; // eye direction
+  _mesh: any; // mesh
+  _main: any; // the camera
+  _pickedFace = -1; // face picked
+  _pickedVertices: Uint32Array; // vertices selected
+  _interPoint: vec3 = [0.0, 0.0, 0.0]; // intersection point (mesh local space)
+  _rLocal2 = 0.0; // radius of the selection area (local/object space)
+  _rWorld2 = 0.0; // radius of the selection area (world space)
+  _eyeDir: vec3 = [0.0, 0.0, 0.0]; // eye direction
 
-  #xSym: boolean
+  _xSym: boolean
 
-  #pickedNormal: vec3 = [0.0, 0.0, 0.0];
+  _pickedNormal: vec3 = [0.0, 0.0, 0.0];
   // alpha stuffs
-  #alphaOrigin: vec3 = [0.0, 0.0, 0.0];
-  #alphaSide = 0.0;
-  #alphaLookAt: mat4 = mat4.create();
-  #alpha: { [k: string]: any };
+  _alphaOrigin: vec3 = [0.0, 0.0, 0.0];
+  _alphaSide = 0.0;
+  _alphaLookAt: mat4 = mat4.create();
+  _alpha: { [k: string]: any };
 
   // Scratch vars to reduce allocations
-  #tmpNear: vec3 = [0.0, 0.0, 0.0];
-  #tmpNear1: vec3 = [0.0, 0.0, 0.0];
-  #tmpFar: vec3 = [0.0, 0.0, 0.0];
-  #tmpInv: mat4 = mat4.create();
-  #tmpInter: vec3 = [0.0, 0.0, 0.0];
-  #tmpInter1: vec3 = [0.0, 0.0, 0.0];
-  #tmpV1: vec3 = [0.0, 0.0, 0.0];
-  #tmpV2: vec3 = [0.0, 0.0, 0.0];
-  #tmpV3: vec3 = [0.0, 0.0, 0.0];
+  _tmpNear: vec3 = [0.0, 0.0, 0.0];
+  _tmpNear1: vec3 = [0.0, 0.0, 0.0];
+  _tmpFar: vec3 = [0.0, 0.0, 0.0];
+  _tmpInv: mat4 = mat4.create();
+  _tmpInter: vec3 = [0.0, 0.0, 0.0];
+  _tmpInter1: vec3 = [0.0, 0.0, 0.0];
+  _tmpV1: vec3 = [0.0, 0.0, 0.0];
+  _tmpV2: vec3 = [0.0, 0.0, 0.0];
+  _tmpV3: vec3 = [0.0, 0.0, 0.0];
 
   static ALPHAS: { [k: string]: any } = {};
   static ALPHAS_NAMES: { [k: string]: string } = {};
@@ -118,22 +118,22 @@ class Picking {
   }
 
   constructor(main, xSym) {
-    this.#main = main; // the camera
-    this.#xSym = !!xSym;
+    this._main = main; // the camera
+    this._xSym = !!xSym;
   }
 
   setIdAlpha(id) {
-    this.#alpha = Picking.ALPHAS[id];
+    this._alpha = Picking.ALPHAS[id];
   }
 
   getAlpha(x, y, z) {
-    var alpha = this.#alpha;
+    var alpha = this._alpha;
     if (!alpha || !alpha._texture) return 1.0;
 
-    var m = this.#alphaLookAt;
-    var rs = this.#alphaSide;
+    var m = this._alphaLookAt;
+    var rs = this._alphaSide;
 
-    var xn = alpha._ratioY * (m[0] * x + m[4] * y + m[8] * z + m[12]) / (this.#xSym ? -rs : rs);
+    var xn = alpha._ratioY * (m[0] * x + m[4] * y + m[8] * z + m[12]) / (this._xSym ? -rs : rs);
     if (Math.abs(xn) > 1.0) return 0.0;
 
     var yn = alpha._ratioX * (m[1] * x + m[5] * y + m[9] * z + m[13]) / rs;
@@ -146,25 +146,25 @@ class Picking {
   }
 
   updateAlpha(keepOrigin = false) {
-    var dir = this.#tmpV1;
-    var nor = this.#tmpV2;
+    var dir = this._tmpV1;
+    var nor = this._tmpV2;
 
-    var radius = Math.sqrt(this.#rLocal2);
-    this.#alphaSide = radius * Math.SQRT1_2;
+    var radius = Math.sqrt(this._rLocal2);
+    this._alphaSide = radius * Math.SQRT1_2;
 
-    vec3.sub(dir, this.#interPoint, this.#alphaOrigin);
+    vec3.sub(dir, this._interPoint, this._alphaOrigin);
     if (vec3.len(dir) === 0) return;
     vec3.normalize(dir, dir);
 
-    var normal = this.#pickedNormal;
+    var normal = this._pickedNormal;
     vec3.scaleAndAdd(dir, dir, normal, -vec3.dot(dir, normal));
     vec3.normalize(dir, dir);
 
     if (!keepOrigin)
-      vec3.copy(this.#alphaOrigin, this.#interPoint);
+      vec3.copy(this._alphaOrigin, this._interPoint);
 
-    vec3.scaleAndAdd(nor, this.#alphaOrigin, normal, radius);
-    mat4.lookAt(this.#alphaLookAt, this.#alphaOrigin, nor, dir);
+    vec3.scaleAndAdd(nor, this._alphaOrigin, normal, radius);
+    mat4.lookAt(this._alphaLookAt, this._alphaOrigin, nor, dir);
   }
 
   initAlpha() {
@@ -173,55 +173,55 @@ class Picking {
   }
 
   getMesh() {
-    return this.#mesh;
+    return this._mesh;
   }
 
   setLocalRadius2(radius) {
-    this.#rLocal2 = radius;
+    this._rLocal2 = radius;
   }
 
   getLocalRadius2() {
-    return this.#rLocal2;
+    return this._rLocal2;
   }
 
   getLocalRadius() {
-    return Math.sqrt(this.#rLocal2);
+    return Math.sqrt(this._rLocal2);
   }
 
   getWorldRadius2() {
-    return this.#rWorld2;
+    return this._rWorld2;
   }
 
   getWorldRadius() {
-    return Math.sqrt(this.#rWorld2);
+    return Math.sqrt(this._rWorld2);
   }
 
   setIntersectionPoint(inter) {
-    this.#interPoint = inter;
+    this._interPoint = inter;
   }
 
   getEyeDirection() {
-    return this.#eyeDir;
+    return this._eyeDir;
   }
 
   getIntersectionPoint() {
-    return this.#interPoint;
+    return this._interPoint;
   }
 
   getPickedVertices() {
-    return this.#pickedVertices;
+    return this._pickedVertices;
   }
 
   getPickedFace() {
-    return this.#pickedFace;
+    return this._pickedFace;
   }
 
   getPickedNormal() {
-    return this.#pickedNormal;
+    return this._pickedNormal;
   }
 
   /** Intersection between a ray the mouse position for every meshes */
-  intersectionMouseMeshes(meshes = this.#main.getMeshes(), mouseX = this.#main._mouseX, mouseY = this.#main._mouseY) {
+  intersectionMouseMeshes(meshes = this._main.getMeshes(), mouseX = this._main._mouseX, mouseY = this._main._mouseY) {
 
     var vNear = this.unproject(mouseX, mouseY, 0.0);
     var vFar = this.unproject(mouseX, mouseY, 0.1);
@@ -234,32 +234,32 @@ class Picking {
       if (!mesh.isVisible())
         continue;
 
-      mat4.invert(this.#tmpInv, mesh.getMatrix());
-      vec3.transformMat4(this.#tmpNear1, vNear, this.#tmpInv);
-      vec3.transformMat4(this.#tmpFar, vFar, this.#tmpInv);
-      if (!this.intersectionRayMesh(mesh, this.#tmpNear1, this.#tmpFar))
+      mat4.invert(this._tmpInv, mesh.getMatrix());
+      vec3.transformMat4(this._tmpNear1, vNear, this._tmpInv);
+      vec3.transformMat4(this._tmpFar, vFar, this._tmpInv);
+      if (!this.intersectionRayMesh(mesh, this._tmpNear1, this._tmpFar))
         continue;
 
       var interTest = this.getIntersectionPoint();
-      var testDistance = vec3.dist(this.#tmpNear1, interTest) * mesh.getScale();
+      var testDistance = vec3.dist(this._tmpNear1, interTest) * mesh.getScale();
       if (testDistance < nearDistance) {
         nearDistance = testDistance;
         nearMesh = mesh;
-        vec3.copy(this.#tmpInter1, interTest);
+        vec3.copy(this._tmpInter1, interTest);
         nearFace = this.getPickedFace();
       }
     }
 
-    this.#mesh = nearMesh;
-    vec3.copy(this.#interPoint, this.#tmpInter1);
-    this.#pickedFace = nearFace;
+    this._mesh = nearMesh;
+    vec3.copy(this._interPoint, this._tmpInter1);
+    this._pickedFace = nearFace;
     if (nearFace !== -1)
       this.updateLocalAndWorldRadius2();
     return !!nearMesh;
   }
 
   /** Intersection between a ray the mouse position */
-  intersectionMouseMesh(mesh = this.#main.getMesh(), mouseX = this.#main._mouseX, mouseY = this.#main._mouseY) {
+  intersectionMouseMesh(mesh = this._main.getMesh(), mouseX = this._main._mouseX, mouseY = this._main._mouseY) {
     var vNear = this.unproject(mouseX, mouseY, 0.0);
     var vFar = this.unproject(mouseX, mouseY, 0.1);
     var matInverse = mat4.create();
@@ -272,25 +272,25 @@ class Picking {
   /** Intersection between a ray and a mesh */
   intersectionRayMesh(mesh, vNearOrig, vFarOrig) {
     // resest picking
-    this.#mesh = null;
-    this.#pickedFace = -1;
+    this._mesh = null;
+    this._pickedFace = -1;
     // resest picking
-    vec3.copy(this.#tmpNear, vNearOrig);
-    vec3.copy(this.#tmpFar, vFarOrig);
+    vec3.copy(this._tmpNear, vNearOrig);
+    vec3.copy(this._tmpFar, vFarOrig);
     // apply symmetry
-    if (this.#xSym) {
+    if (this._xSym) {
       var ptPlane = mesh.getSymmetryOrigin();
       var nPlane = mesh.getSymmetryNormal();
-      Geometry.mirrorPoint(this.#tmpNear, ptPlane, nPlane);
-      Geometry.mirrorPoint(this.#tmpFar, ptPlane, nPlane);
+      Geometry.mirrorPoint(this._tmpNear, ptPlane, nPlane);
+      Geometry.mirrorPoint(this._tmpFar, ptPlane, nPlane);
     }
     var vAr = mesh.getVertices();
     var fAr = mesh.getFaces();
     // compute eye direction
     var eyeDir = this.getEyeDirection();
-    vec3.sub(eyeDir, this.#tmpFar, this.#tmpNear);
+    vec3.sub(eyeDir, this._tmpFar, this._tmpNear);
     vec3.normalize(eyeDir, eyeDir);
-    var iFacesCandidates = mesh.intersectRay(this.#tmpNear, eyeDir);
+    var iFacesCandidates = mesh.intersectRay(this._tmpNear, eyeDir);
     var distance = Infinity;
     var nbFacesCandidates = iFacesCandidates.length;
     for (var i = 0; i < nbFacesCandidates; ++i) {
@@ -298,44 +298,44 @@ class Picking {
       var ind1 = fAr[indFace] * 3;
       var ind2 = fAr[indFace + 1] * 3;
       var ind3 = fAr[indFace + 2] * 3;
-      this.#tmpV1[0] = vAr[ind1];
-      this.#tmpV1[1] = vAr[ind1 + 1];
-      this.#tmpV1[2] = vAr[ind1 + 2];
-      this.#tmpV2[0] = vAr[ind2];
-      this.#tmpV2[1] = vAr[ind2 + 1];
-      this.#tmpV2[2] = vAr[ind2 + 2];
-      this.#tmpV3[0] = vAr[ind3];
-      this.#tmpV3[1] = vAr[ind3 + 1];
-      this.#tmpV3[2] = vAr[ind3 + 2];
-      var hitDist = Geometry.intersectionRayTriangle(this.#tmpNear, eyeDir, this.#tmpV1, this.#tmpV2, this.#tmpV3, this.#tmpInter);
+      this._tmpV1[0] = vAr[ind1];
+      this._tmpV1[1] = vAr[ind1 + 1];
+      this._tmpV1[2] = vAr[ind1 + 2];
+      this._tmpV2[0] = vAr[ind2];
+      this._tmpV2[1] = vAr[ind2 + 1];
+      this._tmpV2[2] = vAr[ind2 + 2];
+      this._tmpV3[0] = vAr[ind3];
+      this._tmpV3[1] = vAr[ind3 + 1];
+      this._tmpV3[2] = vAr[ind3 + 2];
+      var hitDist = Geometry.intersectionRayTriangle(this._tmpNear, eyeDir, this._tmpV1, this._tmpV2, this._tmpV3, this._tmpInter);
       if (hitDist < 0.0) {
         ind2 = fAr[indFace + 3];
         if (ind2 !== Utils.TRI_INDEX) {
           ind2 *= 3;
-          this.#tmpV2[0] = vAr[ind2];
-          this.#tmpV2[1] = vAr[ind2 + 1];
-          this.#tmpV2[2] = vAr[ind2 + 2];
-          hitDist = Geometry.intersectionRayTriangle(this.#tmpNear, eyeDir, this.#tmpV1, this.#tmpV3, this.#tmpV2, this.#tmpInter);
+          this._tmpV2[0] = vAr[ind2];
+          this._tmpV2[1] = vAr[ind2 + 1];
+          this._tmpV2[2] = vAr[ind2 + 2];
+          hitDist = Geometry.intersectionRayTriangle(this._tmpNear, eyeDir, this._tmpV1, this._tmpV3, this._tmpV2, this._tmpInter);
         }
       }
       if (hitDist >= 0.0 && hitDist < distance) {
         distance = hitDist;
-        vec3.copy(this.#interPoint, this.#tmpInter);
-        this.#pickedFace = iFacesCandidates[i];
+        vec3.copy(this._interPoint, this._tmpInter);
+        this._pickedFace = iFacesCandidates[i];
       }
     }
-    if (this.#pickedFace !== -1) {
-      this.#mesh = mesh;
+    if (this._pickedFace !== -1) {
+      this._mesh = mesh;
       this.updateLocalAndWorldRadius2();
       return true;
     }
-    this.#rLocal2 = 0.0;
+    this._rLocal2 = 0.0;
     return false;
   }
 
   /** Find all the vertices inside the sphere */
   pickVerticesInSphere(rLocal2) {
-    var mesh = this.#mesh;
+    var mesh = this._mesh;
     var vAr = mesh.getVertices();
     var vertSculptFlags = mesh.getVerticesSculptFlags();
     var inter = this.getIntersectionPoint();
@@ -363,19 +363,19 @@ class Picking {
       }
     }
 
-    this.#pickedVertices = new Uint32Array(pickedVertices.subarray(0, acc));
-    return this.#pickedVertices;
+    this._pickedVertices = new Uint32Array(pickedVertices.subarray(0, acc));
+    return this._pickedVertices;
   }
 
   _isInsideSphere(id, inter, rLocal2) {
     if (id === Utils.TRI_INDEX) return false;
     var iv = id * 3;
-    return vec3.sqrDist(inter, this.#mesh.getVertices().subarray(iv, iv + 3)) <= rLocal2;
+    return vec3.sqrDist(inter, this._mesh.getVertices().subarray(iv, iv + 3)) <= rLocal2;
   }
 
   /** Find all the vertices inside the sphere (with topological check) */
   pickVerticesInSphereTopological(rLocal2) {
-    var mesh = this.#mesh;
+    var mesh = this._mesh;
     var nbVertices = mesh.getNbVertices();
     var vAr = mesh.getVertices();
     var fAr = mesh.getFaces();
@@ -440,45 +440,45 @@ class Picking {
       }
     }
 
-    this.#pickedVertices = new Uint32Array(pickedVertices.subarray(0, acc));
-    return this.#pickedVertices;
+    this._pickedVertices = new Uint32Array(pickedVertices.subarray(0, acc));
+    return this._pickedVertices;
   }
 
   computeWorldRadius2(ignorePressure = false) {
 
-    vec3.transformMat4(this.#tmpInter, this.getIntersectionPoint(), this.#mesh.getMatrix());
+    vec3.transformMat4(this._tmpInter, this.getIntersectionPoint(), this._mesh.getMatrix());
 
-    var offsetX = this.#main.getSculptManager().getCurrentTool().getScreenRadius();
+    var offsetX = this._main.getSculptManager().getCurrentTool().getScreenRadius();
     if (!ignorePressure) offsetX *= Tablet.getPressureRadius();
 
-    var screenInter = this.project(this.#tmpInter);
-    return vec3.sqrDist(this.#tmpInter, this.unproject(screenInter[0] + offsetX, screenInter[1], screenInter[2]));
+    var screenInter = this.project(this._tmpInter);
+    return vec3.sqrDist(this._tmpInter, this.unproject(screenInter[0] + offsetX, screenInter[1], screenInter[2]));
   }
 
   updateLocalAndWorldRadius2() {
-    if (!this.#mesh) return;
-    this.#rWorld2 = this.computeWorldRadius2();
-    this.#rLocal2 = this.#rWorld2 / this.#mesh.getScale2();
+    if (!this._mesh) return;
+    this._rWorld2 = this.computeWorldRadius2();
+    this._rLocal2 = this._rWorld2 / this._mesh.getScale2();
   }
 
   unproject(x, y, z) {
-    return this.#main.getCamera().unproject(x, y, z);
+    return this._main.getCamera().unproject(x, y, z);
   }
 
   project(vec) {
-    return this.#main.getCamera().project(vec);
+    return this._main.getCamera().project(vec);
   }
 
   computePickedNormal() {
-    if (!this.#mesh || this.#pickedFace < 0) return;
-    this.polyLerp(this.#mesh.getNormals(), this.#pickedNormal);
-    return vec3.normalize(this.#pickedNormal, this.#pickedNormal);
+    if (!this._mesh || this._pickedFace < 0) return;
+    this.polyLerp(this._mesh.getNormals(), this._pickedNormal);
+    return vec3.normalize(this._pickedNormal, this._pickedNormal);
   }
 
   polyLerp(vField, out) {
-    var vAr = this.#mesh.getVertices();
-    var fAr = this.#mesh.getFaces();
-    var id = this.#pickedFace * 4;
+    var vAr = this._mesh.getVertices();
+    var fAr = this._mesh.getFaces();
+    var id = this._pickedFace * 4;
     var iv1 = fAr[id] * 3;
     var iv2 = fAr[id + 1] * 3;
     var iv3 = fAr[id + 2] * 3;
@@ -487,10 +487,10 @@ class Picking {
     var isQuad = iv4 !== Utils.TRI_INDEX;
     if (isQuad) iv4 *= 3;
 
-    var len1 = 1.0 / vec3.dist(this.#interPoint, vAr.subarray(iv1, iv1 + 3));
-    var len2 = 1.0 / vec3.dist(this.#interPoint, vAr.subarray(iv2, iv2 + 3));
-    var len3 = 1.0 / vec3.dist(this.#interPoint, vAr.subarray(iv3, iv3 + 3));
-    var len4 = isQuad ? 1.0 / vec3.dist(this.#interPoint, vAr.subarray(iv4, iv4 + 3)) : 0.0;
+    var len1 = 1.0 / vec3.dist(this._interPoint, vAr.subarray(iv1, iv1 + 3));
+    var len2 = 1.0 / vec3.dist(this._interPoint, vAr.subarray(iv2, iv2 + 3));
+    var len3 = 1.0 / vec3.dist(this._interPoint, vAr.subarray(iv3, iv3 + 3));
+    var len4 = isQuad ? 1.0 / vec3.dist(this._interPoint, vAr.subarray(iv4, iv4 + 3)) : 0.0;
 
     var invSum = 1.0 / (len1 + len2 + len3 + len4);
     vec3.set(out, 0.0, 0.0, 0.0);

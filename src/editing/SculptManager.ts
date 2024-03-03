@@ -4,53 +4,53 @@ import Enums from '../misc/Enums';
 
 class SculptManager {
 
-  #main;
+  _main;
   /** Sculpting mode */
-  #toolIndex = Enums.Tools.BRUSH;
+  _toolIndex = Enums.Tools.BRUSH;
   /** The sculpting tools */
-  #tools: any[] = [];
+  _tools: any[] = [];
   /** Symmetry */
-  #symmetry = true;
+  _symmetry = true;
   /** Continuous sculpting */
-  #continuous = false;
+  _continuous = false;
   /** Continuous sculpting times */
-  #sculptTimer = -1;
+  _sculptTimer = -1;
   /** Selector geometry ( the red hover circle ) */
-  #selection;
+  _selection;
 
   constructor(main) {
-    this.#main = main;
-    this.#selection = new Selection(main._gl);
+    this._main = main;
+    this._selection = new Selection(main._gl);
     this.init();
   }
 
   setToolIndex(id) {
-    this.#toolIndex = id;
+    this._toolIndex = id;
   }
 
   getToolIndex() {
-    return this.#toolIndex;
+    return this._toolIndex;
   }
 
   getCurrentTool() {
-    return this.#tools[this.#toolIndex];
+    return this._tools[this._toolIndex];
   }
 
   getSymmetry() {
-    return this.#symmetry;
+    return this._symmetry;
   }
 
   getTool(index) {
-    return this.#tools[index];
+    return this._tools[index];
   }
 
   getSelection() {
-    return this.#selection;
+    return this._selection;
   }
 
   init() {
-    var main = this.#main;
-    var tools = this.#tools;
+    var main = this._main;
+    var tools = this._tools;
     for (var i = 0, nb = Tools.length; i < nb; ++i) {
       if (Tools[i]) tools[i] = new Tools[i](main);
     }
@@ -58,7 +58,7 @@ class SculptManager {
 
   // TODO Should this be refactored onto tools themselves?
   canBeContinuous() {
-    switch (this.#toolIndex) {
+    switch (this._toolIndex) {
       case Enums.Tools.TWIST:
       case Enums.Tools.MOVE:
       case Enums.Tools.DRAG:
@@ -71,22 +71,22 @@ class SculptManager {
   }
 
   isUsingContinuous() {
-    return this.#continuous && this.canBeContinuous();
+    return this._continuous && this.canBeContinuous();
   }
 
   start(ctrl) {
     var tool = this.getCurrentTool();
     var canEdit = tool.start(ctrl);
-    if (this.#main.getPicking().getMesh() && this.isUsingContinuous())
-      this.#sculptTimer = window.setInterval(tool._cbContinuous, 16.6);
+    if (this._main.getPicking().getMesh() && this.isUsingContinuous())
+      this._sculptTimer = window.setInterval(tool._cbContinuous, 16.6);
     return canEdit;
   }
 
   end() {
     this.getCurrentTool().end();
-    if (this.#sculptTimer !== -1) {
-      clearInterval(this.#sculptTimer);
-      this.#sculptTimer = -1;
+    if (this._sculptTimer !== -1) {
+      clearInterval(this._sculptTimer);
+      this._sculptTimer = -1;
     }
   }
 
@@ -101,7 +101,7 @@ class SculptManager {
   }
 
   postRender() {
-    this.getCurrentTool().postRender(this.#selection);
+    this.getCurrentTool().postRender(this._selection);
   }
 
   addSculptToScene(scene) {
