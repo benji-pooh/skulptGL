@@ -7,7 +7,7 @@ var queryBool = function (value, def) {
   return value !== 'false' && value !== '0';
 };
 
-var queryNumber = function (value, min, max, def) {
+var queryNumber = function (value, min, max, def = undefined) {
   var f = parseFloat(value);
   if (!f && f !== 0.0) return def;
   return Math.max(min, Math.min(max, f));
@@ -91,7 +91,7 @@ var readShortcuts = function (str) {
   return shortcuts;
 };
 
-var readUrlParameters = function () {
+function readUrlParameters(): { [k: string]: any } {
   var vars = window.location.search.substr(1).split('&');
   var params = {};
   for (var i = 0, nbVars = vars.length; i < nbVars; i++) {
@@ -155,7 +155,7 @@ var getOptionsURL = function () {
 
 getOptionsURL();
 
-getOptionsURL.getShortKey = function (key) {
+getOptionsURL['getShortKey'] = function (key) {
   // handles numpad
   if (key >= 96 && key <= 105) key -= 48;
   return getOptionsURL().shortcuts[key];

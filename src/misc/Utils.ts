@@ -1,6 +1,6 @@
 import { vec3 } from 'gl-matrix';
 
-var Utils = {};
+var Utils: { [k: string]: any } = {};
 
 Utils.SCALE = 100.0; // scale factor
 Utils.TAG_FLAG = 1; // flag value for comparison (always >= tags values)
@@ -124,9 +124,9 @@ Utils.littleEndian = (function () {
 /** Get bytes */
 Utils.getBytes = function (data, offset) {
   return [
-    data[offset].charCodeAt(), 
-    data[offset + 1].charCodeAt(), 
-    data[offset + 2].charCodeAt(), 
+    data[offset].charCodeAt(),
+    data[offset + 1].charCodeAt(),
+    data[offset + 2].charCodeAt(),
     data[offset + 3].charCodeAt()
   ];
 };
