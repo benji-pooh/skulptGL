@@ -1,3 +1,5 @@
+import OctreeCell from "../math3d/OctreeCell";
+
 var MeshData = function () {
   return {
     _nbVertices: 0,
@@ -74,7 +76,7 @@ var MeshData = function () {
     // Octree data
     //////////////
 
-    _octree: null, // root octree cell
+    _octree: OctreeCell, // root octree cell
 
     _faceBoxes: null, // faces bbox (Float32Array)
     _faceCentersXYZ: null, // faces center (Float32Array)

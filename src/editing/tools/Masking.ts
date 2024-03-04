@@ -7,18 +7,20 @@ import MeshStatic from '../../mesh/meshStatic/MeshStatic';
 
 class Masking extends SculptBase {
 
+  protected _radius = 50;
+  protected hardness = 0.25;
+  protected intensity = 1.0;
+  protected negative = true;
+  protected culling = false;
+  protected idAlpha = 0;
+  protected lockPosition = false;
+  protected _thickness = 1.0;
+  protected _negative = false;
+
   constructor(main) {
     super(main);
 
-    this._radius = 50;
-    this._hardness = 0.25;
-    this._intensity = 1.0;
-    this._negative = true;
-    this._culling = false;
-    this._idAlpha = 0;
-    this._lockPosition = false;
 
-    this._thickness = 1.0;
   }
 
   pushState() {
@@ -276,8 +278,8 @@ class Masking extends SculptBase {
     var nMat = mat3.normalFromMat4(mat3.create(), mat);
     var nbVerts = iVerts.length;
     var vArNew = new Float32Array(nbVerts * 2 * 3);
-    var vTemp = [0.0, 0.0, 0.0];
-    var nTemp = [0.0, 0.0, 0.0];
+    var vTemp: vec3 = [0.0, 0.0, 0.0];
+    var nTemp: vec3 = [0.0, 0.0, 0.0];
     var vOffset = nbVerts * 3;
     var thick = this._thickness;
     var eps = 0.01;
@@ -315,7 +317,7 @@ class Masking extends SculptBase {
     for (var i = 0, nbBridge = fBridge.length; i < nbBridge; ++i)
       fBridge[i] = startBridge + i;
     var vBridge = mesh.expandsVertices(mesh.getVerticesFromFaces(fBridge), 1);
-    var smo = new Smooth();
+    var smo = new Smooth(this._main);
     smo.setToolMesh(mesh);
     smo.smooth(vBridge, 1.0);
     smo.smooth(vBridge, 1.0);

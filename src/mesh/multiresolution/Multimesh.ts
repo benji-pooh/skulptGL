@@ -1,10 +1,12 @@
 import MeshResolution from './MeshResolution';
-import Mesh from '../../mesh/Mesh';
+import Mesh from '../Mesh';
 import Buffer from '../../render/Buffer';
 import Subdivision from '../../editing/Subdivision';
 import Reversion from '../../editing/Reversion';
 
 class Multimesh extends Mesh {
+
+  static RENDER_HINT = 0;
 
   static get NONE() {
     return 0;
@@ -18,6 +20,11 @@ class Multimesh extends Mesh {
   static get PICKING() {
     return 3;
   }
+
+  protected _meshes: any;
+  protected _indexBuffer: any;
+  protected _wireframeBuffer: any;
+  protected _sel: number;
 
   constructor(mesh) {
     super();
@@ -215,7 +222,7 @@ class Multimesh extends Mesh {
 
   _canUseLowRender(main) {
     if (this.isUsingTexCoords() || this.isUsingDrawArrays()) return false;
-    if (Multimesh.RENDER_HINT === Multimesh.PICKING || Multimesh.RENDER_HINT === Multimesh.NONE){
+    if (Multimesh.RENDER_HINT === Multimesh.PICKING || Multimesh.RENDER_HINT === Multimesh.NONE) {
       return false;
     }
     if (main.getMesh() === this && Multimesh.RENDER_HINT !== Multimesh.CAMERA) return false;
@@ -223,15 +230,13 @@ class Multimesh extends Mesh {
     return true;
   }
 
-  render(main) {
+  override render(main) {
     return this._canUseLowRender(main) ? this._renderLow(main) : super.render(main);
   }
 
-  renderWireframe(main) {
+  override renderWireframe(main) {
     return this._canUseLowRender(main) ? this._renderWireframeLow(main) : super.renderWireframe(main);
   }
 }
-
-Multimesh.RENDER_HINT = 0;
 
 export default Multimesh;

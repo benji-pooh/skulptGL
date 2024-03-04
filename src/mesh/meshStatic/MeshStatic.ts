@@ -10,9 +10,9 @@ class MeshStatic extends Mesh {
 
     this._id = Mesh.ID++; // useful id to retrieve a mesh (dynamic mesh, multires mesh, voxel mesh)
 
-    if (gl) this._renderData = new RenderData(gl, this);
-    this._meshData = new MeshData();
-    this._transformData = new TransformData();
+    if (gl) this._renderData = new RenderData(gl);
+    this._meshData = MeshData();
+    this._transformData = TransformData();
   }
 }
 

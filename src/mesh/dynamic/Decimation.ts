@@ -1,21 +1,31 @@
 import Utils from '../../misc/Utils';
+import MeshDynamic from './MeshDynamic';
 
-var DecData = {
-  _mesh: null,
-  _states: null, // for undo-redo
+class DecData {
+  /** */
+  _mesh: any;
+  /**  for undo-redo */
+  _states: any[];
+  /**  triangles to be deleted */
+  _iTrisToDelete: any[] = [];
+  /**  vertices to be deleted */
+  _iVertsToDelete: any[] = [];
+  /**  vertices to be updated (mainly for the VBO's, used in decimation and adaptive topo) */
+  _iVertsDecimated: any[] = [];
 
-  _iTrisToDelete: [], // triangles to be deleted
-  _iVertsToDelete: [], // vertices to be deleted
-  _iVertsDecimated: [] // vertices to be updated (mainly for the VBO's, used in decimation and adaptive topo)
+  constructor(mesh, states) {
+    this._mesh = mesh;
+    this._states = states;
+  }
 };
 
-var sortFunc = function (a, b) {
+function sortFunc(a, b) {
   return a - b;
 };
 
 /** Return the valid modified triangles (no duplicates) */
-var getValidModifiedTriangles = function (iVerts, iTris) {
-  var mesh = DecData._mesh;
+function getValidModifiedTriangles(dec_data, iVerts, iTris) {
+  var mesh = dec_data._mesh;
   var ftf = mesh.getFacesTagFlags();
   var nbTriangles = mesh.getNbTriangles();
 
@@ -43,13 +53,13 @@ var getValidModifiedTriangles = function (iVerts, iTris) {
 };
 
 /** Return the valid modified vertices (no duplicates) */
-var getValidModifiedVertices = function () {
-  var mesh = DecData._mesh;
+function getValidModifiedVertices(dec_data) {
+  var mesh = dec_data._mesh;
   var vtf = mesh.getVerticesTagFlags();
   var nbVertices = mesh.getNbVertices();
 
   var tagFlag = ++Utils.TAG_FLAG;
-  var iVertsDecimated = DecData._iVertsDecimated;
+  var iVertsDecimated = dec_data._iVertsDecimated;
   var nbVertsDecimated = iVertsDecimated.length;
   var validVertices = new Uint32Array(Utils.getMemory(nbVertsDecimated * 4), 0, nbVertsDecimated);
   var nbValid = 0;
@@ -66,8 +76,8 @@ var getValidModifiedVertices = function () {
 };
 
 /** Update last triangle of array and move its position */
-var deleteTriangle = function (iTri) {
-  var mesh = DecData._mesh;
+function deleteTriangle(dec_data, iTri) {
+  var mesh = dec_data._mesh;
   var vrf = mesh.getVerticesRingFace();
   var ftf = mesh.getFacesTagFlags();
   var fAr = mesh.getFaces();
@@ -95,8 +105,8 @@ var deleteTriangle = function (iTri) {
   var iv3 = fAr[id + 2];
 
   // undo-redo
-  DecData._states.pushVertices([iv1, iv2, iv3]);
-  DecData._states.pushFaces([lastPos]);
+  dec_data._states.pushVertices([iv1, iv2, iv3]);
+  dec_data._states.pushFaces([lastPos]);
 
   Utils.replaceElement(vrf[iv1], lastPos, iTri);
   Utils.replaceElement(vrf[iv2], lastPos, iTri);
@@ -116,14 +126,14 @@ var deleteTriangle = function (iTri) {
   fAr[iTri + 2] = iv3;
   fAr[iTri + 3] = Utils.TRI_INDEX;
 
-  DecData._iVertsDecimated.push(iv1, iv2, iv3);
+  dec_data._iVertsDecimated.push(iv1, iv2, iv3);
 
   mesh.addNbFace(-1);
 };
 
 /** Update last vertex of array and move its position */
-var deleteVertex = function (iVert) {
-  var mesh = DecData._mesh;
+function deleteVertex(dec_data, iVert) {
+  var mesh = dec_data._mesh;
   var vrv = mesh.getVerticesRingVert();
   var vrf = mesh.getVerticesRingFace();
   var vAr = mesh.getVertices();
@@ -143,7 +153,7 @@ var deleteVertex = function (iVert) {
   var id = 0;
 
   // undo-redo
-  var states = DecData._states;
+  var states = dec_data._states;
   states.pushVertices([lastPos]);
 
   var iTris = vrf[lastPos];
@@ -191,24 +201,24 @@ var deleteVertex = function (iVert) {
 };
 
 /** Apply deletion on vertices and triangles */
-var applyDeletion = function () {
-  var iTrisToDelete = DecData._iTrisToDelete;
+function applyDeletion(dec_data,) {
+  var iTrisToDelete = dec_data._iTrisToDelete;
   Utils.tidy(iTrisToDelete);
   var nbTrisDelete = iTrisToDelete.length;
   var i = 0;
   for (i = nbTrisDelete - 1; i >= 0; --i)
-    deleteTriangle(iTrisToDelete[i]);
+    deleteTriangle(dec_data, iTrisToDelete[i]);
 
-  var iVertsToDelete = DecData._iVertsToDelete;
+  var iVertsToDelete = dec_data._iVertsToDelete;
   Utils.tidy(iVertsToDelete);
   var nbVertsToDelete = iVertsToDelete.length;
   for (i = nbVertsToDelete - 1; i >= 0; --i)
-    deleteVertex(iVertsToDelete[i]);
+    deleteVertex(dec_data, iVertsToDelete[i]);
 };
 
 /** Decimate 2 triangles (collapse 1 edge) */
-var edgeCollapse = function (iTri1, iTri2, iv1, iv2, ivOpp1, ivOpp2, iTris) {
-  var mesh = DecData._mesh;
+function edgeCollapse(dec_data, iTri1, iTri2, iv1, iv2, ivOpp1, ivOpp2, iTris) {
+  var mesh = dec_data._mesh;
   var vAr = mesh.getVertices();
   var nAr = mesh.getNormals();
   var cAr = mesh.getColors();
@@ -236,13 +246,13 @@ var edgeCollapse = function (iTri1, iTri2, iv1, iv2, ivOpp1, ivOpp2, iTris) {
   if (ringOpp1.length !== trisOpp1.length || ringOpp2.length !== trisOpp2.length)
     return;
 
-  DecData._iVertsDecimated.push(iv1, iv2);
+  dec_data._iVertsDecimated.push(iv1, iv2);
 
   // undo-redo
-  DecData._states.pushVertices(ring1);
-  DecData._states.pushVertices(ring2);
-  DecData._states.pushFaces(tris1);
-  DecData._states.pushFaces(tris2);
+  dec_data._states.pushVertices(ring1);
+  dec_data._states.pushVertices(ring2);
+  dec_data._states.pushFaces(tris1);
+  dec_data._states.pushFaces(tris2);
 
   ring1.sort(sortFunc);
   ring2.sort(sortFunc);
@@ -344,8 +354,8 @@ var edgeCollapse = function (iTri1, iTri2, iv1, iv2, ivOpp1, ivOpp2, iTris) {
   vAr[id + 2] = meanZ - nz * dot;
 
   vtf[iv2] = ftf[iTri1] = ftf[iTri2] = -1;
-  DecData._iVertsToDelete.push(iv2);
-  DecData._iTrisToDelete.push(iTri1, iTri2);
+  dec_data._iVertsToDelete.push(iv2);
+  dec_data._iTrisToDelete.push(iTri1, iTri2);
 
   nb = tris1.length;
   for (i = 0; i < nb; ++i)
@@ -355,10 +365,10 @@ var edgeCollapse = function (iTri1, iTri2, iv1, iv2, ivOpp1, ivOpp2, iTris) {
 };
 
 /** Decimate triangles (find orientation of the 2 triangles) */
-var decimateTriangles = function (iTri1, iTri2, iTris) {
+function decimateTriangles(dec_data, iTri1, iTri2, iTris) {
   if (iTri2 === -1)
     return;
-  var fAr = DecData._mesh.getFaces();
+  var fAr = dec_data._mesh.getFaces();
 
   var id = iTri1 * 4;
   var iv11 = fAr[id];
@@ -371,22 +381,22 @@ var decimateTriangles = function (iTri1, iTri2, iTris) {
   var iv32 = fAr[id + 2];
 
   if (iv11 === iv12) {
-    if (iv21 === iv32) edgeCollapse(iTri1, iTri2, iv11, iv21, iv31, iv22, iTris);
-    else edgeCollapse(iTri1, iTri2, iv11, iv31, iv21, iv32, iTris);
+    if (iv21 === iv32) edgeCollapse(dec_data, iTri1, iTri2, iv11, iv21, iv31, iv22, iTris);
+    else edgeCollapse(dec_data, iTri1, iTri2, iv11, iv31, iv21, iv32, iTris);
   } else if (iv11 === iv22) {
-    if (iv21 === iv12) edgeCollapse(iTri1, iTri2, iv11, iv21, iv31, iv32, iTris);
-    else edgeCollapse(iTri1, iTri2, iv11, iv31, iv21, iv12, iTris);
+    if (iv21 === iv12) edgeCollapse(dec_data, iTri1, iTri2, iv11, iv21, iv31, iv32, iTris);
+    else edgeCollapse(dec_data, iTri1, iTri2, iv11, iv31, iv21, iv12, iTris);
   } else if (iv11 === iv32) {
-    if (iv21 === iv22) edgeCollapse(iTri1, iTri2, iv11, iv21, iv31, iv12, iTris);
-    else edgeCollapse(iTri1, iTri2, iv11, iv31, iv21, iv22, iTris);
-  } else if (iv21 === iv12) edgeCollapse(iTri1, iTri2, iv31, iv21, iv11, iv22, iTris);
-  else if (iv21 === iv22) edgeCollapse(iTri1, iTri2, iv31, iv21, iv11, iv32, iTris);
-  else edgeCollapse(iTri1, iTri2, iv31, iv21, iv11, iv12, iTris);
+    if (iv21 === iv22) edgeCollapse(dec_data, iTri1, iTri2, iv11, iv21, iv31, iv12, iTris);
+    else edgeCollapse(dec_data, iTri1, iTri2, iv11, iv31, iv21, iv22, iTris);
+  } else if (iv21 === iv12) edgeCollapse(dec_data, iTri1, iTri2, iv31, iv21, iv11, iv22, iTris);
+  else if (iv21 === iv22) edgeCollapse(dec_data, iTri1, iTri2, iv31, iv21, iv11, iv32, iTris);
+  else edgeCollapse(dec_data, iTri1, iTri2, iv31, iv21, iv11, iv12, iTris);
 };
 
 /** Find opposite triangle */
-var findOppositeTriangle = function (iTri, iv1, iv2) {
-  var vrf = DecData._mesh.getVerticesRingFace();
+function findOppositeTriangle(dec_data, iTri, iv1, iv2) {
+  var vrf = dec_data._mesh.getVerticesRingFace();
   var iTris1 = vrf[iv1];
   var iTris2 = vrf[iv2];
   iTris1.sort(sortFunc);
@@ -397,15 +407,16 @@ var findOppositeTriangle = function (iTri, iv1, iv2) {
   return res[0] === iTri ? res[1] : res[0];
 };
 
-var Decimation = {};
+let Decimation: { [k: string]: any } = {};
 
 /** Decimation */
-Decimation.decimation = function (mesh, iTris, center, radius2, detail2, states) {
-  DecData._mesh = mesh;
-  DecData._states = states;
-  DecData._iVertsDecimated.length = 0;
-  DecData._iTrisToDelete.length = 0;
-  DecData._iVertsToDelete.length = 0;
+Decimation.decimate = function (mesh: MeshDynamic, iTris, center, radius2, detail2, states) {
+  let dec_data = new DecData(mesh, states);
+  dec_data._mesh = mesh;
+  dec_data._states = states;
+  dec_data._iVertsDecimated.length = 0;
+  dec_data._iTrisToDelete.length = 0;
+  dec_data._iVertsToDelete.length = 0;
 
   var radius = Math.sqrt(radius2);
   var ftf = mesh.getFacesTagFlags();
@@ -484,18 +495,18 @@ Decimation.decimation = function (mesh, iTris, center, radius2, detail2, states)
 
     if (len1 < len2 && len1 < len3) {
       if (len1 < detail2 * fallOff * (m1 + m2) * 0.5)
-        decimateTriangles(iTri, findOppositeTriangle(iTri, iv1, iv2), dynArr);
+        decimateTriangles(dec_data, iTri, findOppositeTriangle(dec_data, iTri, iv1, iv2), dynArr);
     } else if (len2 < len3) {
       if (len2 < detail2 * fallOff * (m2 + m3) * 0.5)
-        decimateTriangles(iTri, findOppositeTriangle(iTri, iv2, iv3), dynArr);
+        decimateTriangles(dec_data, iTri, findOppositeTriangle(dec_data, iTri, iv2, iv3), dynArr);
     } else {
       if (len3 < detail2 * fallOff * (m1 + m3) * 0.5)
-        decimateTriangles(iTri, findOppositeTriangle(iTri, iv1, iv3), dynArr);
+        decimateTriangles(dec_data, iTri, findOppositeTriangle(dec_data, iTri, iv1, iv3), dynArr);
     }
   }
 
-  applyDeletion();
-  iTris = getValidModifiedTriangles(getValidModifiedVertices(), dynArr);
+  applyDeletion(dec_data,);
+  iTris = getValidModifiedTriangles(dec_data, getValidModifiedVertices(dec_data,), dynArr);
   return iTris;
 };
 

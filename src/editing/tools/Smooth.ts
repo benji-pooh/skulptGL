@@ -36,7 +36,7 @@ class Smooth extends SculptBase {
   }
 
   /** Smooth a group of vertices. New position is given by simple averaging */
-  smooth(iVerts, intensity, picking) {
+  smooth(iVerts, intensity, picking: any | null = null) {
     var mesh = this.getMesh();
     var vAr = mesh.getVertices();
     var mAr = mesh.getMaterials();

@@ -16,30 +16,35 @@ import createMeshData from '../MeshData';
 
 class MeshDynamic extends Mesh {
 
+  /** Subdivision Factor */
+  static SUBDIVISION_FACTOR = 75;
+  /** Decimation Factor */
+  static DECIMATION_FACTOR = 0;
+  /** Linear subdivision enabled */
+  static LINEAR = false;
+
+  private _facesStateFlags: Int32Array | null = null;
+  private _wireframe: Uint32Array | null = null;
+
+  isDynamic: boolean = true;
+
   constructor(mesh) {
     super();
-
     this.setID(mesh.getID());
-
     this._meshData = createMeshData();
     this.setRenderData(mesh.getRenderData());
     this.setTransformData(mesh.getTransformData());
-
-    this._facesStateFlags = null; // state flags (<= Utils.STATE_FLAG) (Int32Array)
-    this._wireframe = null; // Uint32Array
-
     this.initFromMesh(mesh);
-
     this.initRender();
     this.isDynamic = true;
   }
 
   subdivide(iTris, center, radius2, detail2, states) {
-    return Subdivision.subdivision(this, iTris, center, radius2, detail2, states, MeshDynamic.LINEAR);
+    return Subdivision.subdivide(this, iTris, center, radius2, detail2, states, MeshDynamic.LINEAR);
   }
 
   decimate(iTris, center, radius2, detail2, states) {
-    return Decimation.decimation(this, iTris, center, radius2, detail2, states);
+    return Decimation.decimate(this, iTris, center, radius2, detail2, states);
   }
 
   getSubdivisionFactor() {
@@ -74,7 +79,8 @@ class MeshDynamic extends Mesh {
     return this._facesStateFlags;
   }
 
-  allocateArrays() {
+  override allocateArrays() {
+    console.log("MeshDynamic REALLOC")
     super.allocateArrays();
     this._meshData._vertRingVert = []; // vertex ring
     this._meshData._vertRingFace = []; // face ring
@@ -124,6 +130,8 @@ class MeshDynamic extends Mesh {
     if (this.isUsingDrawArrays()) this.updateDrawArrays(iFaces);
   }
 
+  // TODO This code is weirdly coupled to setShowWireframe as well
+  // What is this even trying to do?
   getWireframe() {
     if (!this._wireframe) {
       this._wireframe = new Uint32Array(this.getTriangles().length * 2);
@@ -137,10 +145,13 @@ class MeshDynamic extends Mesh {
     super.setShowWireframe(showWireframe);
   }
 
-  updateWireframe(iFaces) {
+  updateWireframe(iFaces: any | null = null) {
     var wire = this._wireframe;
+    if (wire == null) {
+      return;
+    }
     var tris = this.getTriangles();
-    var full = iFaces === undefined;
+    var full = iFaces == null;
     var useDA = this.isUsingDrawArrays();
     var nbTriangles = full ? this.getNbTriangles() : iFaces.length;
     for (var i = 0; i < nbTriangles; ++i) {
@@ -204,10 +215,10 @@ class MeshDynamic extends Mesh {
   reAllocateArrays(nbAddElements) {
     var mdata = this._meshData;
 
-    var nbDyna = this._facesStateFlags.length;
+    var nbDyna = this._facesStateFlags?.length;
     var nbTriangles = this.getNbTriangles();
     var len = nbTriangles + nbAddElements;
-    if (nbDyna < len || nbDyna > len * 4) {
+    if (nbDyna != null && (nbDyna < len || nbDyna > len * 4)) {
       this._facesStateFlags = this.resizeArray(this._facesStateFlags, len);
       if (this.getShowWireframe())
         this._wireframe = this.resizeArray(this._wireframe, len * 6);
@@ -315,9 +326,5 @@ class MeshDynamic extends Mesh {
     }
   }
 }
-
-MeshDynamic.SUBDIVISION_FACTOR = 75; // subdivision factor
-MeshDynamic.DECIMATION_FACTOR = 0; // decimation factor
-MeshDynamic.LINEAR = false; // linear subdivision
 
 export default MeshDynamic;

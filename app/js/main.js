@@ -1,3 +1,3 @@
 import SculptGL from '../../src/SculptGL';
 
-window.SculptGL = SculptGL;
+window['SculptGL'] = SculptGL;
