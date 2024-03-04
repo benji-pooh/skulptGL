@@ -230,11 +230,11 @@ class Multimesh extends Mesh {
     return true;
   }
 
-  render(main) {
+  override render(main) {
     return this._canUseLowRender(main) ? this._renderLow(main) : super.render(main);
   }
 
-  renderWireframe(main) {
+  override renderWireframe(main) {
     return this._canUseLowRender(main) ? this._renderWireframeLow(main) : super.renderWireframe(main);
   }
 }

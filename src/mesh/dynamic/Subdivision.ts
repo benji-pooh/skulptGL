@@ -168,7 +168,6 @@ function halfEdgeSplit(sub_data: SubData, iTri, iv1, iv2, iv3) {
   Utils.replaceElement(vrf[iv2], iTri, iNewTri);
   var leaf = fleaf[iTri];
   var iTrisLeaf = leaf._iFaces;
-  console.log(leaf);
   fleaf[iNewTri] = leaf;
   pil[iNewTri] = iTrisLeaf.length;
   iTrisLeaf.push(iNewTri);
