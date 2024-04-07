@@ -20,7 +20,7 @@ class MeshResolution extends Mesh {
     this.setTransformData(mesh.getTransformData());
   }
 
-  optimize() { }
+  override optimize() { }
 
   getEvenMapping() {
     return this._evenMapping;

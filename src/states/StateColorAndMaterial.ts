@@ -1,13 +1,20 @@
+import Mesh from '../mesh/Mesh';
 import Utils from '../misc/Utils';
 
 class StateColorAndMaterial {
 
+  _main: any;
+  _mesh: Mesh;
+  /** Ids of vertifices */
+  _idVertState: any[] = [];
+  /** copies of color vertices */
+  _cArState: any[] = [];
+  /** copies of material vertices */
+  _mArState: any[] = [];
+
   constructor(main, mesh) {
     this._main = main; // main application
     this._mesh = mesh; // the mesh
-    this._idVertState = []; // ids of vertices
-    this._cArState = []; // copies of color vertices
-    this._mArState = []; // copies of material vertices
   }
 
   isNoop() {

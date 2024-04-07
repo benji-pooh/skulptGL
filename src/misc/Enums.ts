@@ -2,7 +2,10 @@ import Utils from './Utils';
 
 // enum marked with /!\ shouldn't change (serialized in sgl file)
 
-var Enums = {};
+// TODO Make enums more TS like
+// https://stackoverflow.com/questions/56854964/why-is-const-enum-allowed-with-isolatedmodules
+
+var Enums: { [k: string]: any } = {};
 
 Enums.Action = {
   NOTHING: 0,

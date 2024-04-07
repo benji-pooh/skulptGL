@@ -3,13 +3,17 @@ import Utils from '../misc/Utils';
 
 class StateGeometry {
 
-  constructor(main, mesh) {
-    this._main = main; // main application
-    this._mesh = mesh; // the mesh
-    this._center = vec3.copy([0.0, 0.0, 0.0], mesh.getCenter());
+  _main: any; // main application
+  _mesh: any;// the mesh
+  _center: vec3;
 
-    this._idVertState = []; // ids of vertices
-    this._vArState = []; // copies of vertices coordinates
+  _idVertState = []; // ids of vertices
+  _vArState = []; // copies of vertices coordinates
+
+  constructor(main, mesh) {
+    this._main = main;
+    this._mesh = mesh;
+    this._center = vec3.copy([0.0, 0.0, 0.0], mesh.getCenter());
   }
 
   isNoop() {

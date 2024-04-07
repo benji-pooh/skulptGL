@@ -1,4 +1,3 @@
-import './misc/Polyfill';
 import { vec3 } from 'gl-matrix';
 import { Manager as HammerManager, Pan, Pinch, Tap } from 'hammerjs';
 import Tablet from './misc/Tablet';

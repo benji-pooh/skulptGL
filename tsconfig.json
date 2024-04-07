@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "isolatedModules": true,
+        "lib": [
+            "es2023",
+            "dom"
+        ],
+        "noEmit": true,
+        "noImplicitOverride": true,
+    }
+}
