@@ -1,5 +1,8 @@
 class StateCustom {
 
+  _undocb: any;
+  _redocb: any;
+
   constructor(undocb, redocb) {
     this._undocb = undocb;
     this._redocb = redocb ? redocb : undocb;

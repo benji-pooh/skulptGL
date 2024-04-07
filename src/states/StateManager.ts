@@ -8,6 +8,13 @@ import StCustom from './StateCustom';
 
 class StateManager {
 
+  static STACK_LENGTH = 15;
+
+  _main: any; // main
+  _undos = []; // undo actions
+  _redos = []; // redo actions
+  _curUndoIndex = -1; // current index in undo
+
   constructor(main) {
     this._main = main; // main
     this._undos = []; // undo actions
@@ -17,13 +24,13 @@ class StateManager {
 
   pushStateCustom(undocb, redocb, squash) {
     var st = new StCustom(undocb, redocb);
-    st.squash = squash;
+    st['squash'] = squash;
     this.pushState(st);
   }
 
   pushStateAddRemove(addMesh, remMesh, squash) {
     var st = new StAddRemove(this._main, addMesh, remMesh);
-    st.squash = squash;
+    st['squash'] = squash;
     this.pushState(st);
   }
 
@@ -137,7 +144,5 @@ class StateManager {
     }
   }
 }
-
-StateManager.STACK_LENGTH = 15;
 
 export default StateManager;

@@ -3,23 +3,30 @@ import Utils from '../misc/Utils';
 
 class StateDynamic {
 
+  _main: any; // main application
+  _mesh: any; // the mesh
+  _center: vec3;
+
+  _nbFacesState: number // number of faces
+  _nbVerticesState: number  // number of vertices
+
+  _idVertState = []; // ids of vertices
+  _fRingState = []; // ring of faces around vertices
+  _vRingState = []; // ring of faces around vertices
+  _vArState = []; // copies of vertices coordinates
+  _cArState = []; // copies of color vertices
+  _mArState = []; // copies of material vertices
+
+  _idFaceState = []; // ids of faces
+  _fArState = []; // copies of face indices
+
   constructor(main, mesh) {
-    this._main = main; // main application
-    this._mesh = mesh; // the mesh
+    this._main = main;
+    this._mesh = mesh;
     this._center = vec3.copy([0.0, 0.0, 0.0], mesh.getCenter());
 
     this._nbFacesState = mesh.getNbFaces(); // number of faces
     this._nbVerticesState = mesh.getNbVertices(); // number of vertices
-
-    this._idVertState = []; // ids of vertices
-    this._fRingState = []; // ring of faces around vertices
-    this._vRingState = []; // ring of faces around vertices
-    this._vArState = []; // copies of vertices coordinates
-    this._cArState = []; // copies of color vertices
-    this._mArState = []; // copies of material vertices
-
-    this._idFaceState = []; // ids of faces
-    this._fArState = []; // copies of face indices
   }
 
   isNoop() {

@@ -111,8 +111,9 @@ ShaderPBR.fragment = [
 // ShaderPBR.onLoadEnvironment = function (gl, tex, main, env) {
 ShaderPBR.onLoadEnvironment = function (xhr, gl, main, env) {
   // nodejs context : status is 0 for some reasons
-  if (xhr.status && xhr.status !== 200 && (!xhr.response || !xhr.response.byteLength))
+  if (xhr.status && xhr.status !== 200 && (!xhr.response || !xhr.response.byteLength)) {
     return;
+  }
 
   // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
   var w = xhr.width || Math.sqrt(xhr.response.byteLength / 8);
@@ -140,7 +141,8 @@ ShaderPBR.getOrCreateEnvironment = function (gl, main, env) {
   if (env.texture !== undefined) return env.texture;
   env.texture = null;
 
-  if (env.path.endsWith('png')) {
+  // Parcel includes cache busting in the generated urls, so we can't use endswith
+  if (env.path.includes('.png')) {
     var image = new Image();
     image.src = env.path;
     image.onload = ShaderPBR.onLoadEnvironment.bind(this, image, gl, main, env);

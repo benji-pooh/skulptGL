@@ -1,10 +1,11 @@
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
+import uv_tex from '../../../app/resources/uv.png';
 
 var ShaderUV = ShaderBase.getCopy();
 ShaderUV.vertexName = ShaderUV.fragmentName = 'ShowUV';
 
-ShaderUV.texPath = 'resources/uv.png';
+ShaderUV.texPath = uv_tex;
 
 ShaderUV.uniforms = {};
 ShaderUV.attributes = {};

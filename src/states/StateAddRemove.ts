@@ -1,9 +1,18 @@
 class StateAddRemove {
 
+  _main: any;
+  _addedMeshes: any[];
+  _removedMeshes: any[];
+  _selectMeshes: any[];
+
   constructor(main, addedMeshes, removedMeshes) {
     this._main = main; // main application
-    this._addedMeshes = addedMeshes.length !== undefined ? addedMeshes : [addedMeshes]; // the added meshes
-    this._removedMeshes = removedMeshes.length !== undefined ? removedMeshes : [removedMeshes]; // the deleted meshes
+    this._addedMeshes = addedMeshes.length !== undefined
+      ? addedMeshes
+      : [addedMeshes]; // the added meshes
+    this._removedMeshes = removedMeshes.length !== undefined
+      ? removedMeshes
+      : [removedMeshes]; // the deleted meshes
     this._selectMeshes = main.getSelectedMeshes().slice();
   }
 

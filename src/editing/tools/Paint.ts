@@ -12,7 +12,6 @@ class Paint extends SculptBase {
   protected _pickColor = false; // color picking
   protected _pickCallback: Function | null = null; // callback function after picking a color
   protected _idAlpha = 0;
-  protected _lockPosition = false;
 
   protected _writeAlbedo = true;
   protected _writeRoughness = true;
@@ -20,40 +19,40 @@ class Paint extends SculptBase {
 
   constructor(main) {
     super(main);
-
+    this._lockPosition = false;
     this._radius = 50;
 
   }
 
-  end() {
+  override end() {
     this._pickColor = false;
     super.end();
   }
 
-  pushState(force) {
+  override pushState(force) {
     if (!this._pickColor || force)
       this._main.getStateManager().pushStateColorAndMaterial(this.getMesh());
   }
 
-  startSculpt() {
+  override startSculpt() {
     if (this._pickColor)
       return this.pickColor(this._main.getPicking());
     super.startSculpt();
   }
 
-  update(contin) {
+  override update(contin) {
     if (this._pickColor === true)
       return this.updatePickColor();
     super.update(contin);
   }
 
-  updateContinuous() {
+  override updateContinuous() {
     if (this._pickColor === true)
       return this.updatePickColor();
     super.updateContinuous();
   }
 
-  updateMeshBuffers() {
+  override updateMeshBuffers() {
     var mesh = this.getMesh();
     if (mesh.isDynamic) {
       mesh.updateBuffers();
@@ -85,7 +84,7 @@ class Paint extends SculptBase {
     }
   }
 
-  stroke(picking) {
+  override stroke(picking) {
     var iVertsInRadius = picking.getPickedVertices();
     var intensity = this._intensity * Tablet.getPressureIntensity();
 
