@@ -1,8 +1,13 @@
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
 import getOptionsURL from '../../misc/getOptionsURL';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderMerge = ShaderBase.getCopy();
+interface IShaderMerge {
+  FILMIC: boolean
+}
+
+var ShaderMerge = <IShaderMerge & IShaderBase>ShaderBase.getCopy();
 ShaderMerge.vertexName = ShaderMerge.fragmentName = 'Merge';
 
 ShaderMerge.FILMIC = getOptionsURL().filmic; // edited by the gui

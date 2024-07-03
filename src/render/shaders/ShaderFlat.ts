@@ -11,7 +11,7 @@ ShaderFlat.activeAttributes = {
 };
 
 ShaderFlat.uniformNames = ['uColor'];
-Array.prototype.push.apply(ShaderFlat.uniformNames, ShaderBase.uniformNames.commonUniforms);
+Array.prototype.push.apply(ShaderFlat.uniformNames, ShaderBase.commonUniforms);
 
 ShaderFlat.vertex = [
   'attribute vec3 aVertex;',

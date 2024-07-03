@@ -1,8 +1,13 @@
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
 import uv_tex from '../../../app/resources/uv.png';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderUV = ShaderBase.getCopy();
+interface IShaderUV {
+  texPath: string
+}
+
+var ShaderUV = <IShaderUV & IShaderBase>ShaderBase.getCopy();
 ShaderUV.vertexName = ShaderUV.fragmentName = 'ShowUV';
 
 ShaderUV.texPath = uv_tex;
@@ -11,7 +16,7 @@ ShaderUV.uniforms = {};
 ShaderUV.attributes = {};
 
 ShaderUV.uniformNames = ['uTexture0', 'uAlbedo'];
-Array.prototype.push.apply(ShaderUV.uniformNames, ShaderBase.uniformNames.commonUniforms);
+Array.prototype.push.apply(ShaderUV.uniformNames, ShaderBase.commonUniforms);
 
 ShaderUV.vertex = [
   'attribute vec3 aVertex;',

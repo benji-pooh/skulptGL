@@ -2,8 +2,13 @@ import getOptionsURL from '../../misc/getOptionsURL';
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
 import outlineGLSL from './glsl/outline.glsl';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderContour = ShaderBase.getCopy();
+interface IShaderContour {
+  color: any
+}
+
+var ShaderContour = <IShaderContour & IShaderBase>ShaderBase.getCopy();
 ShaderContour.vertexName = ShaderContour.fragmentName = 'SobelContour';
 
 ShaderContour.color = getOptionsURL().outlinecolor;
@@ -53,10 +58,10 @@ ShaderContour.draw = function (rtt) {
 };
 ShaderContour.initAttributes = function (gl) {
   ShaderContour.attributes.aVertex = new Attribute(
-    gl, 
+    gl,
     ShaderContour.program,
-    'aVertex', 
-    2, 
+    'aVertex',
+    2,
     gl.FLOAT
   );
 };

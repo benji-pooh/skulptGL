@@ -1,6 +1,12 @@
 class Buffer {
 
-  constructor(gl, type, hint) {
+  _gl: WebGL2RenderingContext;
+  _buffer: WebGLBuffer;
+  _type: number;
+  _hint: number;
+  _size: number;
+
+  constructor(gl: WebGL2RenderingContext, type, hint) {
     this._gl = gl; // webgl context
     this._buffer = gl.createBuffer(); // the buffer
     this._type = type; // the type (vert data vs index)

@@ -1,7 +1,14 @@
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
+import { IShaderBase } from './IShaderBase';
+import Rtt from '../../drawables/Rtt';
 
-var ShaderBlur = ShaderBase.getCopy();
+interface IShaderBlur {
+  INPUT_TEXTURE: Rtt | null;
+}
+
+
+var ShaderBlur = <IShaderBlur & IShaderBase>ShaderBase.getCopy();
 ShaderBlur.vertexName = ShaderBlur.fragmentName = 'Blur';
 
 ShaderBlur.INPUT_TEXTURE = null;
@@ -60,5 +67,6 @@ ShaderBlur.draw = function (rtt) {
 ShaderBlur.initAttributes = function (gl) {
   ShaderBlur.attributes.aVertex = new Attribute(gl, ShaderBlur.program, 'aVertex', 2, gl.FLOAT);
 };
+
 
 export default ShaderBlur;

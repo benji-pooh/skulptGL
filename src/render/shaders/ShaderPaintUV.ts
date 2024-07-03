@@ -1,7 +1,12 @@
 import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderPaintUV = ShaderBase.getCopy();
+interface IShaderPaintUV {
+  CHANNEL_VALUE: number
+}
+
+var ShaderPaintUV = <IShaderPaintUV & IShaderBase>ShaderBase.getCopy();
 ShaderPaintUV.CHANNEL_VALUE = 0; // 0 color, 1 roughness, 2 metalness
 ShaderPaintUV.vertexName = ShaderPaintUV.fragmentName = 'PaintUV';
 

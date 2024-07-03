@@ -1,6 +1,8 @@
+import { IShaderBase } from './IShaderBase';
 import ShaderBase from './ShaderBase';
 
-var ShaderSelection = ShaderBase.getCopy();
+
+var ShaderSelection = <IShaderBase>ShaderBase.getCopy();
 ShaderSelection.vertexName = ShaderSelection.fragmentName = 'ShowSelection';
 
 ShaderSelection.uniforms = {};

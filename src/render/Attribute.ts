@@ -1,6 +1,11 @@
 class Attribute {
 
-  constructor(gl, program, name, size, type) {
+  _gl: WebGL2RenderingContext;
+  _location: GLint;
+  _size: number;
+  _type: number;
+
+  constructor(gl: WebGL2RenderingContext, program, name, size, type) {
     this._gl = gl; // webgl context
     this._location = gl.getAttribLocation(program, name); // the location
     this._size = size; // numbe of components

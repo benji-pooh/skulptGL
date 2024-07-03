@@ -8,8 +8,19 @@ import winter_river from '../../../app/resources/environments/winter_river_1k.pn
 import getOptionsURL from '../../misc/getOptionsURL';
 import ShaderBase from './ShaderBase';
 import pbrGLSL from './glsl/pbr.glsl';
+import { IShaderBase } from './IShaderBase';
+import ImageLoader from '../../misc/ImageLoader';
 
-var ShaderPBR = ShaderBase.getCopy();
+interface IShaderPBR {
+  textures: any,
+  environments: any[],
+  idEnv: number,
+  exposure: number,
+  onLoadEnvironment: (xhr: HTMLImageElement | XMLHttpRequest, gl: WebGL2RenderingContext, main: any, env: any) => void,
+  getOrCreateEnvironment: (gl: WebGLRenderingContext, main: any, env: any) => boolean,
+}
+
+var ShaderPBR: IShaderPBR & IShaderBase = <IShaderPBR & IShaderBase>ShaderBase.getCopy();
 ShaderPBR.vertexName = ShaderPBR.fragmentName = 'ShadingPBR';
 
 ShaderPBR.textures = {};
@@ -54,7 +65,7 @@ ShaderPBR.uniforms = {};
 ShaderPBR.attributes = {};
 
 ShaderPBR.uniformNames = ['uIblTransform', 'uTexture0', 'uAlbedo', 'uRoughness', 'uMetallic', 'uExposure', 'uSPH', 'uEnvSize'];
-Array.prototype.push.apply(ShaderPBR.uniformNames, ShaderBase.uniformNames.commonUniforms);
+Array.prototype.push.apply(ShaderPBR.uniformNames, ShaderBase.commonUniforms);
 
 ShaderPBR.vertex = [
   'attribute vec3 aVertex;',
@@ -110,23 +121,27 @@ ShaderPBR.fragment = [
 
 // ShaderPBR.onLoadEnvironment = function (gl, tex, main, env) {
 ShaderPBR.onLoadEnvironment = function (xhr, gl, main, env) {
-  // nodejs context : status is 0 for some reasons
-  if (xhr.status && xhr.status !== 200 && (!xhr.response || !xhr.response.byteLength)) {
-    return;
-  }
-
-  // gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-  var w = xhr.width || Math.sqrt(xhr.response.byteLength / 8);
-  var h = w * 2;
-  env.size = [w, h];
-
-  env.texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, env.texture);
-
-  if (xhr.response) {
+  if (xhr instanceof XMLHttpRequest) {
+    // nodejs context : status is 0 for some reasons
+    if (xhr.status && xhr.status !== 200 && (!xhr.response || !xhr.response.byteLength)) {
+      return;
+    }
+    var w = Math.sqrt(xhr.response.byteLength / 8);
+    var h = w * 2;
+    env.size = [w, h];
+    env.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, env.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(xhr.response));
+
   } else {
+    var w = xhr.width
+    var h = w * 2;
+    env.size = [w, h];
+
+    env.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, env.texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, xhr);
+
   }
 
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -137,8 +152,10 @@ ShaderPBR.onLoadEnvironment = function (xhr, gl, main, env) {
   if (main) main.render();
 };
 
-ShaderPBR.getOrCreateEnvironment = function (gl, main, env) {
-  if (env.texture !== undefined) return env.texture;
+ShaderPBR.getOrCreateEnvironment = function (gl: WebGLRenderingContext, main: any, env: any) {
+  if (env.texture !== undefined) {
+    return env.texture
+  };
   env.texture = null;
 
   // Parcel includes cache busting in the generated urls, so we can't use endswith
@@ -176,6 +193,7 @@ ShaderPBR.updateUniforms = function (mesh, main) {
 
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, ShaderPBR.getOrCreateEnvironment(gl, main, env) || this.getDummyTexture(gl));
+
   gl.uniform1i(uniforms.uTexture0, 0);
 
   ShaderBase.updateUniforms.call(this, mesh, main);

@@ -9,8 +9,15 @@ import pearl from '../../../app/resources/matcaps/pearl.jpg';
 import skin from '../../../app/resources/matcaps/skin.jpg';
 import green from '../../../app/resources/matcaps/green.jpg';
 import white from '../../../app/resources/matcaps/white.jpg';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderMatcap = ShaderBase.getCopy();
+interface IShaderMatcap {
+  textures: {},
+  createTexture: (gl: WebGL2RenderingContext, img: HTMLImageElement, idMaterial: string) => void
+  matcaps: { path: string, name: string }[]
+}
+
+var ShaderMatcap = <IShaderMatcap & IShaderBase>ShaderBase.getCopy();
 ShaderMatcap.vertexName = ShaderMatcap.fragmentName = 'Matcap';
 
 ShaderMatcap.textures = {};
@@ -58,7 +65,7 @@ ShaderMatcap.uniforms = {};
 ShaderMatcap.attributes = {};
 
 ShaderMatcap.uniformNames = ['uTexture0', 'uAlbedo'];
-Array.prototype.push.apply(ShaderMatcap.uniformNames, ShaderBase.uniformNames.commonUniforms);
+Array.prototype.push.apply(ShaderMatcap.uniformNames, ShaderBase.commonUniforms);
 
 ShaderMatcap.vertex = [
   'attribute vec3 aVertex;',
