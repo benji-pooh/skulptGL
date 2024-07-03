@@ -1,6 +1,6 @@
 import ShaderBase from './ShaderBase';
 
-var ShaderNormal = ShaderBase.getCopy();
+let ShaderNormal: typeof ShaderBase = ShaderBase.getCopy();
 ShaderNormal.vertexName = ShaderNormal.fragmentName = 'ShowNormal';
 
 ShaderNormal.uniforms = {};
@@ -12,7 +12,7 @@ ShaderNormal.activeAttributes = {
 };
 
 ShaderNormal.uniformNames = [];
-Array.prototype.push.apply(ShaderNormal.uniformNames, ShaderBase.uniformNames.commonUniforms);
+Array.prototype.push.apply(ShaderNormal.uniformNames, ShaderBase.commonUniforms);
 
 ShaderNormal.vertex = [
   'attribute vec3 aVertex;',

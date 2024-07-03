@@ -2,9 +2,15 @@ import ShaderBase from './ShaderBase';
 import Attribute from '../Attribute';
 import getOptionsURL from '../../misc/getOptionsURL';
 import fxaaGLSL from './glsl/fxaa.glsl';
+import { IShaderBase } from './IShaderBase';
 
-var ShaderFxaa = ShaderBase.getCopy();
+interface IShaderFxaa {
+  FILMIC: boolean
+}
+
+var ShaderFxaa = <IShaderFxaa & IShaderBase>ShaderBase.getCopy();
 ShaderFxaa.vertexName = ShaderFxaa.fragmentName = 'Fxaa';
+
 
 ShaderFxaa.FILMIC = getOptionsURL().filmic; // edited by the gui
 

@@ -5,16 +5,16 @@ import Attribute from '../Attribute';
 import pbrGLSL from './glsl/pbr.glsl';
 import mainBackgroundGLSL from './glsl/mainBackground.glsl';
 
-var ShaderBackground = ShaderBase.getCopy();
+let ShaderBackground = ShaderBase.getCopy();
 ShaderBackground.vertexName = ShaderBackground.fragmentName = 'Background';
 
 ShaderBackground.uniforms = {};
 ShaderBackground.attributes = {};
 
 ShaderBackground.uniformNames = [
-  'uTexture0', 
+  'uTexture0',
   'uBackgroundType',
-  'uIblTransform', 
+  'uIblTransform',
   'uSPH',
   'uBlur',
   'uEnvSize'];
@@ -65,8 +65,12 @@ ShaderBackground.updateUniforms = function (bg) {
   gl.uniform1i(uniforms.uBackgroundType, bg.type);
 
   var tex;
-  if (bg.type === 0) tex = bg.getTexture();
-  else tex = ShaderPBR.getOrCreateEnvironment(gl, main, env) || bg.getTexture();
+  if (bg.type === 0) {
+    tex = bg.getTexture();
+  }
+  else {
+    tex = ShaderPBR.getOrCreateEnvironment(gl, main, env) || bg.getTexture();
+  }
   gl.activeTexture(gl.TEXTURE0);
   gl.bindTexture(gl.TEXTURE_2D, tex);
   gl.uniform1i(uniforms.uTexture0, 0);
