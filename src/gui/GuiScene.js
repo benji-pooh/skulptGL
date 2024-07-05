@@ -20,18 +20,6 @@ class GuiScene {
     menu.addButton(TR('sceneAddCylinder'), this._main, 'addCylinder');
     menu.addButton(TR('sceneAddTorus'), this._main, 'addTorus');
 
-    // menu.addTitle(TR('Torus'));
-    // menu.addSlider(TR('Arc'), this._main._torusRadius, this.updateTorusRadius.bind(this), 0.01, Math.PI * 2, 0.001);
-    // this.ctrlWI = menu.addSlider(TR('Width'), this._main._torusWidth, this.updateTorusWidth.bind(this), 0.01, 0.5, 0.01);
-    // this.ctrlLE = menu.addSlider(TR('Length'), this._main._torusLength, this.updateTorusLength.bind(this), 0.2, 2.0, 0.01);
-    // menu.addSlider(TR('Radial'), this._main._torusRadial, this.updateTorusRadial.bind(this), 3, 64, 1);
-    // menu.addSlider(TR('Tubular'), this._main._torusTubular, this.updateTorusTubular.bind(this), 3, 256, 1);
-
-    // this.ctrlValidate = menu.addButton(TR('Validate !'), this, 'validatePreview');
-    // this.ctrlValidate.setVisibility(false);
-    // this.ctrlDiscard = menu.addButton(TR('Discard !'), this, 'discardPreview');
-    // this.ctrlDiscard.setVisibility(false);
-
     // selection stuffs
     menu.addTitle(TR('sceneSelection'));
     this._ctrlIsolate = menu.addCheckbox(TR('renderingIsolate'), false, this.showHide.bind(this));
@@ -44,11 +32,17 @@ class GuiScene {
 
     // extra
     menu.addTitle(TR('renderingExtra'));
-    menu.addCheckbox(TR('darkenUnselected'), ShaderBase.darkenUnselected, this.onDarkenUnselected.bind(this));
+    menu.addCheckbox(TR(
+      'darkenUnselected'), ShaderBase.darkenUnselected, this.onDarkenUnselected.bind(this)
+    );
     menu.addCheckbox(TR('contourShow'), this._main._showContour, this.onShowContour.bind(this));
     menu.addCheckbox(TR('renderingGrid'), this._main._showGrid, this.onShowGrid.bind(this));
-    menu.addCheckbox(TR('renderingSymmetryLine'), ShaderBase.showSymmetryLine, this.onShowSymmetryLine.bind(this));
-    this._ctrlOffSym = menu.addSlider('SymOffset', 0.0, this.onOffsetSymmetry.bind(this), -1.0, 1.0, 0.001);
+    menu.addCheckbox(
+      TR('renderingSymmetryLine'), ShaderBase.showSymmetryLine, this.onShowSymmetryLine.bind(this)
+    );
+    this._ctrlOffSym = menu.addSlider(
+      'SymOffset', 0.0, this.onOffsetSymmetry.bind(this), -1.0, 1.0, 0.001
+    );
   }
 
   clearScene() {
@@ -144,7 +138,9 @@ class GuiScene {
   updateMesh() {
     var nbMeshes = this._main.getMeshes().length;
     var nbSelected = this._main.getSelectedMeshes().length;
-    this._ctrlIsolate.setVisibility(this.hasHiddenMeshes() || (nbMeshes !== nbSelected && nbSelected >= 1));
+    this._ctrlIsolate.setVisibility(
+      this.hasHiddenMeshes() || (nbMeshes !== nbSelected && nbSelected >= 1)
+    );
     this._ctrlMerge.setVisibility(nbSelected > 1);
 
     var mesh = this._main.getMesh();

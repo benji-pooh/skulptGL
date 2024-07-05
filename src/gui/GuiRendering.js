@@ -36,27 +36,37 @@ class GuiRendering {
     optionsShaders[Enums.Shader.NORMAL] = TR('renderingNormal');
     optionsShaders[Enums.Shader.UV] = TR('renderingUV');
     menu.addTitle(TR('renderingShader'));
-    this._ctrlShaders = menu.addCombobox('', Enums.Shader.MATCAP, this.onShaderChanged.bind(this), optionsShaders);
+    this._ctrlShaders = menu.addCombobox(
+      '', Enums.Shader.MATCAP, this.onShaderChanged.bind(this), optionsShaders
+    );
 
     // flat shading
-    this._ctrlCurvature = menu.addSlider(TR('renderingCurvature'), 20, this.onCurvatureChanged.bind(this), 0, 100, 1);
+    this._ctrlCurvature = menu.addSlider(
+      TR('renderingCurvature'), 20, this.onCurvatureChanged.bind(this), 0, 100, 1
+    );
 
     // filmic tonemapping
-    this._ctrlFilmic = menu.addCheckbox(TR('renderingFilmic'), ShaderMERGE.FILMIC, this.onFilmic.bind(this));
+    this._ctrlFilmic = menu.addCheckbox(
+      TR('renderingFilmic'), ShaderMERGE.FILMIC, this.onFilmic.bind(this)
+    );
 
     // environments
     var optionEnvs = {};
     for (var i = 0, envs = ShaderPBR.environments, l = envs.length; i < l; ++i)
       optionEnvs[i] = envs[i].name;
     this._ctrlEnvTitle = menu.addTitle(TR('renderingEnvironment'));
-    this._ctrlEnv = menu.addCombobox('', ShaderPBR.idEnv, this.onEnvironmentChanged.bind(this), optionEnvs);
+    this._ctrlEnv = menu.addCombobox(
+      '', ShaderPBR.idEnv, this.onEnvironmentChanged.bind(this), optionEnvs
+    );
 
     // matcap texture
     var optionMatcaps = {};
     for (var j = 0, mats = ShaderMatcap.matcaps, k = mats.length; j < k; ++j)
       optionMatcaps[j] = mats[j].name;
     this._ctrlMatcapTitle = menu.addTitle(TR('renderingMaterial'));
-    this._ctrlMatcap = menu.addCombobox(TR('renderingMatcap'), 0, this.onMatcapChanged.bind(this), optionMatcaps);
+    this._ctrlMatcap = menu.addCombobox(TR(
+      'renderingMatcap'), 0, this.onMatcapChanged.bind(this), optionMatcaps
+    );
 
     // matcap load
     this._ctrlImportMatcap = menu.addButton(TR('renderingImportMatcap'), this, 'importMatcap');
@@ -64,17 +74,25 @@ class GuiRendering {
     // uv texture
     this._ctrlUV = menu.addButton(TR('renderingImportUV'), this, 'importTexture');
 
-    this._ctrlExposure = menu.addSlider(TR('renderingExposure'), 1, this.onExposureChanged.bind(this), 0, 5, 0.001);
+    this._ctrlExposure = menu.addSlider(
+      TR('renderingExposure'), 1, this.onExposureChanged.bind(this), 0, 5, 0.001
+    );
     this.onUpdateCtrlExposure();
 
     menu.addTitle(TR('renderingExtra'));
-    this._ctrlTransparency = menu.addSlider(TR('renderingTransparency'), 0.0, this.onTransparencyChanged.bind(this), 0, 100, 1);
+    this._ctrlTransparency = menu.addSlider(
+      TR('renderingTransparency'), 0.0, this.onTransparencyChanged.bind(this), 0, 100, 1
+    );
 
     // flat shading
-    this._ctrlFlatShading = menu.addCheckbox(TR('renderingFlat'), false, this.onFlatShading.bind(this));
+    this._ctrlFlatShading = menu.addCheckbox(
+      TR('renderingFlat'), false, this.onFlatShading.bind(this)
+    );
 
     // wireframe
-    this._ctrlShowWireframe = menu.addCheckbox(TR('renderingWireframe'), false, this.onShowWireframe.bind(this));
+    this._ctrlShowWireframe = menu.addCheckbox(
+      TR('renderingWireframe'), false, this.onShowWireframe.bind(this)
+    );
     if (RenderData.ONLY_DRAW_ARRAYS)
       this._ctrlShowWireframe.setVisibility(false);
 

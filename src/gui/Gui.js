@@ -47,7 +47,10 @@ class Gui {
   initGui() {
     this.deleteGui();
 
-    this._guiMain = new GuiMain(this._main.getViewport(), this._main.onCanvasResize.bind(this._main));
+    this._guiMain = new GuiMain(
+      this._main.getViewport(),
+      this._main.onCanvasResize.bind(this._main)
+    );
 
     var ctrls = this._ctrls;
     ctrls.length = 0;
@@ -56,7 +59,6 @@ class Gui {
     // Initialize the topbar
     this._topbar = this._guiMain.addTopbar();
     ctrls[idc++] = this._ctrlFiles = new GuiFiles(this._topbar, this);
-    // this.initPrint(this._topbar);
     ctrls[idc++] = this._ctrlScene = new GuiScene(this._topbar, this);
     ctrls[idc++] = this._ctrlStates = new GuiStates(this._topbar, this);
     ctrls[idc++] = this._ctrlBackground = new GuiBackground(this._topbar, this);
@@ -118,26 +120,6 @@ class Gui {
     }
 
     return notif;
-  }
-
-  initPrint(guiParent) {
-    var menu = guiParent.addMenu('Print it!');
-    // menu.addButton('with Sculpteo', this, 'exportSculpteo');
-    menu.addButton('Go to Materialise!', this, 'exportMaterialise');
-  }
-
-  exportSculpteo() {
-    this._export('sculpteo');
-  }
-
-  exportMaterialise() {
-    if (window.confirm('A new webpage will be opened. Start upload?')) {
-      this._export('materialise');
-    }
-  }
-
-  exportSketchfab() {
-    this._export('sketchfab');
   }
 
   _export(notifName) {

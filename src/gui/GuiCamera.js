@@ -21,18 +21,32 @@ class GuiCamera {
 
     // reset camera
     menu.addTitle(TR('cameraReset'));
-    menu.addDualButton(TR('cameraCenter'), TR('cameraFront'), this.resetCamera.bind(this), this.resetFront.bind(this));
-    menu.addDualButton(TR('cameraLeft'), TR('cameraTop'), this.resetLeft.bind(this), this.resetTop.bind(this));
+    menu.addDualButton(
+      TR('cameraCenter'),
+      TR('cameraFront'), 
+      this.resetCamera.bind(this), 
+      this.resetFront.bind(this))
+    ;
+    menu.addDualButton(
+      TR('cameraLeft'), 
+      TR('cameraTop'), 
+      this.resetLeft.bind(this), 
+      this.resetTop.bind(this)
+    );
 
     // camera type
     this._ctrlProjectionTitle = menu.addTitle(TR('cameraProjection'));
     var optionsType = [];
     optionsType[Enums.Projection.PERSPECTIVE] = TR('cameraPerspective');
     optionsType[Enums.Projection.ORTHOGRAPHIC] = TR('cameraOrthographic');
-    this._ctrlProjection = menu.addCombobox('', camera.getProjectionType(), this.onCameraTypeChange.bind(this), optionsType);
+    this._ctrlProjection = menu.addCombobox(
+      '', camera.getProjectionType(), this.onCameraTypeChange.bind(this), optionsType
+    );
 
     // camera fov
-    this._ctrlFov = menu.addSlider(TR('cameraFov'), camera.getFov(), this.onFovChange.bind(this), 10, 90, 1);
+    this._ctrlFov = menu.addSlider(
+      TR('cameraFov'), camera.getFov(), this.onFovChange.bind(this), 10, 90, 1
+    );
     this._ctrlFov.setVisibility(camera.getProjectionType() === Enums.Projection.PERSPECTIVE);
 
     // camera mode
@@ -42,7 +56,9 @@ class GuiCamera {
     optionsMode[Enums.CameraMode.SPHERICAL] = TR('cameraSpherical');
     optionsMode[Enums.CameraMode.PLANE] = TR('cameraPlane');
     menu.addCombobox('', camera.getMode(), this.onCameraModeChange.bind(this), optionsMode);
-    this._ctrlPivot = menu.addCheckbox(TR('cameraPivot'), camera.getUsePivot(), this.onPivotChange.bind(this));
+    this._ctrlPivot = menu.addCheckbox(
+      TR('cameraPivot'), camera.getUsePivot(), this.onPivotChange.bind(this)
+    );
 
     // TR('CameraSpeed') ...
     menu.addSlider('speed', this._main, '_cameraSpeed', 0.05, 1.0, 0.001);

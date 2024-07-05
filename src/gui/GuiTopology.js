@@ -25,34 +25,52 @@ class GuiMultiresolution {
 
     // multires
     menu.addTitle(TR('multiresTitle'));
-    this._ctrlResolution = menu.addSlider(TR('multiresResolution'), 1, this.onResolutionChanged.bind(this), 1, 1, 1);
-    var dual = menu.addDualButton(TR('multiresReverse'), TR('multiresSubdivide'), this, this, 'reverse', 'subdivide');
+    this._ctrlResolution = menu.addSlider(
+      TR('multiresResolution'), 1, this.onResolutionChanged.bind(this), 1, 1, 1
+    );
+    var dual = menu.addDualButton(
+      TR('multiresReverse'), TR('multiresSubdivide'), this, this, 'reverse', 'subdivide'
+    );
     this._ctrlReverse = dual[0];
     this._ctrlSubdivide = dual[1];
-    dual = this._dualButtonDel = menu.addDualButton(TR('multiresDelLower'), TR('multiresDelHigher'), this, this, 'deleteLower', 'deleteHigher');
+    dual = this._dualButtonDel = menu.addDualButton(
+      TR('multiresDelLower'), TR('multiresDelHigher'), this, this, 'deleteLower', 'deleteHigher'
+    );
     this._ctrlDelLower = dual[0];
     this._ctrlDelHigher = dual[1];
-    this._ctrlDelLower.domButton.style.background = this._ctrlDelHigher.domButton.style.background = 'rgba(230,53,59,0.35)';
+    this._ctrlDelLower.domButton.style.background 
+    = this._ctrlDelHigher.domButton.style.background 
+    = 'rgba(230,53,59,0.35)';
 
     var cbResolution = this.remeshResolution.bind(this);
 
     // surface nets remeshing
     menu.addTitle(TR('remeshTitle'));
-    this._ctrlRes1 = menu.addSlider(TR('remeshResolution'), Remesh.RESOLUTION, cbResolution, 8, 400, 1);
+    this._ctrlRes1 = menu.addSlider(
+      TR('remeshResolution'), Remesh.RESOLUTION, cbResolution, 8, 400, 1
+    );
     menu.addCheckbox(TR('remeshBlock'), Remesh, 'BLOCK');
     menu.addButton(TR('remeshRemesh'), this, 'remesh');
 
     // marching cube remeshing
     menu.addTitle(TR('remeshTitleMC'));
-    this._ctrlRes2 = menu.addSlider(TR('remeshResolution'), Remesh.RESOLUTION, cbResolution, 8, 400, 1);
+    this._ctrlRes2 = menu.addSlider(
+      TR('remeshResolution'), Remesh.RESOLUTION, cbResolution, 8, 400, 1
+    );
     menu.addCheckbox(TR('remeshSmoothingMC'), Remesh, 'SMOOTHING');
     menu.addButton(TR('remeshRemeshMC'), this, 'remeshMC');
 
     // dynamic
     menu.addTitle(TR('dynamicTitle'));
-    this._ctrlDynamic = menu.addCheckbox(TR('dynamicActivated'), false, this.dynamicToggleActivate.bind(this));
-    this._ctrlDynSubd = menu.addSlider(TR('dynamicSubdivision'), MeshDynamic, 'SUBDIVISION_FACTOR', 0, 100, 1);
-    this._ctrlDynDec = menu.addSlider(TR('dynamicDecimation'), MeshDynamic, 'DECIMATION_FACTOR', 0, 100, 1);
+    this._ctrlDynamic = menu.addCheckbox(
+      TR('dynamicActivated'), false, this.dynamicToggleActivate.bind(this)
+    );
+    this._ctrlDynSubd = menu.addSlider(
+      TR('dynamicSubdivision'), MeshDynamic, 'SUBDIVISION_FACTOR', 0, 100, 1
+    );
+    this._ctrlDynDec = menu.addSlider(
+      TR('dynamicDecimation'), MeshDynamic, 'DECIMATION_FACTOR', 0, 100, 1
+    );
     this._ctrlDynLin = menu.addCheckbox(TR('dynamicLinear'), MeshDynamic, 'LINEAR');
     this.updateDynamicVisibility(false);
   }
@@ -182,7 +200,9 @@ class GuiMultiresolution {
       main.getStateManager().pushStateAddRemove(mul, mesh, true);
     }
 
-    main.getStateManager().pushState(new StateMultiresolution(main, mul, StateMultiresolution.SUBDIVISION));
+    main.getStateManager().pushState(
+      new StateMultiresolution(main, mul, StateMultiresolution.SUBDIVISION)
+    );
     mul.addLevel();
     main.setMesh(mul);
     main.render();
@@ -227,7 +247,9 @@ class GuiMultiresolution {
       return;
     }
 
-    main.getStateManager().pushState(new StateMultiresolution(main, mul, StateMultiresolution.DELETE_LOWER));
+    main.getStateManager().pushState(
+      new StateMultiresolution(main, mul, StateMultiresolution.DELETE_LOWER)
+    );
     mul.deleteLower();
     this.updateMeshResolution();
   }
@@ -241,7 +263,9 @@ class GuiMultiresolution {
       return;
     }
 
-    main.getStateManager().pushState(new StateMultiresolution(main, mul, StateMultiresolution.DELETE_HIGHER));
+    main.getStateManager().pushState(
+      new StateMultiresolution(main, mul, StateMultiresolution.DELETE_HIGHER)
+    );
     mul.deleteHigher();
     this.updateMeshResolution();
   }
@@ -263,7 +287,9 @@ class GuiMultiresolution {
     if (!isMulti || multimesh._sel === uiRes)
       return;
 
-    main.getStateManager().pushState(new StateMultiresolution(main, multimesh, StateMultiresolution.SELECTION));
+    main.getStateManager().pushState(
+      new StateMultiresolution(main, multimesh, StateMultiresolution.SELECTION)
+    );
     multimesh.selectResolution(uiRes);
     this._ctrlGui.updateMeshInfo();
     main.render();
