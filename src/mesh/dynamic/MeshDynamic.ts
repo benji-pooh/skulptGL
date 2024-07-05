@@ -55,7 +55,7 @@ class MeshDynamic extends Mesh {
     return MeshDynamic.DECIMATION_FACTOR * 0.01;
   }
 
-  getVerticesProxy() {
+  override getVerticesProxy() {
     return this.getVertices(); // for now no proxy sculpting for dynamic meshes
   }
 
@@ -63,7 +63,7 @@ class MeshDynamic extends Mesh {
     this._meshData._nbVertices += nb;
   }
 
-  getNbTriangles() {
+  override  getNbTriangles() {
     return this.getNbFaces();
   }
 
@@ -71,7 +71,7 @@ class MeshDynamic extends Mesh {
     this._meshData._nbFaces += nb;
   }
 
-  getNbEdges() {
+  override getNbEdges() {
     return this.getNbTriangles() * 3;
   }
 
@@ -132,7 +132,7 @@ class MeshDynamic extends Mesh {
 
   // TODO This code is weirdly coupled to setShowWireframe as well
   // What is this even trying to do?
-  getWireframe() {
+  override getWireframe() {
     if (!this._wireframe) {
       this._wireframe = new Uint32Array(this.getTriangles().length * 2);
       this.updateWireframe();
@@ -140,7 +140,7 @@ class MeshDynamic extends Mesh {
     return this._wireframe;
   }
 
-  setShowWireframe(showWireframe) {
+  override   setShowWireframe(showWireframe) {
     this._wireframe = null;
     super.setShowWireframe(showWireframe);
   }
@@ -268,7 +268,7 @@ class MeshDynamic extends Mesh {
     }
   }
 
-  initTopology() {
+  override initTopology() {
     var vrings = this.getVerticesRingVert();
     var frings = this.getVerticesRingFace();
     var i = 0;

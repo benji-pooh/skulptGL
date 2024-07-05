@@ -7,7 +7,6 @@ import MeshStatic from '../../mesh/meshStatic/MeshStatic';
 
 class Masking extends SculptBase {
 
-  protected _radius = 50;
   protected hardness = 0.25;
   protected intensity = 1.0;
   protected negative = true;
@@ -23,12 +22,12 @@ class Masking extends SculptBase {
 
   }
 
-  pushState() {
+  override pushState() {
     // too lazy to add a pushStateMaterial
     this._main.getStateManager().pushStateColorAndMaterial(this.getMesh());
   }
 
-  updateMeshBuffers() {
+  override updateMeshBuffers() {
     var mesh = this.getMesh();
     if (mesh.isDynamic)
       mesh.updateBuffers();
@@ -36,11 +35,11 @@ class Masking extends SculptBase {
       mesh.updateMaterialBuffer();
   }
 
-  stroke(picking) {
+  override stroke(picking) {
     Paint.prototype.stroke.call(this, picking);
   }
 
-  dynamicTopology(picking) {
+  override dynamicTopology(picking) {
     // no dynamic topo with masking
     return picking.getPickedVertices();
   }

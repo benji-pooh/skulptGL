@@ -21,7 +21,7 @@ class Twist extends SculptBase {
     this._radius = 75;
   }
 
-  startSculpt() {
+  override startSculpt() {
     var main = this._main;
     var mouseX = main._mouseX;
     var mouseY = main._mouseY;
@@ -44,7 +44,7 @@ class Twist extends SculptBase {
   }
 
   /** Make a brush twist stroke */
-  sculptStroke() {
+  override sculptStroke() {
     var main = this._main;
     var mx = main._mouseX;
     var my = main._mouseY;
@@ -67,7 +67,7 @@ class Twist extends SculptBase {
   }
 
   /** On stroke */
-  stroke(picking, mx, my, lx, ly, twistData) {
+  override stroke(picking, mx, my, lx, ly, twistData) {
     var iVertsInRadius = picking.getPickedVertices();
 
     // undo-redo
