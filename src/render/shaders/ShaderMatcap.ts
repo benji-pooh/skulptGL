@@ -13,7 +13,7 @@ import { IShaderBase } from './IShaderBase';
 
 interface IShaderMatcap {
   textures: {},
-  createTexture: (gl: WebGL2RenderingContext, img: HTMLImageElement, idMaterial: string) => void
+  createTexture: (gl: WebGLRenderingContext, img: HTMLImageElement, idMaterial: string) => void
   matcaps: { path: string, name: string }[]
 }
 

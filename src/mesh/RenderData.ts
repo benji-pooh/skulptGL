@@ -33,7 +33,7 @@ class RenderData {
   _alpha = 1.0;
 
   _flatColor = new Float32Array([1.0, 0.0, 0.0]);
-  _mode = WebGL2RenderingContext.TRIANGLES
+  _mode = WebGLRenderingContext.TRIANGLES
 
   constructor(gl: any) {
     var opts = getOptionsURL();

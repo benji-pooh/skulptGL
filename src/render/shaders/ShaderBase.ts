@@ -112,7 +112,7 @@ let ShaderBase: IShaderBase = {
     ].join('\n'),
   },
 
-  getOrCreate(gl: WebGL2RenderingContext): IShaderBase {
+  getOrCreate(gl: WebGLRenderingContext): IShaderBase {
     if (this.program !== null) {
       return this;
     }
@@ -153,7 +153,7 @@ let ShaderBase: IShaderBase = {
     return this;
   },
 
-  initUniforms(gl: WebGL2RenderingContext) {
+  initUniforms(gl: WebGLRenderingContext) {
     var program = this.program;
     var unifNames = this.uniformNames;
     var unifs = this.uniforms;
@@ -213,7 +213,7 @@ let ShaderBase: IShaderBase = {
     this.unbindAttributes();
   },
 
-  setTextureParameters(gl: WebGL2RenderingContext, tex: HTMLImageElement) {
+  setTextureParameters(gl: WebGLRenderingContext, tex: HTMLImageElement) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     if (Utils.isPowerOfTwo(tex.width) && Utils.isPowerOfTwo(tex.height)) {
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
@@ -227,7 +227,7 @@ let ShaderBase: IShaderBase = {
     }
   },
 
-  onLoadTexture0(gl: WebGL2RenderingContext, tex: HTMLImageElement, main) {
+  onLoadTexture0(gl: WebGLRenderingContext, tex: HTMLImageElement, main) {
     this.texture0 = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this.texture0);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex);
@@ -238,7 +238,7 @@ let ShaderBase: IShaderBase = {
     }
   },
 
-  getDummyTexture(gl: WebGL2RenderingContext): WebGLTexture {
+  getDummyTexture(gl: WebGLRenderingContext): WebGLTexture {
     if (this._dummyTex !== null)
       return this._dummyTex;
     this._dummyTex = gl.createTexture();
@@ -248,7 +248,7 @@ let ShaderBase: IShaderBase = {
     return this._dummyTex;
   },
 
-  getOrCreateTexture0(gl: WebGL2RenderingContext, texPath: string, main): WebGLTexture | false {
+  getOrCreateTexture0(gl: WebGLRenderingContext, texPath: string, main): WebGLTexture | false {
     if (this.texture0 !== undefined)
       return this.texture0;
     this.texture0 = null; // trigger loading
@@ -258,7 +258,7 @@ let ShaderBase: IShaderBase = {
     return false;
   },
 
-  initAttributes(gl: WebGL2RenderingContext) {
+  initAttributes(gl: WebGLRenderingContext) {
     var program = this.program;
     var attrs = this.attributes;
     attrs.aVertex = new Attribute(gl, program, 'aVertex', 3, gl.FLOAT);

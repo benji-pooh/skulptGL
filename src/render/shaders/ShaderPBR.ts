@@ -16,7 +16,7 @@ interface IShaderPBR {
   environments: any[],
   idEnv: number,
   exposure: number,
-  onLoadEnvironment: (xhr: HTMLImageElement | XMLHttpRequest, gl: WebGL2RenderingContext, main: any, env: any) => void,
+  onLoadEnvironment: (xhr: HTMLImageElement | XMLHttpRequest, gl: WebGLRenderingContext, main: any, env: any) => void,
   getOrCreateEnvironment: (gl: WebGLRenderingContext, main: any, env: any) => boolean,
 }
 
