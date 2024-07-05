@@ -1,7 +1,15 @@
 {
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "build/",
+        "dist/",
+        "node_modules"
+    ],
     "compilerOptions": {
         "allowJs": true,
-        "checkJs": true,
+        "checkJs": false,
         "isolatedModules": true,
         "lib": [
             "es2023",
