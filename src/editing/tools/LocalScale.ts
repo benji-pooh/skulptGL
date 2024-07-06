@@ -2,6 +2,9 @@ import SculptBase from './SculptBase';
 
 class LocalScale extends SculptBase {
 
+  protected _culling: boolean;
+  protected _idAlpha: number;
+
   constructor(main) {
     super(main);
 
@@ -10,7 +13,7 @@ class LocalScale extends SculptBase {
     this._idAlpha = 0;
   }
 
-  startSculpt() {
+  override startSculpt() {
     var main = this._main;
     if (main.getSculptManager().getSymmetry()) {
       var pickingSym = main.getPickingSymmetry();
@@ -20,7 +23,7 @@ class LocalScale extends SculptBase {
   }
 
   /** Make a brush scale stroke */
-  sculptStroke() {
+  override sculptStroke() {
     var main = this._main;
     var delta = main._mouseX - main._lastMouseX;
     var picking = main.getPicking();
@@ -39,7 +42,7 @@ class LocalScale extends SculptBase {
   }
 
   /** On stroke */
-  stroke(picking, delta) {
+  override  stroke(picking, delta) {
     var iVertsInRadius = picking.getPickedVertices();
 
     // undo-redo

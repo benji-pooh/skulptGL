@@ -45,15 +45,21 @@ class GuiSculpting {
     for (var i = 0, nbTools = Tools.length; i < nbTools; ++i) {
       if (Tools[i]) optTools[i] = TR(Tools[i].uiName);
     }
-    this._ctrlSculpt = menu.addCombobox(TR('sculptTool'), this._sculptManager.getToolIndex(), this.onChangeTool.bind(this), optTools);
+    this._ctrlSculpt = menu.addCombobox(
+      TR('sculptTool'), this._sculptManager.getToolIndex(), this.onChangeTool.bind(this), optTools
+    );
 
     GuiSculptingTools.initGuiTools(this._sculptManager, this._menu, this._main);
 
     this._ctrlTitleCommon = menu.addTitle(TR('sculptCommon'));
     // symmetry
-    this._ctrlSymmetry = menu.addCheckbox(TR('sculptSymmetry'), this._sculptManager._symmetry, this.onSymmetryChange.bind(this));
+    this._ctrlSymmetry = menu.addCheckbox(
+      TR('sculptSymmetry'), this._sculptManager._symmetry, this.onSymmetryChange.bind(this)
+    );
     // continuous
-    this._ctrlContinuous = menu.addCheckbox(TR('sculptContinuous'), this._sculptManager, '_continuous');
+    this._ctrlContinuous = menu.addCheckbox(
+      TR('sculptContinuous'), this._sculptManager, '_continuous')
+    ;
 
     GuiSculptingTools.show(this._sculptManager.getToolIndex());
     this.addEvents();
@@ -237,7 +243,11 @@ class GuiSculpting {
   }
 
   onKeyUp(event) {
-    var releaseTool = this._main._action === Enums.Action.NOTHING && this._toolOnRelease !== -1 && !event.ctrlKey && !event.shiftKey;
+    var releaseTool = this._main._action === Enums.Action.NOTHING 
+    && this._toolOnRelease !== -1 
+    && !event.ctrlKey 
+    && !event.shiftKey;
+    
     if (!event.altKey || releaseTool)
       this.releaseInvertSign();
 

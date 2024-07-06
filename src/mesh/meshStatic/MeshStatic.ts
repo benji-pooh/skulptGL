@@ -5,7 +5,7 @@ import RenderData from '../RenderData';
 
 class MeshStatic extends Mesh {
 
-  constructor(gl) {
+  constructor(gl = null) {
     super();
 
     this._id = Mesh.ID++; // useful id to retrieve a mesh (dynamic mesh, multires mesh, voxel mesh)

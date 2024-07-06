@@ -3,6 +3,12 @@ import SculptBase from './SculptBase';
 
 class Inflate extends SculptBase {
 
+  protected _intensity: number;
+  protected _negative: boolean;
+  protected _culling: boolean;
+  protected _idAlpha: number;
+
+
   constructor(main) {
     super(main);
 
@@ -14,7 +20,7 @@ class Inflate extends SculptBase {
     this._lockPosition = false;
   }
 
-  stroke(picking) {
+  override stroke(picking) {
     var iVertsInRadius = picking.getPickedVertices();
     var intensity = this._intensity * Tablet.getPressureIntensity();
 

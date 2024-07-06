@@ -4,7 +4,7 @@
 const HALF_FLOAT = 0x8D61;
 
 class WebGLCaps {
-  static _gl: WebGL2RenderingContext = null;
+  static _gl: WebGLRenderingContext = null;
   static _checkRTT = {};
   static _webGLExtensions: { [k: string]: any } = {};
 
@@ -77,7 +77,7 @@ class WebGLCaps {
   /// until this method is called. 
   ///
   /// TODO: Turn into true singleton
-  static initWebGLExtensions(gl: WebGL2RenderingContext) {
+  static initWebGLExtensions(gl: WebGLRenderingContext) {
     WebGLCaps._gl = gl;
     var supported = gl.getSupportedExtensions();
     var ext = WebGLCaps._webGLExtensions;

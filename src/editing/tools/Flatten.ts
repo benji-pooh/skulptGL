@@ -17,7 +17,7 @@ class Flatten extends SculptBase {
     this._lockPosition = false;
   }
 
-  stroke(picking) {
+  override stroke(picking) {
     var iVertsInRadius = picking.getPickedVertices();
     var intensity = this._intensity * Tablet.getPressureIntensity();
 

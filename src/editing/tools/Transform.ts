@@ -20,7 +20,7 @@ class Transform extends SculptBase {
     return true;
   }
 
-  preUpdate() {
+  override preUpdate() {
     var picking = this._main.getPicking();
 
     var mesh = picking.getMesh();
@@ -30,7 +30,7 @@ class Transform extends SculptBase {
     this._main.setCanvasCursor('default');
   }
 
-  start(ctrl) {
+  override start(ctrl) {
     var main = this._main;
     var mesh = this.getMesh();
     var picking = main.getPicking();
@@ -51,7 +51,7 @@ class Transform extends SculptBase {
     return false;
   }
 
-  end() {
+  override end() {
     this._gizmo.onMouseUp();
 
     if (!this.getMesh() || this.isIdentity(this.getMesh().getEditMatrix()))
@@ -98,14 +98,14 @@ class Transform extends SculptBase {
     else mesh.updateGeometry(mesh.getFacesFromVertices(iVerts), iVerts);
   }
 
-  update() { }
+  override update() { }
 
-  postRender() {
+  override postRender() {
     if (this.getMesh())
       this._gizmo.render();
   }
 
-  addSculptToScene(scene) {
+  override addSculptToScene(scene) {
     if (this.getMesh())
       this._gizmo.addGizmoToScene(scene);
   }

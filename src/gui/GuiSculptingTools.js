@@ -51,12 +51,21 @@ var addCtrlRadius = function (tool, fold, widget, main) {
   return ctrl;
 };
 var addCtrlIntensity = function (tool, fold, widget) {
-  var ctrl = fold.addSlider(TR('sculptIntensity'), tool._intensity * 100, setOnChange.bind(tool, '_intensity', 100), 0, 100, 1);
+  var ctrl = fold.addSlider(
+    TR('sculptIntensity'), 
+    tool._intensity * 100, 
+    setOnChange.bind(tool, '_intensity', 100), 
+    0, 
+    100, 
+    1
+  );
   widget._ctrlIntensity = ctrl;
   return ctrl;
 };
 var addCtrlHardness = function (tool, fold) {
-  return fold.addSlider(TR('sculptHardness'), tool._hardness * 100, setOnChange.bind(tool, '_hardness', 100), 0, 100, 1);
+  return fold.addSlider(
+    TR('sculptHardness'), tool._hardness * 100, setOnChange.bind(tool, '_hardness', 100), 0, 100, 1
+  );
 };
 var addCtrlCulling = function (tool, fold) {
   return fold.addCheckbox(TR('sculptCulling'), tool, '_culling');
@@ -186,7 +195,9 @@ GuiTools[Enums.Tools.PAINT] = {
 
     this._ctrls.push(fold.addTitle(TR('sculptPBRTitle')));
     this._ctrls.push(fold.addButton(TR('sculptPaintAll'), tool, 'paintAll'));
-    this._ctrlPicker = fold.addCheckbox(TR('sculptPickColor'), tool._pickColor, this.onColorPick.bind(this, tool, main));
+    this._ctrlPicker = fold.addCheckbox(
+      TR('sculptPickColor'), tool._pickColor, this.onColorPick.bind(this, tool, main)
+    );
     this._ctrls.push(this._ctrlPicker);
 
     var materials = [];
@@ -194,7 +205,9 @@ GuiTools[Enums.Tools.PAINT] = {
     var ctrlColor = fold.addColor(TR('sculptColor'), tool._color, cbMatChanged);
     var ctrlRoughness = fold.addSlider(
       TR('sculptRoughness'), tool._material[0] * 100, cbMatChanged, 0, 100, 1);
-    var ctrlMetallic = fold.addSlider(TR('sculptMetallic'), tool._material[1] * 100, cbMatChanged, 0, 100, 1);
+    var ctrlMetallic = fold.addSlider(
+      TR('sculptMetallic'), tool._material[1] * 100, cbMatChanged, 0, 100, 1
+    );
     materials.push(ctrlColor, ctrlRoughness, ctrlMetallic);
     this._ctrls.push(ctrlColor, ctrlRoughness, ctrlMetallic);
     tool.setPickCallback(this.onPickedMaterial.bind(this, materials, tool, main));
@@ -273,12 +286,18 @@ GuiTools[Enums.Tools.MASKING] = {
     this._ctrls.push(addCtrlCulling(tool, fold));
     this._main = main;
     this._tool = tool;
-    var bci = fold.addDualButton(TR('sculptMaskingClear'), TR('sculptMaskingInvert'), tool, tool, 'clear', 'invert');
-    var bbs = fold.addDualButton(TR('sculptMaskingBlur'), TR('sculptMaskingSharpen'), tool, tool, 'blur', 'sharpen');
+    var bci = fold.addDualButton(
+      TR('sculptMaskingClear'), TR('sculptMaskingInvert'), tool, tool, 'clear', 'invert'
+    );
+    var bbs = fold.addDualButton(
+      TR('sculptMaskingBlur'), TR('sculptMaskingSharpen'), tool, tool, 'blur', 'sharpen'
+    );
     this._ctrls.push(bci[0], bci[1], bbs[0], bbs[1]);
     // mask extract
     this._ctrls.push(fold.addTitle(TR('sculptExtractTitle')));
-    this._ctrls.push(fold.addSlider(TR('sculptExtractThickness'), tool, '_thickness', -5, 5, 0.001));
+    this._ctrls.push(
+      fold.addSlider(TR('sculptExtractThickness'), tool, '_thickness', -5, 5, 0.001)
+    );
     this._ctrls.push(fold.addButton(TR('sculptExtractAction'), tool, 'extract'));
     addCtrlAlpha(this._ctrls, fold, tool, this);
   }

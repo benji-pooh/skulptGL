@@ -5,6 +5,7 @@ import Enums from './misc/Enums';
 import Utils from './misc/Utils';
 import Scene from './Scene';
 import Multimesh from './mesh/multiresolution/Multimesh';
+import MeshDynamic from './mesh/dynamic/MeshDynamic';
 
 var MOUSE_LEFT = 1;
 var MOUSE_MIDDLE = 2;
@@ -12,6 +13,33 @@ var MOUSE_RIGHT = 3;
 
 // Manage events
 class SculptGL extends Scene {
+
+
+  // all x and y position are canvas based
+
+  // controllers stuffs
+  protected _mouseX: number;
+  protected _mouseY: number;
+  protected _lastMouseX: number;
+  protected _lastMouseY: number;
+  protected _lastScale: number;
+
+  // NOTHING, MASK_EDIT, SCULPT_EDIT, CAMERA_ZOOM, CAMERA_ROTATE, CAMERA_PAN, CAMERA_PAN_ZOOM_ALT
+  protected _lastNbPointers: number;
+  protected _isWheelingIn: boolean;
+
+  // masking
+  protected _maskX: number;
+  protected _maskY: number;
+  protected _hammer: HammerManager;
+
+  protected _eventProxy: any;
+
+  protected _isIOS: boolean;
+
+  protected _timerResetPointer: number;
+  protected _timerEndWheel: number;
+
 
   constructor() {
     super();
@@ -36,6 +64,8 @@ class SculptGL extends Scene {
     this._hammer = new HammerManager(this._canvas);
 
     this._eventProxy = {};
+
+    this._isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     this.initHammer();
     this.addEvents();
@@ -188,19 +218,14 @@ class SculptGL extends Scene {
     }
     this.onDeviceMove(evProxy);
 
-    if (this._isIOS()) {
+    if (this._isIOS) {
       window.clearTimeout(this._timerResetPointer);
-      this._timerResetPointer = window.setTimeout(function () {
+      this._timerResetPointer = window.setTimeout(() => {
         this._lastNbPointers = 0;
-      }.bind(this), 60);
+      }, 60);
     }
   }
 
-  _isIOS() {
-    if (this._isIOS !== undefined) return this._isIOS;
-    this._isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    return this._isIOS;
-  }
 
   onPanUpdateNbPointers(nbPointers) {
     // called on panstart or panmove (not consistent)
@@ -215,9 +240,9 @@ class SculptGL extends Scene {
       return;
     this.onDeviceUp();
     // we need to detect when all fingers are released
-    window.setTimeout(function () {
+    window.setTimeout(() => {
       if (!e.pointers.length) this._lastNbPointers = 0;
-    }.bind(this), 60);
+    }, 60);
   }
 
   onDoubleTap(e) {
@@ -233,7 +258,7 @@ class SculptGL extends Scene {
     var picking = this._picking;
     var res = picking.intersectionMouseMeshes();
     var cam = this._camera;
-    var pivot = [0.0, 0.0, 0.0];
+    var pivot: vec3 = [0.0, 0.0, 0.0];
     if (!res) {
       return this.resetCameraMeshes();
     }
@@ -264,35 +289,6 @@ class SculptGL extends Scene {
     this.onDeviceWheel(dir);
   }
 
-  resetCameraMeshes(meshes) {
-    if (!meshes) meshes = this._meshes;
-
-    if (meshes.length > 0) {
-      var pivot = [0.0, 0.0, 0.0];
-      var box = this.computeBoundingBoxMeshes(meshes);
-      var zoom = 0.8 * this.computeRadiusFromBoundingBox(box);
-      zoom *= this._camera.computeFrustumFit();
-      vec3.set(pivot, (box[0] + box[3]) * 0.5, (box[1] + box[4]) * 0.5, (box[2] + box[5]) * 0.5);
-      this._camera.setAndFocusOnPivot(pivot, zoom);
-    } else {
-      this._camera.resetView();
-    }
-
-    this.render();
-  }
-
-  ////////////////
-  // LOAD FILES
-  ////////////////
-  getFileType(name) {
-    var lower = name.toLowerCase();
-    if (lower.endsWith('.obj')) return 'obj';
-    if (lower.endsWith('.sgl')) return 'sgl';
-    if (lower.endsWith('.stl')) return 'stl';
-    if (lower.endsWith('.ply')) return 'ply';
-    return;
-  }
-
   loadFiles(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -313,7 +309,7 @@ class SculptGL extends Scene {
     var self = this;
     reader.onload = function (evt) {
       self.loadScene(evt.target.result, fileType);
-      document.getElementById('fileopen').value = '';
+      (<HTMLInputElement>document.getElementById('fileopen')).value = '';
     };
 
     if (fileType === 'obj')
@@ -494,8 +490,8 @@ class SculptGL extends Scene {
 
       if (action === Enums.Action.SCULPT_EDIT) {
         Multimesh.RENDER_HINT = Multimesh.SCULPT;
-        this._sculptManager.update(this);
-        if (this.getMesh().isDynamic)
+        this._sculptManager.update();
+        if (this.getMesh() instanceof MeshDynamic)
           this._gui.updateMeshInfo();
       }
     }

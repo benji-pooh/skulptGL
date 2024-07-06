@@ -40,11 +40,12 @@ class GuiFiles {
     menu.addButton(TR('fileExportSTL'), this, 'saveFileAsSTL');
     menu.addCheckbox('OBJ color zbrush', this, '_objColorZbrush');
     menu.addCheckbox('OBJ color append', this, '_objColorAppended');
-    menu.addButton(TR('sketchfabTitle'), this._ctrlGui, 'exportSketchfab');
 
     // export texture
     menu.addTitle(TR('fileExportTextureTitle'));
-    this._guiTexSize = menu.addSlider(TR('fileExportTextureSize'), 10, this.onTextureSize.bind(this), 8, 12, 1);
+    this._guiTexSize = menu.addSlider(TR(
+      'fileExportTextureSize'), 10, this.onTextureSize.bind(this), 8, 12, 1
+    );
     this._guiTexSize.setValue(10);
     menu.addButton(TR('fileExportColor'), this, 'saveColor');
     menu.addButton(TR('fileExportRoughness'), this, 'saveRoughness');
@@ -182,7 +183,10 @@ class GuiFiles {
   saveFileAsOBJ() {
     var meshes = this._getExportMeshes();
     if (!meshes) return;
-    this._save(Export.exportOBJ(meshes, this._objColorZbrush, this._objColorAppended), 'yourMesh.obj');
+    this._save(
+      Export.exportOBJ(meshes, this._objColorZbrush, this._objColorAppended), 
+      'yourMesh.obj'
+    );
   }
 
   saveFileAsPLY() {

@@ -15,7 +15,7 @@ class Drag extends SculptBase {
 
   }
 
-  sculptStroke() {
+  override sculptStroke() {
     var main = this._main;
     var mesh = this.getMesh();
     var picking = main.getPicking();
@@ -54,7 +54,7 @@ class Drag extends SculptBase {
     this._lastMouseY = main._mouseY;
   }
 
-  makeStroke(mouseX, mouseY, picking, pickingSym) {
+  override makeStroke(mouseX, mouseY, picking, pickingSym) {
     var mesh = this.getMesh();
     this.updateDragDir(picking, mouseX, mouseY);
     picking.pickVerticesInSphere(picking.getLocalRadius2());
@@ -75,7 +75,7 @@ class Drag extends SculptBase {
   }
 
   /** On stroke */
-  stroke(picking, sym) {
+  override stroke(picking, sym) {
     var iVertsInRadius = picking.getPickedVertices();
 
     // undo-redo

@@ -26,7 +26,7 @@ class Move extends SculptBase {
 
   }
 
-  startSculpt() {
+  override startSculpt() {
     var main = this._main;
     var picking = main.getPicking();
     this.initMoveData(picking, this._moveData);
@@ -76,7 +76,7 @@ class Move extends SculptBase {
     }
   }
 
-  sculptStroke() {
+  override sculptStroke() {
     var main = this._main;
     var picking = main.getPicking();
     var pickingSym = main.getPickingSymmetry();

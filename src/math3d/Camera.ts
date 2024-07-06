@@ -471,14 +471,14 @@ class Camera {
 
     var lastR = 0;
     var tStart = (new Date()).getTime();
-    this._timers[nTimer] = window.setInterval(function () {
+    this._timers[nTimer] = window.setInterval(() => {
       var r = ((new Date()).getTime() - tStart) / duration;
       r = easeOutQuart(r);
       cb(r - lastR, r);
       lastR = r;
       if (r >= 1.0)
         this.clearTimerN(nTimer);
-    }.bind(this), 16.6);
+    }, 16.6);
   }
 
   private _translateDelta(delta, dr) {

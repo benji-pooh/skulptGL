@@ -8,15 +8,14 @@ class Smooth extends SculptBase {
   protected _culling: boolean = false;
   protected _tangent: boolean = false;
   protected _idAlpha: number = 0;
-  protected _lockPosition: boolean = false;
 
-  constructor(main) {
+  constructor(main = null) {
     super(main);
 
     this._radius = 50;
   }
 
-  stroke(picking) {
+  override stroke(picking) {
     var iVertsInRadius = picking.getPickedVertices();
     var intensity = this._intensity * Tablet.getPressureIntensity();
 
@@ -36,7 +35,7 @@ class Smooth extends SculptBase {
   }
 
   /** Smooth a group of vertices. New position is given by simple averaging */
-  smooth(iVerts, intensity, picking: any | null = null) {
+  smooth(iVerts, intensity, picking: (any | null) = null) {
     var mesh = this.getMesh();
     var vAr = mesh.getVertices();
     var mAr = mesh.getMaterials();
@@ -62,7 +61,7 @@ class Smooth extends SculptBase {
   }
 
   /** Smooth a group of vertices. Reproject the position on each vertex normals plane */
-  smoothTangent(iVerts, intensity, picking) {
+  smoothTangent(iVerts, intensity, picking = null) {
     var mesh = this.getMesh();
     var vAr = mesh.getVertices();
     var mAr = mesh.getMaterials();
