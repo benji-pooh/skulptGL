@@ -239,7 +239,7 @@ let ShaderBase: IShaderBase = {
   },
 
   getDummyTexture(gl: WebGLRenderingContext): WebGLTexture {
-    if (this._dummyTex !== null)
+    if (this._dummyTex != null)
       return this._dummyTex;
     this._dummyTex = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, this._dummyTex);
@@ -249,7 +249,7 @@ let ShaderBase: IShaderBase = {
   },
 
   getOrCreateTexture0(gl: WebGLRenderingContext, texPath: string, main): WebGLTexture | false {
-    if (this.texture0 !== undefined)
+    if (this.texture0 != null)
       return this.texture0;
     this.texture0 = null; // trigger loading
     var tex = new Image();

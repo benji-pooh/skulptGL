@@ -24,7 +24,7 @@ mesh.initRender(); // only if gl has been provided
 var DEF_ROUGHNESS = 0.18; // 0.18;
 var DEF_METALNESS = 0.08; // 0.08;
 
-class Mesh {
+abstract class Mesh {
 
   static OPTIMIZE = true;
   static ID = 0;

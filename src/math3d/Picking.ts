@@ -117,7 +117,7 @@ class Picking {
     return newAlpha;
   }
 
-  constructor(main, xSym) {
+  constructor(main, xSym = false) {
     this._main = main; // the camera
     this._xSym = !!xSym;
   }

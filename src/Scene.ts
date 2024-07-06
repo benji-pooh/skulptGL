@@ -18,8 +18,60 @@ import Rtt from './drawables/Rtt';
 import ShaderLib from './render/ShaderLib';
 import MeshStatic from './mesh/meshStatic/MeshStatic';
 import WebGLCaps from './render/WebGLCaps';
+import MeshDynamic from './mesh/dynamic/MeshDynamic';
 
 class Scene {
+
+  protected _gl: WebGLRenderingContext; // webgl context
+
+  protected _cameraSpeed: 0.25;
+
+  // cache canvas stuffs
+  protected _pixelRatio: number;
+  protected _viewport: HTMLElement;
+  protected _canvas: HTMLCanvasElement;
+  protected _canvasWidth: number;
+  protected _canvasHeight: number;
+  protected _canvasOffsetLeft: number;
+  protected _canvasOffsetTop: number;
+
+  // core of the app
+  protected _stateManager: StateManager; // for undo-redo
+  protected _sculptManager: SculptManager;
+  protected _camera: Camera;
+  protected _picking: Picking; // the ray picking
+  protected _pickingSym: Picking; // the symmetrical picking
+
+  // TODO primitive builder
+  protected _meshPreview: any;
+  protected _torusLength: number;
+  protected _torusWidth: number;
+  protected _torusRadius: number;
+  protected _torusRadial: number;
+  protected _torusTubular: number;
+
+  protected _showContour: boolean;
+  protected _showGrid: boolean;
+  protected _grid: any;
+  protected _background: any;
+  protected _meshes: Mesh[]; // the meshes
+  protected _selectMeshes: Mesh[]; // multi selection
+  protected _mesh: Mesh; // the selected mesh
+
+  protected _rttContour: Rtt; // rtt for contour
+  protected _rttMerge: Rtt; // rtt decode opaque + merge transparent
+  protected _rttOpaque: Rtt; // rtt half float
+  protected _rttTransparent: Rtt; // rtt rgbm
+
+  // ui stuffs
+  protected _focusGui: boolean; // if the gui is being focused
+  protected _gui: Gui;
+
+  protected _preventRender: boolean; // prevent multiple render per frame
+  protected _drawFullScene: boolean; // render everything on the rtt
+  protected _autoMatrix: boolean; // scale and center the imported meshes
+  protected _vertexSRGB: boolean; // srgb vs linear colorspace for vertex color
+  protected _action: number;
 
   constructor() {
     this._gl = null; // webgl context
@@ -29,7 +81,7 @@ class Scene {
     // cache canvas stuffs
     this._pixelRatio = 1.0;
     this._viewport = document.getElementById('viewport');
-    this._canvas = document.getElementById('canvas');
+    this._canvas = <HTMLCanvasElement>document.getElementById('canvas');
     this._canvasWidth = 0;
     this._canvasHeight = 0;
     this._canvasOffsetLeft = 0;
@@ -100,6 +152,19 @@ class Scene {
     else this.addSphere();
   }
 
+  ////////////////
+  // LOAD FILES
+  ////////////////
+  getFileType(name) {
+    var lower = name.toLowerCase();
+    if (lower.endsWith('.obj')) return 'obj';
+    if (lower.endsWith('.sgl')) return 'sgl';
+    if (lower.endsWith('.stl')) return 'stl';
+    if (lower.endsWith('.ply')) return 'ply';
+    return;
+  }
+
+
   addModelURL(url) {
     var fileType = this.getFileType(url);
     if (!fileType)
@@ -110,10 +175,10 @@ class Scene {
 
     xhr.responseType = fileType === 'obj' ? 'text' : 'arraybuffer';
 
-    xhr.onload = function () {
+    xhr.onload = () => {
       if (xhr.status === 200)
         this.loadScene(xhr.response, fileType);
-    }.bind(this);
+    };
 
     xhr.send(null);
   }
@@ -197,7 +262,7 @@ class Scene {
     grid.setFlatColor([0.04, 0.04, 0.04]);
   }
 
-  setOrUnsetMesh(mesh, multiSelect) {
+  setOrUnsetMesh(mesh, multiSelect = false) {
     if (!mesh) {
       this._selectMeshes.length = 0;
     } else if (!multiSelect) {
@@ -370,11 +435,11 @@ class Scene {
       stencil: true
     };
 
-    var canvas = document.getElementById('canvas');
+    var canvas = <HTMLCanvasElement>document.getElementById('canvas');
 
-    var gl = this._gl = canvas.getContext('webgl', attributes) 
-      || canvas.getContext('experimental-webgl', attributes);
-      
+    var gl = this._gl = <WebGLRenderingContext>(canvas.getContext('webgl', attributes)
+      || canvas.getContext('experimental-webgl', attributes));
+
     if (!gl) {
       window.alert('Could not initialise WebGL. No WebGL, no SculptGL. Sorry.');
       return;
@@ -426,7 +491,7 @@ class Scene {
   }
 
   initAlphaTextures() {
-    Picking.initAlphas().then((alphaNames)=>{
+    Picking.initAlphas().then((alphaNames) => {
       for (let alphaName of alphaNames) {
         var entry = {};
         entry[alphaName] = alphaName;
@@ -497,8 +562,8 @@ class Scene {
     var mCen = mat4.create();
     mat4.scale(mCen, mCen, [scale, scale, scale]);
     mat4.translate(
-      mCen, 
-      mCen, 
+      mCen,
+      mCen,
       [-(box[0] + box[3]) * 0.5, -(box[1] + box[4]) * 0.5, -(box[2] + box[5]) * 0.5]
     );
 
@@ -535,11 +600,11 @@ class Scene {
   addTorus(preview) {
     var mesh = new Multimesh(
       Primitives.createTorus(
-        this._gl, 
+        this._gl,
         this._torusLength,
-        this._torusWidth, 
-        this._torusRadius, 
-        this._torusRadial, 
+        this._torusWidth,
+        this._torusRadius,
+        this._torusRadial,
         this._torusTubular)
     );
     if (preview) {
@@ -554,7 +619,7 @@ class Scene {
     this.addNewMesh(mesh);
   }
 
-  subdivideClamp(mesh, linear) {
+  subdivideClamp(mesh, linear = false) {
     Subdivision.LINEAR = !!linear;
     while (mesh.getNbFaces() < 50000)
       mesh.addLevel();
@@ -606,6 +671,23 @@ class Scene {
     return newMeshes;
   }
 
+  resetCameraMeshes(meshes = null) {
+    if (!meshes) meshes = this._meshes;
+
+    if (meshes.length > 0) {
+      var pivot: vec3 = [0.0, 0.0, 0.0];
+      var box = this.computeBoundingBoxMeshes(meshes);
+      var zoom = 0.8 * this.computeRadiusFromBoundingBox(box);
+      zoom *= this._camera.computeFrustumFit();
+      vec3.set(pivot, (box[0] + box[3]) * 0.5, (box[1] + box[4]) * 0.5, (box[2] + box[5]) * 0.5);
+      this._camera.setAndFocusOnPivot(pivot, zoom);
+    } else {
+      this._camera.resetView();
+    }
+
+    this.render();
+  }
+
   clearScene() {
     this.getStateManager().reset();
     this.getMeshes().length = 0;
@@ -630,7 +712,7 @@ class Scene {
       meshes.splice(this.getIndexMesh(rm[i]), 1);
   }
 
-  getIndexMesh(mesh, select) {
+  getIndexMesh(mesh, select = false) {
     var meshes = select ? this._selectMeshes : this._meshes;
     var id = mesh.getID();
     for (var i = 0, nbMeshes = meshes.length; i < nbMeshes; ++i) {
