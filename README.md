@@ -9,6 +9,12 @@ you will need to have `node` and `yarn` installed
 
 skulptGL uses parcel for bundling and developer experience.
 
+### Folders
+- The `app` folder contains the app data.
+- The `docs` folder contains the documentation.
+- The `lib` folder contains the libraries.
+- The `src` folder contains the skulptGL sources.
+- The `app` folder contains the app data.
 ## Testing/Running
 
 `yarn parcel` will bundle up the necessary resources and launch a dev server with hot reloading. It
