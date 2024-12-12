@@ -1,25 +1,14 @@
 # SculptNG
 
-SculptNG is a continuation of SculptGL created by Stephane Ginier.
-
-Currently focused around bugfixes and modernizing the software build system, JS features, etc.
+skulptGL is a continuation of SculptGL created by Stéphane Ginier.
 
 Contributors are welcome.
-
-## Roadmap
-
-- [ ] Remove little used features
-- [ ] Clean up index pages
-- [ ] Reorganize resources
-- [ ] Convert to ES6 style classes
-- [ ] Document modules, classes, methods, functions
-- [ ] Add some tests around important invariants
 
 ## Developing
 
 you will need to have `node` and `yarn` installed
 
-SculptNG uses parcel for bundling and developer experience.
+skulptGL uses parcel for bundling and developer experience.
 
 ## Testing/Running
 
@@ -40,7 +29,7 @@ Right now, `rm -rf docs` and `yarn parcel build --dist-dir docs --public-url="/s
 
 ## Credits
 
-Original Author: Stephane Ginier (<https://stephaneginier.com/>)
+Original Author: Stéphane Ginier (<https://stephaneginier.com/>)
 
 ### Environments
 
